@@ -194,7 +194,7 @@ Resources:
 
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
-  # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
+  # https://docs.amazonaws.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
   MCodeBuildpsProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -228,11 +228,16 @@ Resources:
         Webhook: true
         FilterGroups:
           - - Type: EVENT
-              Pattern: PUSH
-          - - Type: BASE_REF
-              Pattern: ^refs/heads/master$
-            - Type: EVENT
               Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/master$
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/master$
+            - Type: FILE_PATH
+              Pattern: "^README.*"
+              ExcludeMatchedPattern: true
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
   # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
@@ -269,11 +274,16 @@ Resources:
         Webhook: true
         FilterGroups:
           - - Type: EVENT
-              Pattern: PUSH
-          - - Type: BASE_REF
-              Pattern: ^refs/heads/Enhancements$
-            - Type: EVENT
               Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/Enhancements$
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/Enhancements$
+            - Type: FILE_PATH
+              Pattern: "^README.*"
+              ExcludeMatchedPattern: true
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
   # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
@@ -310,11 +320,16 @@ Resources:
         Webhook: true
         FilterGroups:
           - - Type: EVENT
-              Pattern: PUSH
-          - - Type: BASE_REF
-              Pattern: ^refs/heads/master$
-            - Type: EVENT
               Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/master$
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/master$
+            - Type: FILE_PATH
+              Pattern: "^README.*"
+              ExcludeMatchedPattern: true
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
   # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
@@ -351,11 +366,16 @@ Resources:
         Webhook: true
         FilterGroups:
           - - Type: EVENT
-              Pattern: PUSH
-          - - Type: BASE_REF
-              Pattern: ^refs/heads/Enhancements$
-            - Type: EVENT
               Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/Enhancements$
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/Enhancements$
+            - Type: FILE_PATH
+              Pattern: "^README.*"
+              ExcludeMatchedPattern: true
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
   # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
@@ -392,11 +412,16 @@ Resources:
         Webhook: true
         FilterGroups:
           - - Type: EVENT
-              Pattern: PUSH
-          - - Type: BASE_REF
-              Pattern: ^refs/heads/master$
-            - Type: EVENT
               Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/master$
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/master$
+            - Type: FILE_PATH
+              Pattern: "^README.*"
+              ExcludeMatchedPattern: true
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
   # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
@@ -433,11 +458,16 @@ Resources:
         Webhook: true
         FilterGroups:
           - - Type: EVENT
-              Pattern: PUSH
-          - - Type: BASE_REF
-              Pattern: ^refs/heads/Enhancements$
-            - Type: EVENT
               Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/Enhancements$
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/Enhancements$
+            - Type: FILE_PATH
+              Pattern: "^README.*"
+              ExcludeMatchedPattern: true
 
   # An SNS Topic used for CodeBuild status updates
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html
