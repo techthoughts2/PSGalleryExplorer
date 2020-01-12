@@ -134,7 +134,6 @@ $results = Find-PSGModule -ByGitHubInfo Watchers -IncludeCorps -IncludeRegulars 
 $results | Format-List
 ```
 
-
 Returns up to 40 modules based on number of GitHub watchers.
 It includes more popular modules as well as modules made by corporations.
 A list of results is displayed.
@@ -289,4 +288,3 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 Author: Jake Morrison - @jakemorrison - https://techthoughts.info/
 
 ## RELATED LINKS
-

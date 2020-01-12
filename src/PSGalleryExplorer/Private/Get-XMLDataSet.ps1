@@ -28,7 +28,12 @@ function Get-XMLDataSet {
         }
         $oldProgressPreference = $progressPreference
         $progressPreference = 'SilentlyContinue'
-        $null = Invoke-WebRequest @invokeWebRequestSplat -PassThru
+        if ($PSEdition -eq 'Desktop') {
+            $null = Invoke-WebRequest @invokeWebRequestSplat -PassThru -UseBasicParsing
+        }
+        else {
+            $null = Invoke-WebRequest @invokeWebRequestSplat -PassThru
+        }
     }#try
     catch {
         $result = $false
