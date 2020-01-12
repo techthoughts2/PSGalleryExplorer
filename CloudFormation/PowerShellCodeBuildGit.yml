@@ -87,6 +87,10 @@ Parameters:
     Description: Email Address for SNS Notifications
     AllowedPattern: "^[\\x20-\\x45]?[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-z]{2,})$"
 
+  PolicyArnS3Access:
+    Type: String
+    Description: Policy ARN for for S3 modules bucket access
+
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -168,6 +172,8 @@ Resources:
             Action:
               - sts:AssumeRole
       Path: /
+      ManagedPolicyArns:
+        - !Ref PolicyArnS3Access
       Policies:
         - PolicyName: CBCloudWatchPublishing
           PolicyDocument:
