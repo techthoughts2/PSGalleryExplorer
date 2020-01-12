@@ -34,25 +34,30 @@ $modulesToInstall = [System.Collections.ArrayList]::new()
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Pester'
             ModuleVersion = '4.9.0'
-            BucketName    = ps-invoke-modules
+            BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
             ModuleVersion = '5.5.6'
-            BucketName    = ps-invoke-modules
+            BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PSScriptAnalyzer'
             ModuleVersion = '1.18.3'
-            BucketName    = ps-invoke-modules
+            BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'platyPS'
             ModuleVersion = '0.12.0'
-            BucketName    = ps-invoke-modules
+            BucketName    = 'ps-invoke-modules'
+            KeyPrefix     = ''
+$null = $modulesToInstall.Add(([PSCustomObject]@{
+            ModuleName    = 'Convert'
+            ModuleVersion = '0.4.1'
+            BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 
