@@ -62,6 +62,8 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
             KeyPrefix     = ''
         }))
 
+$tempPath = [System.IO.Path]::GetTempPath()
+
 if ($galleryDownload -eq $false) {
     'Installing PowerShell Modules'
     foreach ($module in $modulesToInstall) {
