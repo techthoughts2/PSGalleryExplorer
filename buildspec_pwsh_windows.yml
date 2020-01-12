@@ -14,7 +14,7 @@ phases:
       - '& "C:\Program Files\PowerShell\7-preview\pwsh.exe" -command ''.\install_modules.ps1'''
   pre_build:
     commands:
-        - pwsh -command '$PSVersionTable'
+      - '& "C:\Program Files\PowerShell\7-preview\pwsh.exe" -command '''$PSVersionTable'''
       # - powershell -command 'New-Item -Path C:\Test -ItemType Directory | Out-Null'
       # - '& "C:\Program Files\PowerShell\6\pwsh.exe" -command ''Invoke-Build -File .\src\PSGalleryExplorer.build.Settings.ps1 -Task ValidateUniqueModuleVersion'''
   build:

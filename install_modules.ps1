@@ -98,6 +98,9 @@ elseif ($PSVersionTable.Platform -eq 'Unix') {
     #     KeyPrefix     = ''
     # }))
 }
+elseif ($PSEdition -eq 'Desktop') {
+    $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
+}
 else {
     throw 'Unrecognized OS platform'
 }
