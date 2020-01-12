@@ -64,6 +64,44 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
 
 $tempPath = [System.IO.Path]::GetTempPath()
 
+if ($PSVersionTable.Platform -eq 'Win32NT') {
+    $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
+    if ($PSEdition -eq 'Core') {
+        $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'PowerShell', 'Modules')
+        # Add the AWSPowerShell.NetCore Module
+        # $null = $modulesToInstall.Add(([PSCustomObject]@{
+        #     ModuleName    = 'AWSPowerShell.NetCore'
+        #     ModuleVersion = '3.3.604.0'
+        #     BucketName    = 'ps-invoke-modules'
+        #     KeyPrefix     = ''
+        # }))
+    }
+    else {
+        $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
+        # Add the AWSPowerShell Module
+        # $null = $modulesToInstall.Add(([PSCustomObject]@{
+        #     ModuleName    = 'AWSPowerShell'
+        #     ModuleVersion = '3.3.604.0'
+        #     BucketName    = 'ps-invoke-modules'
+        #     KeyPrefix     = ''
+        # }))
+    }
+}
+elseif ($PSVersionTable.Platform -eq 'Unix') {
+    $moduleInstallPath = [System.IO.Path]::Combine('/', 'usr', 'local', 'share', 'powershell', 'Modules')
+
+    # Add the AWSPowerShell.NetCore Module
+    # $null = $modulesToInstall.Add(([PSCustomObject]@{
+    #     ModuleName    = 'AWSPowerShell.NetCore'
+    #     ModuleVersion = '3.3.604.0'
+    #     BucketName    = 'ps-invoke-modules'
+    #     KeyPrefix     = ''
+    # }))
+}
+else {
+    throw 'Unrecognized OS platform'
+}
+
 if ($galleryDownload -eq $false) {
     'Installing PowerShell Modules'
     foreach ($module in $modulesToInstall) {
