@@ -1,0 +1,98 @@
+// Available variables which can be used inside of strings.
+// ${workspaceRoot}: the root folder of the team
+// ${file}: the current opened file
+// ${relativeFile}: the current opened file relative to workspaceRoot
+// ${fileBasename}: the current opened file's basename
+// ${fileDirname}: the current opened file's dirname
+// ${fileExtname}: the current opened file's extension
+// ${cwd}: the current working directory of the spawned process
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    // Start PowerShell
+    "windows": {
+        "options": {
+            "shell": {
+                //"executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                "executable": "C:\\Program Files\\PowerShell\\6\\pwsh.exe",
+                //"command": "${env:ProgramFiles}/PowerShell/7-preview/pwsh.exe",
+                "args": [
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command"
+                ]
+            }
+        }
+    },
+    "linux": {
+        "options": {
+            "shell": {
+                "executable": "/usr/bin/pwsh",
+                "args": [
+                    "-NoProfile",
+                    "-Command"
+                ]
+            }
+        }
+    },
+    "osx": {
+        "options": {
+            "shell": {
+                "executable": "/usr/local/bin/pwsh",
+                "args": [
+                    "-NoProfile",
+                    "-Command"
+                ]
+            }
+        }
+    },
+    // Associate with test task runner
+    "tasks": [
+        {
+            "label": "Test",
+            "type": "shell",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$pester"
+            ],
+            "command": "Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true}"
+        },
+        {
+            "label": "CF Resource List",
+            "type": "process",
+            "command": "firefox.exe",
+            "windows": {
+                "command": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
+            },
+            "args": [
+                "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "CF Type Search",
+            "type": "process",
+            "command": "firefox.exe",
+            "windows": {
+                "command": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
+            },
+            "args": [
+                "https://docs.aws.amazon.com/search/doc-search.html?searchPath=documentation-guide&searchQuery=%22${selectedText}%22&x=0&y=0&this_doc_product=AWS+CloudFormation&this_doc_guide=User+Guide&doc_locale=en_us#facet_doc_product=AWS%20CloudFormation&facet_doc_guide=User%20Guide"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

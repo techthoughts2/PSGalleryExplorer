@@ -1,0 +1,88 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: PSGalleryExplorer S3 Code Bucket for Lambda Functions
+
+Parameters:
+  ServiceName:
+    Type: String
+    Description: 'Name of the service that will be used to tag each resource.'
+    Default: PSGalleryExplorer
+    # The bucket name can be between 3 and 63 characters long, and can contain only lower-case characters, numbers, periods, and dashes.
+    # Each label in the bucket name must start with a lowercase letter or number.
+    # The bucket name cannot contain underscores, end with a dash, have consecutive periods, or use dashes adjacent to periods.
+    # The bucket name cannot be formatted as an IP address (198.51.100.24).
+  BucketName:
+    Type: String
+    Description: Hard coded S3 bucketname
+    Default: psge
+
+Resources:
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
+  PSGELFunctions:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      # AccelerateConfiguration: AccelerateConfiguration
+      # AccessControl: String
+      # AnalyticsConfigurations:
+      #   - AnalyticsConfiguration
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub ${BucketName}-psgelfunctions
+      # CorsConfiguration:
+      #   CorsConfiguration
+      # InventoryConfigurations:
+      #   - InventoryConfiguration
+      # LifecycleConfiguration:
+      #   Rules:
+      #       -
+      #         AbortIncompleteMultipartUpload:
+      #           DaysAfterInitiation: 7
+      #         Status: Enabled
+      #         Transitions:
+      #           -
+      #             StorageClass: GLACIER
+      #             TransitionInDays: 30
+      # LoggingConfiguration:
+      #   DestinationBucketName: !Ref S3BucketLogs
+      #   LogFilePrefix: '/logs/updateapcdata/'
+      # MetricsConfigurations:
+      #   - MetricsConfiguration
+      # NotificationConfiguration:
+      #   TopicConfigurations:
+      #     -
+      #       Event: s3:ObjectCreated:*
+      #       Topic: !Ref UpdateSNSTopic
+      # ObjectLockConfiguration:
+      #   ObjectLockConfiguration
+      # ObjectLockEnabled: Boolean
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      # ReplicationConfiguration:
+      #   ReplicationConfiguration
+      # VersioningConfiguration:
+      #   VersioningConfiguration
+      # WebsiteConfiguration:
+      #   WebsiteConfiguration
+      Tags:
+        - Key: Service
+          Value: !Ref ServiceName
+
+Outputs:
+  PSGELFunctionsBucketName:
+    Value: !Ref PSGELFunctions
+    Description: Name of the PSGalleryExplorer Amazon S3 bucket that holds Lambda functions
+    Export:
+      Name: PSGELFBN
+  PSGELFunctionsArn:
+    Description: Arn of the PSGalleryExplorer Amazon S3 bucket that holds Lambda functions
+    Value: !GetAtt PSGELFunctions.Arn
+  PSGELFunctionsDomainName:
+    Description: Domain name of the PSGalleryExplorer Amazon S3 bucket that holds Lambda functions
+    Value: !GetAtt PSGELFunctions.DomainName
