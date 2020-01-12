@@ -54,6 +54,7 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleVersion = '0.12.0'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
+        }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Convert'
             ModuleVersion = '0.4.1'
