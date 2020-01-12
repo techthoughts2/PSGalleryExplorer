@@ -179,7 +179,7 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource:
-                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/test*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/PSGalleryExplorer*"
         - PolicyName: CBS3ArtifactAccess
           PolicyDocument:
             Version: "2012-10-17"
