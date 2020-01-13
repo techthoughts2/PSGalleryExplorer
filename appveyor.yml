@@ -20,4 +20,4 @@ init:
 install:
   - pwsh: . .\actions_bootstrap.ps1
 build_script:
-  - pwsh: Invoke-Build -File .\src\PoshGram.build.ps1
+  - pwsh: Invoke-Build -File .\src\PSGalleryExplorer.build.ps1
