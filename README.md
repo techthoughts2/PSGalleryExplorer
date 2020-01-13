@@ -9,7 +9,7 @@
 [psgallery-v1]:    https://www.powershellgallery.com/packages/PSGalleryExplorer/0.8.0
 
 <p align="center">
-    <img src="./media/PSGalleryExplorer.PNG" alt="PSGalleryExplorer Logo" >
+    <img src="/media/PSGalleryExplorer.PNG" alt="PSGalleryExplorer Logo" >
 </p>
 
 Branch | Windows | Windows pwsh | MacOS | Linux
@@ -29,9 +29,9 @@ PSGalleryExplorer provides functionality to search for PowerShell modules on the
 
 To aid in module discovery more common/popular modules and modules made by corporations are excluded by default. Popular modules and corporation modules can be included in results by specifying the necessary parameter switches.
 
-[PSGalleryExplorer](https://github.com/techthoughts2/PSGalleryExplorer/blob/master/docs/PSGalleryExplorer.md) provides the following functions:
+[PSGalleryExplorer](docs/PSGalleryExplorer.md) provides the following functions:
 
-* [Find-PSGModule](https://github.com/techthoughts2/PSGalleryExplorer/blob/master/docs/Find-PSGModule.md)
+* [Find-PSGModule](docs/Find-PSGModule.md)
 
 ## Why
 
