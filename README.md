@@ -47,7 +47,7 @@ This project aims to increase the discoverability of modules on the PowerShell G
 
 * [PowerShell 5.1](https://github.com/PowerShell/PowerShell) *(or higher version)*
 
-### Installing PoshGram via PowerShell Gallery
+### Installing PSGalleryExplorer via PowerShell Gallery
 
 ```powershell
 #from a 5.1+ PowerShell session
