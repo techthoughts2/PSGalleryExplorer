@@ -9,7 +9,7 @@
 [psgallery-v1]:    https://www.powershellgallery.com/packages/PSGalleryExplorer/0.8.0
 
 <p align="center">
-    <img src="/media/PSGalleryExplorer.PNG" alt="PSGalleryExplorer Logo" >
+    <img src="/media/PSGalleryExplorer.png" alt="PSGalleryExplorer Logo" >
 </p>
 
 Branch | Windows | Windows pwsh | MacOS | Linux
