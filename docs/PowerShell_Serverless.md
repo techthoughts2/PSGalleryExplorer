@@ -2,7 +2,7 @@
 
 ## Synopsis
 
-PSGalleryExplorer includes a modules corresponding GitHub project information when returning module results.
+PSGalleryExplorer includes a module's corresponding GitHub project information when returning module results.
 
 A fully PowerShell serverless solution is deployed to continually collect and update GitHub information for PSGalleryExplorer's use.
 
