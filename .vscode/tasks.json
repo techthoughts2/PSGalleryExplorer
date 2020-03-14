@@ -14,9 +14,9 @@
     "windows": {
         "options": {
             "shell": {
-                //"executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-                "executable": "C:\\Program Files\\PowerShell\\6\\pwsh.exe",
-                //"command": "${env:ProgramFiles}/PowerShell/7-preview/pwsh.exe",
+                // "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                // "executable": "C:\\Program Files\\PowerShell\\6\\pwsh.exe",
+                "executable": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
                 "args": [
                     "-NoProfile",
                     "-ExecutionPolicy",
@@ -51,16 +51,88 @@
     // Associate with test task runner
     "tasks": [
         {
-            "label": "Test",
+            "label": "PesterTest",
             "type": "shell",
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            },
             "problemMatcher": [
                 "$pester"
             ],
-            "command": "Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true}"
+            "command": "Invoke-Pester '${workspaceFolder}/src/Tests/Unit' -PesterOption @{IncludeVSCodeMarker=$true}",
+        },
+        {
+            "label": ".",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "$PSVersionTable;Invoke-Build -Task . -File './src/PoshGram.build.ps1'",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "TestLocal",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task TestLocal -File './src/PoshGram.build.ps1'"
+        },
+        {
+            "label": "HelpLocal",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task HelpLocal -File './src/PoshGram.build.ps1'"
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task Clean -File './src/PoshGram.build.ps1'"
+        },
+        {
+            "label": "ValidateRequirements",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task ValidateRequirements -File './src/PoshGram.build.ps1'"
+        },
+        {
+            "label": "Analyze",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task Analyze -File './src/PoshGram.build.ps1'"
+        },
+        {
+            "label": "AnalyzeTests",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task AnalyzeTests -File './src/PoshGram.build.ps1'"
+        },
+        {
+            "label": "FormattingCheck",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task FormattingCheck -File './src/PoshGram.build.ps1'"
+        },
+        {
+            "label": "Test",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task Test -File './src/PoshGram.build.ps1'"
+        },
+        {
+            "label": "DevCC",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task DevCC -File './src/PoshGram.build.ps1'"
+        },
+        {
+            "label": "Build",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task Build -File './src/PoshGram.build.ps1'"
+        },
+        {
+            "label": "InfraTest",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "command": "Invoke-Build -Task InfraTest -File './src/PoshGram.build.ps1'"
         },
         {
             "label": "CF Resource List",

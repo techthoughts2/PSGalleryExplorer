@@ -33,13 +33,13 @@ $VerbosePreference = 'SilentlyContinue'
 $modulesToInstall = [System.Collections.ArrayList]::new()
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Pester'
-            ModuleVersion = '4.9.0'
+            ModuleVersion = '4.10.1'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
-            ModuleVersion = '5.5.6'
+            ModuleVersion = '5.5.7'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
@@ -68,35 +68,13 @@ if ($PSVersionTable.Platform -eq 'Win32NT') {
     $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
     if ($PSEdition -eq 'Core') {
         $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'PowerShell', 'Modules')
-        # Add the AWSPowerShell.NetCore Module
-        # $null = $modulesToInstall.Add(([PSCustomObject]@{
-        #     ModuleName    = 'AWSPowerShell.NetCore'
-        #     ModuleVersion = '3.3.604.0'
-        #     BucketName    = 'ps-invoke-modules'
-        #     KeyPrefix     = ''
-        # }))
     }
     else {
         $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
-        # Add the AWSPowerShell Module
-        # $null = $modulesToInstall.Add(([PSCustomObject]@{
-        #     ModuleName    = 'AWSPowerShell'
-        #     ModuleVersion = '3.3.604.0'
-        #     BucketName    = 'ps-invoke-modules'
-        #     KeyPrefix     = ''
-        # }))
     }
 }
 elseif ($PSVersionTable.Platform -eq 'Unix') {
     $moduleInstallPath = [System.IO.Path]::Combine('/', 'usr', 'local', 'share', 'powershell', 'Modules')
-
-    # Add the AWSPowerShell.NetCore Module
-    # $null = $modulesToInstall.Add(([PSCustomObject]@{
-    #     ModuleName    = 'AWSPowerShell.NetCore'
-    #     ModuleVersion = '3.3.604.0'
-    #     BucketName    = 'ps-invoke-modules'
-    #     KeyPrefix     = ''
-    # }))
 }
 elseif ($PSEdition -eq 'Desktop') {
     $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
