@@ -1,0 +1,36 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "PSGalleryExplorer: Control Plane"
+
+Parameters:
+  ProjectName:
+    Type: String
+
+  ArtifactS3Bucket:
+    Type: String
+    Description: S3 Bucket for CodePipeline Artifacts
+
+  ArtifactS3KeyPrefix:
+    Type: String
+    Description: S3 Key Prefix for CodePipeline Artifacts
+
+Resources:
+
+  TestSNS:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${ArtifactS3Bucket}.s3.amazonaws.com/${ArtifactS3KeyPrefix}/${FileName}'
+        - #AWSRegion: !Ref "AWS::Region"
+          ArtifactS3Bucket: !Ref ArtifactS3Bucket
+          ArtifactS3KeyPrefix: !Ref ArtifactS3KeyPrefix
+          FileName: CloudFormation/PSGalleryExplorer/ChildTemplates/TestSNS.yml
+      TimeoutInMinutes: 5 #make sure it can actually complete in this time period
+      Parameters: #much match the parameters of nested template
+        ProjectName: !Ref ProjectName
+      Tags:
+        - Key: ProjectName
+          Value: !Ref ProjectName
+        - Key: StackName
+          Value: !Ref AWS::StackName

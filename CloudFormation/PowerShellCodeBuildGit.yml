@@ -197,6 +197,22 @@ Resources:
                   - s3:GetObjectVersion
                 Resource:
                   - !Sub arn:aws:s3:::codepipeline-${AWS::Region}-*
+        - PolicyName: CBReportAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codebuild:CreateReport
+                  - codebuild:CreateReportGroup
+                  - codebuild:UpdateReportGroup
+                  - codebuild:UpdateReport
+                  - codebuild:DeleteReportGroup
+                  - codebuild:DeleteReport
+                  - codebuild:BatchPutCodeCoverages
+                  - codebuild:BatchPutTestCases
+                Resource:
+                  - !Sub 'arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:report-group/PSGalleryExplorer*'
 
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
