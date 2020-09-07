@@ -22,7 +22,7 @@
 #>
 
 
-$galleryDownload = $true
+$galleryDownload = $false
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -34,45 +34,53 @@ $modulesToInstall = [System.Collections.ArrayList]::new()
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Pester'
             ModuleVersion = '4.10.1'
-            BucketName    = 'PSGallery'
+            BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
             ModuleVersion = '5.6.1'
-            BucketName    = 'PSGallery'
+            BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PSScriptAnalyzer'
             ModuleVersion = '1.19.1'
-            BucketName    = 'PSGallery'
+            BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'platyPS'
             ModuleVersion = '0.12.0'
-            BucketName    = 'PSGallery'
+            BucketName    = 'ps-invoke-modules'
+            KeyPrefix     = ''
+        }))
+$null = $modulesToInstall.Add(([PSCustomObject]@{
+            ModuleName    = 'AWSLambdaPSCore'
+            ModuleVersion = '2.0.0.0'
+            BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.Common'
             ModuleVersion = '4.1.0.0'
-            BucketName    = 'PSGallery'
-            KeyPrefix     = ''
-        }))
-$null = $modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'AWSLambdaPSCore'
-            ModuleVersion = '1.2.0.0'
-            BucketName    = 'PSGallery'
+            BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.S3'
             ModuleVersion = '4.1.0.0'
-            BucketName    = 'PSGallery'
+            BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
+
+$null = $modulesToInstall.Add(([PSCustomObject]@{
+            ModuleName    = 'AWS.Tools.CloudFormation'
+            ModuleVersion = '4.1.0.0'
+            BucketName    = 'ps-invoke-modules'
+            KeyPrefix     = ''
+        }))
+
 
 if ($galleryDownload -eq $false) {
 
@@ -159,7 +167,7 @@ if ($galleryDownload -eq $false) {
 else {
     Get-PackageProvider -Name Nuget -ForceBootstrap | Out-Null
     'Installing PowerShell Modules'
-    Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+    Set-PSRepository -Name 'ps-invoke-modules' -InstallationPolicy Trusted
     # $NuGetProvider = Get-PackageProvider -Name "NuGet" -ErrorAction SilentlyContinue
     # if ( -not $NugetProvider ) {
     #     Install-PackageProvider -Name "NuGet" -Confirm:$false -Force -Verbose
@@ -167,10 +175,10 @@ else {
     foreach ($module in $modulesToInstall) {
         try {
             if ($module.ModuleName -eq 'Pester' -and $PSEdition -eq 'Desktop') {
-                Install-Module $module.ModuleName -RequiredVersion $module.ModuleVersion -Repository PSGallery -Force -SkipPublisherCheck -ErrorAction Stop
+                Install-Module $module.ModuleName -RequiredVersion $module.ModuleVersion -Repository ps-invoke-modules -Force -SkipPublisherCheck -ErrorAction Stop
             }
             else {
-                Install-Module $module.ModuleName -RequiredVersion $module.ModuleVersion -Repository PSGallery -Confirm:$false -Force -SkipPublisherCheck -ErrorAction Stop
+                Install-Module $module.ModuleName -RequiredVersion $module.ModuleVersion -Repository ps-invoke-modules -Confirm:$false -Force -SkipPublisherCheck -ErrorAction Stop
             }
         }
         catch {

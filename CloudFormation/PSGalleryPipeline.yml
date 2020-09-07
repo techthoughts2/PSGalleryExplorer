@@ -176,7 +176,7 @@ Resources:
         Auth:
           Type: OAUTH
         Location: !Ref RepositoryUrl
-        BuildSpec: CodeBuild/UnitTestandBuild/buildspec.yml
+        BuildSpec: CodeBuild/UnitTestAndBuild/buildspec.yml
       TimeoutInMinutes: 30
       Tags:
         - Key: Name
@@ -442,7 +442,7 @@ Resources:
           Actions:
             - Name: Deploy
               InputArtifacts:
-                - Name: GitHubSource
+                - Name: CFNTemplateArtifact
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
