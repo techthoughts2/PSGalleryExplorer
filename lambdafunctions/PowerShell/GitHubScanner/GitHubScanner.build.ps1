@@ -111,7 +111,7 @@ task Analyze {
 # Synopsis: Builds the Module to the Artifacts folder
 task Build {
     Write-Verbose -Message 'Compiling the AWS Lambda Package'
-    $script:LambdaPackage = New-AWSPowerShellLambdaPackage -ScriptPath $script:LambdaScriptPath -StagingDirectory $script:StagingPath -OutputPackage $script:ArtifactPackage -PowerShellSdkVersion '6.1.1' -Verbose
+    $script:LambdaPackage = New-AWSPowerShellLambdaPackage -ScriptPath $script:LambdaScriptPath -StagingDirectory $script:StagingPath -OutputPackage $script:ArtifactPackage -Verbose
     Write-Host 'AWS Lambda Function Handler:' $script:LambdaPackage.LambdaHandler
     Write-Host 'PowerShell Function Handler Environment Variable Name:' $script:LambdaPackage.PowerShellFunctionHandlerEnvVar
 }
