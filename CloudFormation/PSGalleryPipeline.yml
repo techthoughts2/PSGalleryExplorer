@@ -89,6 +89,64 @@ Resources:
               Bool:
                 'aws:SecureTransport': false
 
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-policy.html
+  PSModuleAccess:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        - !Ref CodeBuildServiceRole
+      PolicyName: 'PSModuleAccess'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetAccessPoint
+              - s3:GetLifecycleConfiguration
+              - s3:GetBucketTagging
+              - s3:GetInventoryConfiguration
+              - s3:GetObjectVersionTagging
+              - s3:ListBucketVersions
+              - s3:GetBucketLogging
+              - s3:GetAccelerateConfiguration
+              - s3:GetBucketPolicy
+              - s3:GetObjectVersionTorrent
+              - s3:GetObjectAcl
+              - s3:GetEncryptionConfiguration
+              - s3:GetBucketObjectLockConfiguration
+              - s3:GetBucketRequestPayment
+              - s3:GetAccessPointPolicyStatus
+              - s3:GetObjectVersionAcl
+              - s3:GetObjectTagging
+              - s3:GetMetricsConfiguration
+              - s3:GetBucketPublicAccessBlock
+              - s3:GetBucketPolicyStatus
+              - s3:ListBucketMultipartUploads
+              - s3:GetObjectRetention
+              - s3:GetBucketWebsite
+              - s3:GetJobTagging
+              - s3:ListAccessPoints
+              - s3:ListJobs
+              - s3:GetBucketVersioning
+              - s3:GetBucketAcl
+              - s3:GetObjectLegalHold
+              - s3:GetBucketNotification
+              - s3:GetReplicationConfiguration
+              - s3:ListMultipartUploadParts
+              - s3:GetObject
+              - s3:GetObjectTorrent
+              - s3:GetAccountPublicAccessBlock
+              - s3:DescribeJob
+              - s3:GetBucketCORS
+              - s3:GetAnalyticsConfiguration
+              - s3:GetObjectVersionForReplication
+              - s3:GetBucketLocation
+              - s3:GetAccessPointPolicy
+              - s3:GetObjectVersion"
+            Resource:
+              - 'arn:aws:s3:::ps-invoke-modules'
+              - 'arn:aws:s3:::ps-invoke-modules/*'
+
   # The IAM Role CodeBuild will run the container as
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
   CodeBuildServiceRole:
@@ -133,6 +191,14 @@ Resources:
                   - 's3:ListBucket'
                 Resource:
                   - '*'
+        - PolicyName: 'CFNTesting'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'cloudformation:ValidateTemplate'
+                Resource: '*'
         - PolicyName: 'IntegrationTestPolicy'
           PolicyDocument:
             Version: '2012-10-17'
@@ -187,29 +253,29 @@ Resources:
           Value: !Ref ProjectName
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
-  IntegrationTestIAMRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: IntegrationTestIAMRole
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              AWS:
-                - !Sub 'arn:aws:iam::${AWS::AccountId}:root'
-            Action:
-              - sts:AssumeRole
-      Path: /
-      Policies:
-        - PolicyName: !Sub 'IntegrationTestAccess-${ProjectName}'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 'cloudformation:ListExports'
-                Resource: '*'
+  # IntegrationTestIAMRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     RoleName: IntegrationTestIAMRole
+  #     AssumeRolePolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             AWS:
+  #               - !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+  #           Action:
+  #             - sts:AssumeRole
+  #     Path: /
+  #     Policies:
+  #       - PolicyName: !Sub 'IntegrationTestAccess-${ProjectName}'
+  #         PolicyDocument:
+  #           Version: '2012-10-17'
+  #           Statement:
+  #             - Effect: Allow
+  #               Action:
+  #                 - 'cloudformation:ListExports'
+  #               Resource: '*'
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
   IntegrationTestProject:
@@ -478,10 +544,10 @@ Outputs:
     Description: The name of the CodeBuild project
     Value: !Ref UnitTestAndBuildProject
 
-  IntegrationTestIAMRoleArn:
-    Value: !GetAtt IntegrationTestIAMRole.Arn
-    Export:
-      Name: IntegrationTestIAMRoleArn
+  # IntegrationTestIAMRoleArn:
+  #   Value: !GetAtt IntegrationTestIAMRole.Arn
+  #   Export:
+  #     Name: IntegrationTestIAMRoleArn
 
   # CodePipelineRoleForAccess:
   #   Description: IAM Role used for AWS CodePipeline access.

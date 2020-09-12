@@ -140,7 +140,7 @@ Write-Host "Conversions completed."
 Write-Host "Merging Git info into PSGallery..."
 foreach ($item in $gitData) {
     $d = $null
-    $d = $galleryData | ? { $_.Name -eq $item.Values.ModuleName }
+    $d = $galleryData | Where-Object { $_.Name -eq $item.Values.ModuleName }
 
     # $gitHubData = New-Object -TypeName PSObject
     $gitHubData = @{
