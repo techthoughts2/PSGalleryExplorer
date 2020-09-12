@@ -1,5 +1,7 @@
 {
-    "ProjectName": "PSGalleryExplorer",
-    "ArtifactS3Bucket": "will be replaced during CodeBuild process",
-    "ArtifactS3KeyPrefix": "will be replaced during CodeBuild process"
+    "Parameters": {
+        "ProjectName": "PSGalleryExplorer",
+        "ArtifactS3Bucket": "will be replaced during CodeBuild process",
+        "ArtifactS3KeyPrefix": "will be replaced during CodeBuild process"
+    }
 }
