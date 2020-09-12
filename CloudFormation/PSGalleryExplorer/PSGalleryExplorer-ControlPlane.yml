@@ -4,8 +4,13 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "PSGalleryExplorer: Control Plane"
 
 Parameters:
-  ProjectName:
+  ServiceName:
     Type: String
+    Description: 'Name of the service that will be used to tag each resource.'
+
+  BucketName:
+    Type: String
+    Description: Hard coded S3 bucketname prefix
 
   ArtifactS3Bucket:
     Type: String
@@ -17,7 +22,8 @@ Parameters:
 
 Resources:
 
-  TestSNS:
+  # Deploys the s3 buckets used for the PSGalleryExplorer project
+  PSGES3Buckets:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
@@ -25,12 +31,13 @@ Resources:
         - #AWSRegion: !Ref "AWS::Region"
           ArtifactS3Bucket: !Ref ArtifactS3Bucket
           ArtifactS3KeyPrefix: !Ref ArtifactS3KeyPrefix
-          FileName: CloudFormation/PSGalleryExplorer/ChildTemplates/TestSNS.yml
+          FileName: CloudFormation/PSGalleryExplorer/ChildTemplates/PSGES3Buckets.yml
       TimeoutInMinutes: 5 #make sure it can actually complete in this time period
       Parameters: #much match the parameters of nested template
-        ProjectName: !Ref ProjectName
+        ServiceName: !Ref ServiceName
+        BucketName: !Ref BucketName
       Tags:
-        - Key: ProjectName
-          Value: !Ref ProjectName
+        - Key: ServiceName
+          Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName

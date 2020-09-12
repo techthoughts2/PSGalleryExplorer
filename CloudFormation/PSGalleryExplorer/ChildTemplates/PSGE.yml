@@ -10,7 +10,6 @@ Parameters:
   ServiceName:
     Type: String
     Description: 'Name of the service that will be used to tag each resource.'
-    Default: PSGalleryExplorer
     # The bucket name can be between 3 and 63 characters long, and can contain only lower-case characters, numbers, periods, and dashes.
     # Each label in the bucket name must start with a lowercase letter or number.
     # The bucket name cannot contain underscores, end with a dash, have consecutive periods, or use dashes adjacent to periods.
@@ -18,7 +17,6 @@ Parameters:
   BucketName:
     Type: String
     Description: Hard coded S3 bucketname prefix
-    Default: psge
   PSGalleryXMLKey:
     Type: String
     Description: S3 Key name for PSGallery XML data
@@ -109,292 +107,6 @@ Resources:
   #______________________________________________________________________________________________
   # BUCKETS
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html
-  UpdateSNSTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      # DisplayName: String
-      # KmsMasterKeyId: String
-      # Subscription:
-      #   - Subscription
-      # TopicName: String
-      Tags:
-        -
-          Key: Service
-          Value: !Ref ServiceName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html
-  SNSUpdateTopicPolicy:
-    Type: AWS::SNS::TopicPolicy
-    Properties:
-      Topics:
-        - !Ref UpdateSNSTopic
-      PolicyDocument:
-        Id: SNSTopicPolicy
-        Version: '2012-10-17'
-        Statement:
-          -
-            Sid: S3TriggerAccess
-            Effect: Allow
-            Principal:
-              AWS:
-                - '*'
-            Action:
-              - sns:Publish
-            Resource:
-              - !Ref UpdateSNSTopic
-            Condition:
-              StringEquals:
-                aws:SourceAccount: !Sub ${AWS::AccountId}
-              ArnLike:
-                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}-${AWS::AccountId}-stagetrigger"
-
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
-  StageTriggerData:
-    Type: AWS::S3::Bucket
-    DependsOn:
-      - SNSUpdateTopicPolicy
-    DeletionPolicy: Delete
-    Properties:
-      # AccelerateConfiguration: AccelerateConfiguration
-      # AccessControl: String
-      # AnalyticsConfigurations:
-      #   - AnalyticsConfiguration
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      BucketName: !Sub ${BucketName}-${AWS::AccountId}-stagetrigger
-      # CorsConfiguration:
-      #   CorsConfiguration
-      # InventoryConfigurations:
-      #   - InventoryConfiguration
-      # LifecycleConfiguration:
-      #   Rules:
-      #       -
-      #         AbortIncompleteMultipartUpload:
-      #           DaysAfterInitiation: 7
-      #         Status: Enabled
-      #         Transitions:
-      #           -
-      #             StorageClass: GLACIER
-      #             TransitionInDays: 30
-      # LoggingConfiguration:
-      #   DestinationBucketName: !Ref S3BucketLogs
-      #   LogFilePrefix: '/logs/updateapcdata/'
-      # MetricsConfigurations:
-      #   - MetricsConfiguration
-      NotificationConfiguration:
-        TopicConfigurations:
-          -
-            Event: s3:ObjectCreated:*
-            Topic: !Ref UpdateSNSTopic
-      # ObjectLockConfiguration:
-      #   ObjectLockConfiguration
-      # ObjectLockEnabled: Boolean
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      # ReplicationConfiguration:
-      #   ReplicationConfiguration
-      # VersioningConfiguration:
-      #   VersioningConfiguration
-      # WebsiteConfiguration:
-      #   WebsiteConfiguration
-      Tags:
-        -
-          Key: Service
-          Value: !Ref ServiceName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
-  GitXMLData:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
-    Properties:
-      # AccelerateConfiguration: AccelerateConfiguration
-      # AccessControl: String
-      # AnalyticsConfigurations:
-      #   - AnalyticsConfiguration
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      BucketName: !Sub ${BucketName}-gitxml
-      # CorsConfiguration:
-      #   CorsConfiguration
-      # InventoryConfigurations:
-      #   - InventoryConfiguration
-      LifecycleConfiguration:
-        Rules:
-          -
-            AbortIncompleteMultipartUpload:
-              DaysAfterInitiation: 3
-            ExpirationInDays: 14
-            Status: Enabled
-      # LoggingConfiguration:
-      #   DestinationBucketName: !Ref S3BucketLogs
-      #   LogFilePrefix: '/logs/updateapcdata/'
-      # MetricsConfigurations:
-      #   - MetricsConfiguration
-      # NotificationConfiguration:
-      #   TopicConfigurations:
-      #     -
-      #       Event: s3:ObjectCreated:*
-      #       Topic: !Ref UpdateSNSTopic
-      # ObjectLockConfiguration:
-      #   ObjectLockConfiguration
-      # ObjectLockEnabled: Boolean
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      # ReplicationConfiguration:
-      #   ReplicationConfiguration
-      # VersioningConfiguration:
-      #   VersioningConfiguration
-      # WebsiteConfiguration:
-      #   WebsiteConfiguration
-      Tags:
-        -
-          Key: Service
-          Value: !Ref ServiceName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
-  S3BucketLogs:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
-    Properties:
-      # AccelerateConfiguration: AccelerateConfiguration
-      AccessControl: LogDeliveryWrite
-      # AnalyticsConfigurations:
-      #   - AnalyticsConfiguration
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      # BucketName: String
-      # CorsConfiguration:
-      #   CorsConfiguration
-      # InventoryConfigurations:
-      #   - InventoryConfiguration
-      LifecycleConfiguration:
-        Rules:
-          -
-            AbortIncompleteMultipartUpload:
-              DaysAfterInitiation: 3
-            ExpirationInDays: 365
-            Status: Enabled
-            Transitions:
-              -
-                StorageClass: STANDARD_IA
-                TransitionInDays: 30
-      # LoggingConfiguration:
-      #   DestinationBucketName: !Ref S3BucketLogs
-      #   LogFilePrefix: '/logs/updateapcdata/'
-      # MetricsConfigurations:
-      #   - MetricsConfiguration
-      # NotificationConfiguration:
-      #   TopicConfigurations:
-      #     -
-      #       Event: s3:ObjectCreated:*
-      #       Topic: !Ref UpdateSNSTopic
-      # ObjectLockConfiguration:
-      #   ObjectLockConfiguration
-      # ObjectLockEnabled: Boolean
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      Tags:
-        -
-          Key: Service
-          Value: !Ref ServiceName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
-  PubXMLDataPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref PubXMLData
-      PolicyDocument:
-        Statement:
-          -
-            Action:
-              - "s3:GetObject"
-            Effect: "Allow"
-            Resource:
-              !Join
-              - ""
-              -
-                - "arn:aws:s3:::"
-                -
-                  Ref: "PubXMLData"
-                - "/*"
-            Principal: "*"
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
-  # https://docs.aws.amazon.com/AmazonS3/latest/user-guide/configure-metrics.html
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-metricsconfiguration.html
-  PubXMLData:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
-    Properties:
-      AccelerateConfiguration:
-        AccelerationStatus: Enabled
-      # AccessControl: String
-      # AnalyticsConfigurations:
-      #   - AnalyticsConfiguration
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      BucketName: !Sub ${BucketName}-pubxml
-      # CorsConfiguration:
-      #   CorsConfiguration
-      # InventoryConfigurations:
-      #   - InventoryConfiguration
-      # LifecycleConfiguration:
-      #   Rules:
-      #       -
-      #         AbortIncompleteMultipartUpload:
-      #           DaysAfterInitiation: 7
-      #         Status: Enabled
-      #         Transitions:
-      #           -
-      #             StorageClass: GLACIER
-      #             TransitionInDays: 30
-      LoggingConfiguration:
-        DestinationBucketName: !Ref S3BucketLogs
-        LogFilePrefix: '/logs/psgalleryexplorer/'
-      MetricsConfigurations:
-        - Id: EntireBucket
-      # NotificationConfiguration:
-      #   TopicConfigurations:
-      #     -
-      #       Event: s3:ObjectCreated:*
-      #       Topic: !Ref UpdateSNSTopic
-      # ObjectLockConfiguration:
-      #   ObjectLockConfiguration
-      # ObjectLockEnabled: Boolean
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
-        BlockPublicPolicy: false
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: false
-      # ReplicationConfiguration:
-      #   ReplicationConfiguration
-      # VersioningConfiguration:
-      #   VersioningConfiguration
-      # WebsiteConfiguration:
-      #   WebsiteConfiguration
-      Tags:
-        -
-          Key: Service
-          Value: !Ref ServiceName
   #______________________________________________________________________________________________
   #PUBXML
 
@@ -533,7 +245,7 @@ Resources:
           S3_FINAL_BUCKET_KEY: !Ref PSGalleryExplorerXMLKey
       Handler: !Ref PubXMLPopulatorHandler
       MemorySize: 3008
-      Runtime: dotnetcore2.1
+      Runtime: dotnetcore3.1
       Timeout: 900
       Events:
         UpdatePBXQueue:
@@ -633,7 +345,7 @@ Resources:
           S3_KEY_NAME: !Ref PSGalleryXMLKey
       Handler: !Ref GalleryScannerHandler
       MemorySize: 1280
-      Runtime: dotnetcore2.1
+      Runtime: dotnetcore3.1
       Timeout: 900
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -774,7 +486,7 @@ Resources:
           S3_BUCKET_NAME: !Ref GitXMLData
       Handler: !Ref GitHubScannerHandler
       MemorySize: 832
-      Runtime: dotnetcore2.1
+      Runtime: dotnetcore3.1
       Timeout: 900
       Events:
         GitHubScanQueue:
@@ -837,7 +549,7 @@ Resources:
           S3_BUCKET_NAME: !Ref GitXMLData
       Handler: !Ref GitHubSMScannerHandler
       MemorySize: 768
-      Runtime: dotnetcore2.1
+      Runtime: dotnetcore3.1
       Timeout: 900
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -1015,7 +727,7 @@ Resources:
           S3_KEY_NAME: !Ref GitXMLKey
       Handler: !Ref GCombineHandler
       MemorySize: 2048
-      Runtime: dotnetcore2.1
+      Runtime: dotnetcore3.1
       Timeout: 900
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -1049,47 +761,6 @@ Outputs:
     Export:
         Name: PSGELUpdateSNSSub
   # SNSUpdateTopicPolicy
-  StageTriggerDataBucketName:
-    Value: !Ref StageTriggerData
-    Description: Name of the PSGalleryExplorer Amazon S3 bucket that holds processed XML from Gallery and GitHub
-    Export:
-      Name: StageTriggerBN
-  StageTriggerDataArn:
-    Description: Arn of the PSGalleryExplorer Amazon S3 bucket that holds processed XML from Gallery and GitHub
-    Value: !GetAtt StageTriggerData.Arn
-  StageTriggerDataDomainName:
-    Description: DomainName of the PSGalleryExplorer Amazon S3 bucket that holds processed XML from Gallery and GitHub
-    Value: !GetAtt StageTriggerData.DomainName
-  GitXMLDataBucketName:
-    Value: !Ref GitXMLData
-    Description: Name of the PSGalleryExplorer Amazon S3 bucket that holds raw github XML data
-    Export:
-      Name: GitXMLDataBN
-  GitXMLDataArn:
-    Description: Arn of the PSGalleryExplorer Amazon S3 bucket that holds raw github XML data
-    Value: !GetAtt GitXMLData.Arn
-  GitXMLDataDomainName:
-    Description: DomainName of the PSGalleryExplorer Amazon S3 bucket that holds raw github XML data
-    Value: !GetAtt GitXMLData.DomainName
-  S3BucketLogsBucketName:
-    Value: !Ref S3BucketLogs
-    Description: Name of the PSGalleryExplorer Amazon S3 bucket that holds public S3 access logs
-    Export:
-      Name: S3BucketLogsBN
-  S3BucketLogsArn:
-    Description: Arn of the PSGalleryExplorer Amazon S3 bucket that holds public S3 access logs
-    Value: !GetAtt S3BucketLogs.Arn
-  PubXMLDataBucketName:
-    Value: !Ref PubXMLData
-    Description: Name of the PSGalleryExplorer public S3 bucket
-    Export:
-      Name: PubXMLDataBN
-  PubXMLDataArn:
-    Description: Arn of the PSGalleryExplorer public S3 bucket
-    Value: !GetAtt PubXMLData.Arn
-  PubXMLDataDomainName:
-    Description: DomainName of the PSGalleryExplorer public S3 bucket
-    Value: !GetAtt PubXMLData.DomainName
   UpdatePubXMLDataDlqName:
     Description: DLQ Name for Public XML processing
     Value: !GetAtt UpdatePubXMLDataDlq.QueueName

@@ -3,13 +3,28 @@
 # $env:AWSRegion = the AWS Region hosting the service under test
 # $env:projectName = name of the project
 
+try {
+    $cfnExports = Get-CFNExport -ErrorAction Stop
+}
+catch {
+    throw
+}
+
 Describe -Name 'Infrastructure Tests' -Fixture {
 
-    Context -Name 'TestIAM.yml' -Fixture {
-        It -Name 'Created a CFN Export for a Test IAM Role' -Test {
-            $assertion = ($cfnExports | Where-Object { $_.Name -eq "$env:projectName-TestSNSArn" }).Value
-            $expected = 'arn:aws:sns:{0}:{1}:*' -f $env:AWSRegion, $env:AWSAccountId
-            $assertion | Should -BeLike $expected
+    Context -Name 'PSGES3Buckets.yml' -Fixture {
+        It -Name 'Created the S3 buckets needed for the project' -Test {
+            $assertion1 = ($cfnExports | Where-Object { $_.Name -eq "StageTriggerBN" }).Value
+            $expected = 'psge-*'
+            $assertion1 | Should -BeLike $expected
+            $assertion2 = ($cfnExports | Where-Object { $_.Name -eq "GitXMLDataBN" }).Value
+            $expected = 'psge-*'
+            $assertion2 | Should -BeLike $expected
+            $assertion4 = ($cfnExports | Where-Object { $_.Name -eq "PubXMLDataBN" }).Value
+            $expected = 'psge-*'
+            $assertion4 | Should -BeLike $expected
+            $logEval = ($cfnExports | Where-Object { $_.Name -eq "S3BucketLogsBN" }).Value
+            $logEval | Should -Not -BeNullOrEmpty
         }#it
     }#context_IntegrationTestInfrastructure
 
