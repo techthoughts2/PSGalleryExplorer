@@ -9,14 +9,14 @@
 # To include PowerShell modules with your Lambda function, like the AWSPowerShell.NetCore module, add a "#Requires" statement
 # indicating the module and version.
 
-#Requires -Modules @{ModuleName='PackageManagement';ModuleVersion='1.4.5'}
-#Requires -Modules @{ModuleName='PowerShellGet';ModuleVersion='2.2.1'}
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SQS';ModuleVersion='4.0.2.0'}
+# Requires -Modules @{ModuleName='PackageManagement';ModuleVersion='1.4.5'}
+# Requires -Modules @{ModuleName='PowerShellGet';ModuleVersion='2.2.1'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SQS';ModuleVersion='4.1.0.0'}
 #Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.10.1'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
 
 # Uncomment to send the input event to CloudWatch Logs
 Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)

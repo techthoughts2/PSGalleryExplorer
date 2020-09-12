@@ -38,6 +38,10 @@ foreach ($path in $paths) {
             $templatePath = Split-Path -Path $parentPath -Leaf
             $s3KeyPrefix = '{0}/CloudFormation/{1}/{2}' -f $env:S3_KEY_PREFIX, $templatePath, $file.Directory.Name
         }
+        elseif ($file.Directory.Name -eq 'Manual') {
+            Write-Host 'Manually deployed CFN detected. Skipping.'
+            continue
+        }
         else {
             throw 'Unexpected directory encountered inside CloudFormation folder'
         }
