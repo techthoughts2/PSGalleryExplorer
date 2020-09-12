@@ -1,7 +1,7 @@
 ---
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 
-Description: "PSGalleryExplorer: Control Plane"
+Description: 'PSGalleryExplorer: Control Plane'
 
 Parameters:
   ServiceName:
@@ -21,7 +21,6 @@ Parameters:
     Description: S3 Key Prefix for CodePipeline Artifacts
 
 Resources:
-
   # Deploys the s3 buckets used for the PSGalleryExplorer project
   PSGES3Buckets:
     Type: AWS::CloudFormation::Stack

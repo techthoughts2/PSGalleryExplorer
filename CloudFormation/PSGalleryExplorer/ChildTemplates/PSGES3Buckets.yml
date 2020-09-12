@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Master stack: PathToMasterStackFile'
+Description: 'PSGalleryExplorer: S3 Buckets'
 
 Parameters:
   ServiceName:
@@ -314,6 +314,7 @@ Outputs:
   StageTriggerDataDomainName:
     Description: DomainName of the PSGalleryExplorer Amazon S3 bucket that holds processed XML from Gallery and GitHub
     Value: !GetAtt StageTriggerData.DomainName
+
   GitXMLDataBucketName:
     Value: !Ref GitXMLData
     Description: Name of the PSGalleryExplorer Amazon S3 bucket that holds raw github XML data
@@ -325,6 +326,7 @@ Outputs:
   GitXMLDataDomainName:
     Description: DomainName of the PSGalleryExplorer Amazon S3 bucket that holds raw github XML data
     Value: !GetAtt GitXMLData.DomainName
+
   S3BucketLogsBucketName:
     Value: !Ref S3BucketLogs
     Description: Name of the PSGalleryExplorer Amazon S3 bucket that holds public S3 access logs
@@ -333,6 +335,7 @@ Outputs:
   S3BucketLogsArn:
     Description: Arn of the PSGalleryExplorer Amazon S3 bucket that holds public S3 access logs
     Value: !GetAtt S3BucketLogs.Arn
+
   PubXMLDataBucketName:
     Value: !Ref PubXMLData
     Description: Name of the PSGalleryExplorer public S3 bucket
@@ -344,3 +347,9 @@ Outputs:
   PubXMLDataDomainName:
     Description: DomainName of the PSGalleryExplorer public S3 bucket
     Value: !GetAtt PubXMLData.DomainName
+
+  UpdateSNSTopicArn:
+    Value: !Ref UpdateSNSTopic
+    Description: Arn of the UpdateSNSTopic
+    Export:
+      Name: UpdateSNSTopicArn

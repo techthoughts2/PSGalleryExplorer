@@ -17,6 +17,6 @@ phases:
       - pwsh -command '& ./CodeBuild/IntegrationTest/New-IntegrationInfrastructure.ps1'
   build:
     commands:
-      - pwsh -command "Import-Module -Name 'AWS.Tools.Common','AWS.Tools.SecurityToken','AWS.Tools.EC2','Pester'; Set-Location -Path ./CodeBuild/IntegrationTest/Tests; Invoke-Pester -EnableExit"
+      - pwsh -command "Set-Location -Path ./CodeBuild/IntegrationTest/Tests; Invoke-Pester -EnableExit"
     finally:
       - pwsh -command '& ./CodeBuild/IntegrationTest/Remove-IntegrationInfrastructure.ps1'
