@@ -571,6 +571,8 @@ Resources:
             Action:
               - sts:AssumeRole
       Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchFullAccess
       Policies:
         - PolicyName: InvokeLambda
           PolicyDocument:
@@ -581,16 +583,6 @@ Resources:
                   - lambda:InvokeFunction
                 Resource:
                   - !GetAtt GitHubSMScanner.Arn
-        - PolicyName: CloudWatch
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - cloudwatch:*
-                Resource: !GetAtt
-                  - GitHubScannerSMDelayLogGroup
-                  - Arn
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
   GitHubScannerSMDelayLogGroup:
