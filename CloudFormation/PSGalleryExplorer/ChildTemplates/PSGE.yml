@@ -112,8 +112,8 @@ Resources:
     Type: AWS::CloudWatch::Alarm
     Properties:
       ActionsEnabled: true
-      # AlarmActions:
-      #   - String
+      AlarmActions:
+        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
       AlarmDescription: Alarms if the UpdatePubXMLDataDlq Dead Letter Queue has too many messages
       AlarmName: UpdatePubXMLDataDlq_NumberOfMessagesVisible
       ComparisonOperator: GreaterThanOrEqualToThreshold
@@ -380,8 +380,8 @@ Resources:
     Type: AWS::CloudWatch::Alarm
     Properties:
       ActionsEnabled: true
-      # AlarmActions:
-      #   - String
+      AlarmActions:
+        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
       AlarmDescription: Alarms if the GitHubDataDlq Dead Letter Queue has too many messages
       AlarmName: GitHubDataDlq_NumberOfMessagesVisible
       ComparisonOperator: GreaterThanOrEqualToThreshold
