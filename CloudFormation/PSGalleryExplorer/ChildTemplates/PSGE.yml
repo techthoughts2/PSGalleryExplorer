@@ -242,7 +242,7 @@ Resources:
               Action:
                 - secretsmanager:GetSecretValue
               Resource:
-                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
             - Sid: UpdatePubXMLDataQueueAcc
               Effect: Allow
               Action:
@@ -334,7 +334,7 @@ Resources:
               Action:
                 - secretsmanager:GetSecretValue
               Resource:
-                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
             - Sid: GitHubDataQueueAcc
               Effect: Allow
               Action:
@@ -483,8 +483,8 @@ Resources:
               Action:
                 - secretsmanager:GetSecretValue
               Resource:
-                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${GitHubOauthSecret}'
-                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${GitHubOauthSecret}-v09KRX'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
             - Sid: StateMachineExecute
               Effect: Allow
               Action:
@@ -543,8 +543,8 @@ Resources:
               Action:
                 - secretsmanager:GetSecretValue
               Resource:
-                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${GitHubOauthSecret}'
-                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${GitHubOauthSecret}-v09KRX'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
       Tags:
         ServiceName: !Ref ServiceName
         StackName: !Ref AWS::StackName
@@ -710,7 +710,7 @@ Resources:
               Action:
                 - secretsmanager:GetSecretValue
               Resource:
-                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
       Tags:
         ServiceName: !Ref ServiceName
         StackName: !Ref AWS::StackName
