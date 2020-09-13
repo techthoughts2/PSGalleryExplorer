@@ -9,8 +9,13 @@
 # To include PowerShell modules with your Lambda function, like the AWSPowerShell.NetCore module, add a "#Requires" statement
 # indicating the module and version.
 
-# Requires -Modules @{ModuleName='PackageManagement';ModuleVersion='1.4.5'}
-# Requires -Modules @{ModuleName='PowerShellGet';ModuleVersion='2.2.1'}
+# $env:GITHUB_SQS_NAME
+# $env:S3_BUCKET_NAME
+# $env:S3_KEY_NAME
+# $env:TELEGRAM_SECRET
+
+#Requires -Modules @{ModuleName='PackageManagement';ModuleVersion='1.4.7'}
+#Requires -Modules @{ModuleName='PowerShellGet';ModuleVersion='2.2.4.1'}
 #Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
 #Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
 #Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
@@ -39,7 +44,7 @@ function Send-TelegramError {
         $ErrorMessage
     )
     if ($null -eq $script:token ) {
-        $script:token = Get-SECSecretValue -SecretId PoshGramTokens -Region us-west-2 -ErrorAction Stop
+        $script:token = Get-SECSecretValue -SecretId $env:TELEGRAM_SECRET -Region 'us-west-2' -ErrorAction Stop
     }
     try {
         if ($null -eq $script:token ) {

@@ -198,6 +198,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - 'cloudformation:ValidateTemplate'
+                  - 'cloudformation:ListExports'
                 Resource: '*'
         - PolicyName: 'IntegrationTestPolicy'
           PolicyDocument:

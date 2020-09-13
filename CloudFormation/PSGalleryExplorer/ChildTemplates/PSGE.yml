@@ -1,12 +1,11 @@
 ---
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 
-Description: PSGalleryExplorer CFN Deployment Stack
+Description: 'PSGalleryExplorer: Serverless Deployment Logic'
 
 Transform: 'AWS::Serverless-2016-10-31'
 
 Parameters:
-
   ServiceName:
     Type: String
     Description: 'Name of the service that will be used to tag each resource.'
@@ -14,99 +13,76 @@ Parameters:
     # Each label in the bucket name must start with a lowercase letter or number.
     # The bucket name cannot contain underscores, end with a dash, have consecutive periods, or use dashes adjacent to periods.
     # The bucket name cannot be formatted as an IP address (198.51.100.24).
+
   BucketName:
     Type: String
     Description: Hard coded S3 bucketname prefix
+
   PSGalleryXMLKey:
     Type: String
     Description: S3 Key name for PSGallery XML data
-    Default: PSGalleryRaw.xml
+
   GitXMLKey:
     Type: String
     Description: S3 Key name for GitHub XML data
-    Default: finalGitXML.xml
+
   PSGalleryExplorerXMLKey:
     Type: String
     Description: S3 Key name for final public PSGallery XML data
-    Default: PSGalleryExplorer.zip
+
   GitHubOauthSecret:
     Type: String
     Description: Name of the secret to be retrieved that contains the GitHub Oauth token
+
   TelegramSecret:
     Type: String
     Description: Name of the secret to be retrieved that contains the GitHub Oauth token
-  PubXMLPopulatorS3Key:
-    Type: String
-  PubXMLPopulatorHandler:
-    Type: String
-    Default: PubXMLPopulator::PubXMLPopulator.Bootstrap::ExecuteFunction
-  GalleryScannerS3Key:
-    Type: String
-  GalleryScannerHandler:
-    Type: String
-    Default: GalleryScanner::GalleryScanner.Bootstrap::ExecuteFunction
-  GitHubScannerS3Key:
-    Type: String
-  GitHubScannerHandler:
-    Type: String
-    Default: GitHubScanner::GitHubScanner.Bootstrap::ExecuteFunction
-  GitHubSMScannerS3Key:
-    Type: String
-  GitHubSMScannerHandler:
-    Type: String
-    Default: GitHubSMScanner::GitHubSMScanner.Bootstrap::ExecuteFunction
-  GCombineS3Key:
-    Type: String
-  GCombineHandler:
-    Type: String
-    Default: GCombine::GCombine.Bootstrap::ExecuteFunction
 
-Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      - Label:
-          default: Service Name
-        Parameters:
-          - ServiceName
-      - Label:
-          default: S3 Bucket Specifications
-        Parameters:
-          - BucketName
-          - PSGalleryXMLKey
-          - GitXMLKey
-          - PSGalleryExplorerXMLKey
-      - Label:
-          default: Secret prefix
-        Parameters:
-          - GitHubOauthSecret
-          - TelegramSecret
-      - Label:
-          default: Lambda Source Designations
-        Parameters:
-          - PubXMLPopulatorS3Key
-          - GalleryScannerS3Key
-          - GitHubScannerS3Key
-          - GitHubSMScannerS3Key
-          - GCombineS3Key
-      - Label:
-          default: Lambda Handerlers
-        Parameters:
-          - PubXMLPopulatorHandler
-          - GalleryScannerHandler
-          - GitHubScannerHandler
-          - GitHubSMScannerHandler
-          - GCombineHandler
-    ParameterLabels:
-      BucketName:
-        default: S3 BucketName Prefix
-      GitHubOauthSecret:
-        default: GitHub Oauth token Secret Name
+  LambdaS3BucketName:
+    Type: String
+    Description: The S3 Bucket holding the Lambda code
+
+  LMFunctionS3KeyGalleryScanner:
+    Type: String
+    Description: S3 Key for the GalleryScanner Lambda function(s) zip file
+
+  LMFunctionHandlerGalleryScanner:
+    Type: String
+    Description: GalleryScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
+
+  LMFunctionS3KeyGCombine:
+    Type: String
+    Description: S3 Key for the GCombine Lambda function(s) zip file
+
+  LMFunctionHandlerGCombine:
+    Type: String
+    Description: GCombine Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
+
+  LMFunctionS3KeyGitHubScanner:
+    Type: String
+    Description: S3 Key for the GitHubScanner Lambda function(s) zip file
+
+  LMFunctionHandlerGitHubScanner:
+    Type: String
+    Description: GitHubScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
+
+  LMFunctionS3KeyGitHubSMScanner:
+    Type: String
+    Description: S3 Key for the GitHubSMScanner Lambda function(s) zip file
+
+  LMFunctionHandlerGitHubSMScanner:
+    Type: String
+    Description: GitHubSMScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
+
+  LMFunctionS3KeyPubXMLPopulator:
+    Type: String
+    Description: S3 Key for the PubXMLPopulator Lambda function(s) zip file
+
+  LMFunctionHandlerPubXMLPopulator:
+    Type: String
+    Description: PubXMLPopulator Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
 
 Resources:
-
-  #______________________________________________________________________________________________
-  # BUCKETS
-
   #______________________________________________________________________________________________
   #PUBXML
 
@@ -126,9 +102,10 @@ Resources:
       # RedrivePolicy: Json
       VisibilityTimeout: 160
       Tags:
-        -
-          Key: Service
+        - Key: ServiceName
           Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
   AlarmNumberOfMessagesVisibleUpdatePubXMLDataDlq:
@@ -180,9 +157,10 @@ Resources:
         maxReceiveCount: 3
       VisibilityTimeout: 1000
       Tags:
-        -
-          Key: Service
+        - Key: ServiceName
           Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html
   UpdatePubXMLDataQueuePolicy:
@@ -193,18 +171,16 @@ Resources:
       PolicyDocument:
         Id: AllowIncomingAccess
         Statement:
-          -
-            Effect: Allow
+          - Effect: Allow
             Principal:
               AWS:
-                - !Ref "AWS::AccountId"
+                - !Ref 'AWS::AccountId'
             Action:
               - sqs:SendMessage
               - sqs:ReceiveMessage
             Resource:
               - !GetAtt UpdatePubXMLDataQueue.Arn
-          -
-            Effect: Allow
+          - Effect: Allow
             Principal: '*'
             Action:
               - sqs:SendMessage
@@ -212,7 +188,7 @@ Resources:
               - !GetAtt UpdatePubXMLDataQueue.Arn
             Condition:
               ArnEquals:
-                aws:SourceArn: !Ref UpdateSNSTopic
+                aws:SourceArn: !ImportValue UpdateSNSTopicArn
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html
   UpdatePubXMLSourceSubscription:
@@ -225,7 +201,7 @@ Resources:
       RawMessageDelivery: true
       # RedrivePolicy: Json
       # Region: String
-      TopicArn: !Ref UpdateSNSTopic
+      TopicArn: !ImportValue UpdateSNSTopicArn
 
   # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
   PubXMLPopulator:
@@ -233,17 +209,18 @@ Resources:
     DependsOn: UpdatePubXMLDataQueue
     Properties:
       CodeUri:
-        Bucket: !ImportValue PSGELFBN
-        Key: !Ref PubXMLPopulatorS3Key
+        Bucket: !Ref LambdaS3BucketName
+        Key: !Ref LMFunctionS3KeyPubXMLPopulator
       Description: 'Populates public PSGalleryExplorer bucket with final XML files.'
       Environment:
         Variables:
-          S3_BUCKET_NAME: !Ref StageTriggerData
+          S3_BUCKET_NAME: !ImportValue StageTriggerBN
           S3_BUCKET_GALLERY_KEY: !Ref PSGalleryXMLKey
           S3_BUCKET_GIT_KEY: !Ref GitXMLKey
-          S3_FINAL_BUCKET_NAME: !Ref PubXMLData
+          S3_FINAL_BUCKET_NAME: !ImportValue PubXMLDataBN
           S3_FINAL_BUCKET_KEY: !Ref PSGalleryExplorerXMLKey
-      Handler: !Ref PubXMLPopulatorHandler
+          TELEGRAM_SECRET: !Ref TelegramSecret
+      Handler: !Ref LMFunctionHandlerPubXMLPopulator
       MemorySize: 3008
       Runtime: dotnetcore3.1
       Timeout: 900
@@ -256,28 +233,29 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - S3ReadPolicy:
-            BucketName: !Ref StageTriggerData
+            BucketName: !ImportValue StageTriggerBN
         - S3CrudPolicy:
-            BucketName: !Ref PubXMLData
+            BucketName: !ImportValue PubXMLDataBN
         - Statement:
-          - Sid: SecretsOauthRetrieve
-            Effect: Allow
-            Action:
-              - secretsmanager:GetSecretValue
-            Resource:
-              - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}"
-          - Sid: UpdatePubXMLDataQueueAcc
-            Effect: Allow
-            Action:
-              - sqs:SendMessage
-              - sqs:ListQueues
-              - sqs:ListDeadLetterSourceQueues
-              - sqs:ReceiveMessage
-              - sqs:GetQueueAttributes
-              - sqs:ListQueueTags
-            Resource: !GetAtt  UpdatePubXMLDataQueue.Arn
+            - Sid: SecretsOauthRetrieve
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}'
+            - Sid: UpdatePubXMLDataQueueAcc
+              Effect: Allow
+              Action:
+                - sqs:SendMessage
+                - sqs:ListQueues
+                - sqs:ListDeadLetterSourceQueues
+                - sqs:ReceiveMessage
+                - sqs:GetQueueAttributes
+                - sqs:ListQueueTags
+              Resource: !GetAtt UpdatePubXMLDataQueue.Arn
       Tags:
-        Service: !Ref ServiceName
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
 
   #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
   PubXMLPopulatorLogGroup:
@@ -293,22 +271,20 @@ Resources:
   GSScheduledRule:
     Type: AWS::Events::Rule
     Properties:
-      Description: "ScheduledRule - triggers GalleryScanner Lambda at specified rate"
+      Description: 'ScheduledRule - triggers GalleryScanner Lambda at specified rate'
       # EventBusName: String
       # EventPattern: Json
       # Name: String
       # RoleArn: String
-      ScheduleExpression: "rate(7 days)"
-      State: "ENABLED"
+      ScheduleExpression: 'rate(7 days)'
+      State: 'ENABLED'
       Targets:
-        -
-          Arn:
+        - Arn:
             Fn::GetAtt:
-              - "GalleryScanner"
-              - "Arn"
-          Id: "TargetFunctionV1"
-          Input:
-            !Sub
+              - 'GalleryScanner'
+              - 'Arn'
+          Id: 'TargetFunctionV1'
+          Input: !Sub
             - |
               {
                 "tagname": "Service",
@@ -321,13 +297,13 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName:
-        Ref: "GalleryScanner"
-      Action: "lambda:InvokeFunction"
-      Principal: "events.amazonaws.com"
+        Ref: 'GalleryScanner'
+      Action: 'lambda:InvokeFunction'
+      Principal: 'events.amazonaws.com'
       SourceArn:
         Fn::GetAtt:
-          - "GSScheduledRule"
-          - "Arn"
+          - 'GSScheduledRule'
+          - 'Arn'
 
   # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
   # https://github.com/awslabs/serverless-application-model/blob/develop/examples/2016-10-31/policy_templates/all_policy_templates.yaml
@@ -335,36 +311,38 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       CodeUri:
-        Bucket: !ImportValue PSGELFBN
-        Key: !Ref GalleryScannerS3Key
+        Bucket: !Ref LambdaS3BucketName
+        Key: !Ref LMFunctionS3KeyGalleryScanner
       Description: 'Retrieves all modules from PSGallery and generates SQS for GitHub scan processing.'
       Environment:
         Variables:
           GITHUB_SQS_NAME: !Ref GitHubDataQueue
-          S3_BUCKET_NAME: !Ref StageTriggerData
+          S3_BUCKET_NAME: !ImportValue StageTriggerBN
           S3_KEY_NAME: !Ref PSGalleryXMLKey
-      Handler: !Ref GalleryScannerHandler
+          TELEGRAM_SECRET: !Ref TelegramSecret
+      Handler: !Ref LMFunctionHandlerGalleryScanner
       MemorySize: 1280
       Runtime: dotnetcore3.1
       Timeout: 900
       Policies:
         - AWSLambdaBasicExecutionRole
         - S3CrudPolicy:
-            BucketName: !Ref StageTriggerData
+            BucketName: !ImportValue StageTriggerBN
         - Statement:
-          - Sid: SecretsOauthRetrieve
-            Effect: Allow
-            Action:
-              - secretsmanager:GetSecretValue
-            Resource:
-              - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}"
-          - Sid: GitHubDataQueueAcc
-            Effect: Allow
-            Action:
-              - sqs:SendMessage
-            Resource: !GetAtt  GitHubDataQueue.Arn
+            - Sid: SecretsOauthRetrieve
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}'
+            - Sid: GitHubDataQueueAcc
+              Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: !GetAtt GitHubDataQueue.Arn
       Tags:
-        Service: !Ref ServiceName
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
 
   #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
   GalleryScannerLogGroup:
@@ -376,7 +354,7 @@ Resources:
   #______________________________________________________________________________________________
   #GITHUB SCANNER
 
-    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   GitHubDataDlq:
     Type: AWS::SQS::Queue
     Properties:
@@ -392,9 +370,10 @@ Resources:
       # RedrivePolicy: Json
       VisibilityTimeout: 160
       Tags:
-        -
-          Key: Service
+        - Key: ServiceName
           Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
   AlarmNumberOfMessagesVisibleUpdateGitHubDataDlq:
@@ -446,8 +425,7 @@ Resources:
         maxReceiveCount: 3
       VisibilityTimeout: 1000
       Tags:
-        -
-          Key: Service
+        - Key: Service
           Value: !Ref ServiceName
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html
@@ -459,11 +437,10 @@ Resources:
       PolicyDocument:
         Id: AllowIncomingAccess
         Statement:
-          -
-            Effect: Allow
+          - Effect: Allow
             Principal:
               AWS:
-                - !Ref "AWS::AccountId"
+                - !Ref 'AWS::AccountId'
             Action:
               - sqs:SendMessage
               - sqs:ReceiveMessage
@@ -476,15 +453,17 @@ Resources:
     DependsOn: GitHubDataQueue
     Properties:
       CodeUri:
-        Bucket: !ImportValue PSGELFBN
-        Key: !Ref GitHubScannerS3Key
+        Bucket: !Ref LambdaS3BucketName
+        Key: !Ref LMFunctionS3KeyGitHubScanner
       Description: 'Processes SQS queue containing module info and retrieves data from GitHub.'
       Environment:
         Variables:
           STATE_MACHINE_NAME: !GetAtt GitHubScannerSMDelay.Name
           STATE_MACHINE_ARN: !Ref GitHubScannerSMDelay
-          S3_BUCKET_NAME: !Ref GitXMLData
-      Handler: !Ref GitHubScannerHandler
+          S3_BUCKET_NAME: !ImportValue GitXMLDataBN
+          TELEGRAM_SECRET: !Ref TelegramSecret
+          GITHUB_SECRET: !Ref GitHubOauthSecret
+      Handler: !Ref LMFunctionHandlerGitHubScanner
       MemorySize: 832
       Runtime: dotnetcore3.1
       Timeout: 900
@@ -497,32 +476,33 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - S3CrudPolicy:
-            BucketName: !Ref GitXMLData
+            BucketName: !ImportValue GitXMLDataBN
         - Statement:
-          - Sid: SecretsOauthRetrieve
-            Effect: Allow
-            Action:
-              - secretsmanager:GetSecretValue
-            Resource:
-              - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${GitHubOauthSecret}"
-              - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}"
-          - Sid: StateMachineExecute
-            Effect: Allow
-            Action:
-              - states:StartExecution
-            Resource: !Ref GitHubScannerSMDelay
-          - Sid: GitHubDataQueueReadAcc
-            Effect: Allow
-            Action:
-              - sqs:SendMessage
-              - sqs:ListQueues
-              - sqs:ListDeadLetterSourceQueues
-              - sqs:ReceiveMessage
-              - sqs:GetQueueAttributes
-              - sqs:ListQueueTags
-            Resource: !GetAtt  GitHubDataQueue.Arn
+            - Sid: SecretsOauthRetrieve
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${GitHubOauthSecret}'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}'
+            - Sid: StateMachineExecute
+              Effect: Allow
+              Action:
+                - states:StartExecution
+              Resource: !Ref GitHubScannerSMDelay
+            - Sid: GitHubDataQueueReadAcc
+              Effect: Allow
+              Action:
+                - sqs:SendMessage
+                - sqs:ListQueues
+                - sqs:ListDeadLetterSourceQueues
+                - sqs:ReceiveMessage
+                - sqs:GetQueueAttributes
+                - sqs:ListQueueTags
+              Resource: !GetAtt GitHubDataQueue.Arn
       Tags:
-        Service: !Ref ServiceName
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
 
   #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
   GitHubScannerLogGroup:
@@ -541,30 +521,33 @@ Resources:
     DependsOn: GitHubDataQueue
     Properties:
       CodeUri:
-        Bucket: !ImportValue PSGELFBN
-        Key: !Ref GitHubSMScannerS3Key
+        Bucket: !Ref LambdaS3BucketName
+        Key: !Ref LMFunctionS3KeyGitHubSMScanner
       Description: 'State machine lambda for delayed GitHub info processing.'
       Environment:
         Variables:
-          S3_BUCKET_NAME: !Ref GitXMLData
-      Handler: !Ref GitHubSMScannerHandler
+          S3_BUCKET_NAME: !ImportValue GitXMLDataBN
+          TELEGRAM_SECRET: !Ref TelegramSecret
+          GITHUB_SECRET: !Ref GitHubOauthSecret
+      Handler: !Ref LMFunctionHandlerGitHubSMScanner
       MemorySize: 768
       Runtime: dotnetcore3.1
       Timeout: 900
       Policies:
         - AWSLambdaBasicExecutionRole
         - S3CrudPolicy:
-            BucketName: !Ref GitXMLData
+            BucketName: !ImportValue GitXMLDataBN
         - Statement:
-          - Sid: SecretsOauthRetrieve
-            Effect: Allow
-            Action:
-              - secretsmanager:GetSecretValue
-            Resource:
-              - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${GitHubOauthSecret}"
-              - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}"
+            - Sid: SecretsOauthRetrieve
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${GitHubOauthSecret}'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}'
       Tags:
-        Service: !Ref ServiceName
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
 
   #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
   GitHubSMScannerLogGroup:
@@ -635,8 +618,7 @@ Resources:
       # StateMachineName: String
       StateMachineType: STANDARD
       Tags:
-        -
-          Key: Service
+        - Key: Service
           Value: !Ref ServiceName
       DefinitionString: !Sub
         - |-
@@ -664,9 +646,7 @@ Resources:
               }
             }
           }
-        - {
-            SMScannerLambda: !GetAtt GitHubSMScanner.Arn,
-          }
+        - { SMScannerLambda: !GetAtt GitHubSMScanner.Arn }
 
   #______________________________________________________________________________________________
   # GitXMLCombiner
@@ -675,22 +655,20 @@ Resources:
   GCombineScheduledRule:
     Type: AWS::Events::Rule
     Properties:
-      Description: "ScheduledRule - triggers GCombine Lambda at specified rate"
+      Description: 'ScheduledRule - triggers GCombine Lambda at specified rate'
       # EventBusName: String
       # EventPattern: Json
       # Name: String
       # RoleArn: String
-      ScheduleExpression: "rate(1 day)"
-      State: "ENABLED"
+      ScheduleExpression: 'rate(1 day)'
+      State: 'ENABLED'
       Targets:
-        -
-          Arn:
+        - Arn:
             Fn::GetAtt:
-              - "GCombine"
-              - "Arn"
-          Id: "TargetFunctionV1"
-          Input:
-            !Sub
+              - 'GCombine'
+              - 'Arn'
+          Id: 'TargetFunctionV1'
+          Input: !Sub
             - |
               {
                 "tagname": "Service",
@@ -703,13 +681,13 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName:
-        Ref: "GCombine"
-      Action: "lambda:InvokeFunction"
-      Principal: "events.amazonaws.com"
+        Ref: 'GCombine'
+      Action: 'lambda:InvokeFunction'
+      Principal: 'events.amazonaws.com'
       SourceArn:
         Fn::GetAtt:
-          - "GCombineScheduledRule"
-          - "Arn"
+          - 'GCombineScheduledRule'
+          - 'Arn'
 
   # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
   # https://github.com/awslabs/serverless-application-model/blob/develop/examples/2016-10-31/policy_templates/all_policy_templates.yaml
@@ -717,33 +695,35 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       CodeUri:
-        Bucket: !ImportValue PSGELFBN
-        Key: !Ref GCombineS3Key
+        Bucket: !Ref LambdaS3BucketName
+        Key: !Ref LMFunctionS3KeyGCombine
       Description: 'Combines seperate GitHub data module XMLs into a singular XML data set.'
       Environment:
         Variables:
-          GIT_S3_BUCKET_NAME: !Ref GitXMLData
-          S3_BUCKET_NAME: !Ref StageTriggerData
+          GIT_S3_BUCKET_NAME: !ImportValue GitXMLDataBN
+          S3_BUCKET_NAME: !ImportValue StageTriggerBN
           S3_KEY_NAME: !Ref GitXMLKey
-      Handler: !Ref GCombineHandler
+          TELEGRAM_SECRET: !Ref TelegramSecret
+      Handler: !Ref LMFunctionHandlerGCombine
       MemorySize: 2048
       Runtime: dotnetcore3.1
       Timeout: 900
       Policies:
         - AWSLambdaBasicExecutionRole
         - S3ReadPolicy:
-            BucketName: !Ref GitXMLData
+            BucketName: !ImportValue GitXMLDataBN
         - S3CrudPolicy:
-            BucketName: !Ref StageTriggerData
+            BucketName: !ImportValue StageTriggerBN
         - Statement:
-          - Sid: SecretsOauthRetrieve
-            Effect: Allow
-            Action:
-              - secretsmanager:GetSecretValue
-            Resource:
-              - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}"
+            - Sid: SecretsOauthRetrieve
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}'
       Tags:
-        Service: !Ref ServiceName
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
 
   #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
   GCombineLogGroup:
@@ -754,13 +734,6 @@ Resources:
       RetentionInDays: 7
 
 Outputs:
-
-  UpdateSNSTopic:
-    Value: !Ref UpdateSNSTopic
-    Description: SNS Topic for S3 Object Triggers for XML combination and publication
-    Export:
-        Name: PSGELUpdateSNSSub
-  # SNSUpdateTopicPolicy
   UpdatePubXMLDataDlqName:
     Description: DLQ Name for Public XML processing
     Value: !GetAtt UpdatePubXMLDataDlq.QueueName
@@ -772,8 +745,10 @@ Outputs:
     Description: DLQ Arn for Public XML processing
     Export:
       Name: UpdatePubXMLDataDlqArn
+
   PubXMLDataDlqAlarmName:
     Value: !Ref AlarmNumberOfMessagesVisibleUpdatePubXMLDataDlq
+
   UpdatePubXMLDataQueueName:
     Description: Queue Name for Public XML processing
     Value: !GetAtt UpdatePubXMLDataQueue.QueueName
@@ -785,19 +760,22 @@ Outputs:
     Description: Queue Arn for Public XML processing
     Export:
       Name: UpdatePubXMLDataQueueArn
+
   PubXMLPopulator:
     Description: Arn for Public XML processing Lambda
     Value: !GetAtt PubXMLPopulator.Arn
+
   GSScheduledRuleID:
     Description: Event rule ID for Public XML lambda trigger
     Value: !Ref GSScheduledRule
   GSScheduledRuleArn:
     Description: Arn for Public XML lambda trigger
     Value: !GetAtt GSScheduledRule.Arn
-  # PermissionForEventsToInvokeLambda
+
   GalleryScanner:
     Description: Arn for Gallery scanning Lambda
     Value: !GetAtt GalleryScanner.Arn
+
   GitHubDataDlqName:
     Description: DLQ Name for GitHub XML processing
     Value: !GetAtt GitHubDataDlq.QueueName
@@ -822,9 +800,11 @@ Outputs:
     Description: Queue Arn for GitHub XML processing
     Export:
       Name: GitHubDataQueue
+
   GitHubScanner:
     Description: Arn for GitHub scanning Lambda
     Value: !GetAtt GitHubScanner.Arn
+
   GitHubSMScanner:
     Description: Arn for GitHub scanning Lambda in state machine
     Value: !GetAtt GitHubSMScanner.Arn
@@ -838,6 +818,7 @@ Outputs:
     Description: The Arn of the GitHubScannerSMDelay State Machine
     Export:
       Name: GitHubScannerSMDelayStateMachineArn
+
   GCombine:
     Description: Arn for GCombine scanning Lambda
     Value: !GetAtt GCombine.Arn

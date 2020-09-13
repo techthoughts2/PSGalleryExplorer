@@ -9,6 +9,12 @@
 # To include PowerShell modules with your Lambda function, like the AWSPowerShell.NetCore module, add a "#Requires" statement
 # indicating the module and version.
 
+# $env:STATE_MACHINE_NAME
+# $env:STATE_MACHINE_ARN
+# $env:S3_BUCKET_NAME
+# $env:TELEGRAM_SECRET
+# $env:GITHUB_SECRET
+
 #Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
 #Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
 #Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
@@ -240,7 +246,7 @@ function Send-TelegramError {
         $ErrorMessage
     )
     if ($null -eq $script:token ) {
-        $script:token = Get-SECSecretValue -SecretId PoshGramTokens -Region us-west-2 -ErrorAction Stop
+        $script:token = Get-SECSecretValue -SecretId $env:TELEGRAM_SECRET -Region 'us-west-2' -ErrorAction Stop
     }
     try {
         if ($null -eq $script:token ) {
@@ -311,7 +317,7 @@ Write-Host "State Machine Arn: $stateMachineNameArn"
 Write-Host "Bucket Name: $bucketName"
 
 Write-Host 'Retrieving GitHub Oauth token...'
-$s = Get-SECSecretValue -SecretId GitHubOauth -Region us-west-2 -ErrorAction Stop
+$s = Get-SECSecretValue -SecretId $env:GITHUB_SECRET -Region 'us-west-2' -ErrorAction Stop
 if ($null -eq $s) {
     Write-Warning -Message 'Nothing was returned from secrets query'
     throw

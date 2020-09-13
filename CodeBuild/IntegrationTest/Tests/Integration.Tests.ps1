@@ -30,7 +30,7 @@ Describe -Name 'Infrastructure Tests' -Fixture {
 
         It -Name 'Should create a SNS topic for S3 trigger updates' -Test {
             $assertion = ($cfnExports | Where-Object { $_.Name -eq 'UpdateSNSTopicArn' }).Value
-            $expected = 'arn:aws:sns:{0}:{1}:' -f $env:AWSRegion, $env:AWSAccountId
+            $expected = 'arn:aws:sns:{0}:{1}:*' -f $env:AWSRegion, $env:AWSAccountId
             $assertion | Should -BeLike $expected
         }#it
 
