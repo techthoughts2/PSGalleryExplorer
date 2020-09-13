@@ -587,13 +587,10 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - cloudwatch:PutMetricData
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:DescribeLogGroups
-                  - logs:DescribeLogStreams
-                  - logs:PutLogEvents
-                Resource: '*'
+                  - cloudwatch:*
+                Resource: !GetAtt
+                  - GitHubScannerSMDelayLogGroup
+                  - Arn
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
   GitHubScannerSMDelayLogGroup:
@@ -603,6 +600,7 @@ Resources:
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html
   # https://states-language.net/spec.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html
   GitHubScannerSMDelay:
     Type: AWS::StepFunctions::StateMachine
     Properties:
