@@ -129,6 +129,7 @@ catch {
 
 if ($allModules) {
     Write-Host 'PSGallery data confirmed.'
+    $sqsErrors = $false
     try {
         Write-Host 'Converting PSGallery data to XML format...'
         $galleryXML = ConvertTo-Clixml -InputObject $allModules -Depth 100
@@ -152,20 +153,36 @@ if ($allModules) {
         return
     }
 
-    $githubModules = @()
+    $criteria1 = '^http:\/\/github.com'
+    $criteria2 = '^http:\/\/www.github.com'
+    $criteria3 = '^https:\/\/www.github.com'
     $criteria = '^https:\/\/github.com'
     foreach ($module in $allModules) {
         #---------------------------
         # resets
         $messageBody = $null
         $sqsSplat = $null
+        $moduleURI = $null
         #---------------------------
-        if ($module.ProjectUri.AbsoluteUri -match $criteria ) {
-            $githubModules += $module
+        $moduleURI = $module.ProjectUri.AbsoluteUri
+        if ($moduleURI -match $criteria1) {
+            # special case processing - 1
+            $moduleURI = $moduleURI.Replace('http:', 'https:')
+        }
+        elseif ($moduleURI -match $criteria2) {
+            # special case processing - 2
+            $moduleURI = $moduleURI.Replace('http://www.', 'https://')
+        }
+        elseif ($moduleURI -match $criteria3) {
+            # special case processing - 3
+            $moduleURI = $moduleURI.Replace('https://www.', 'https://')
+        }
+        #---------------------------
+        if ($moduleURI -match $criteria ) {
 
             $messageBody = ConvertTo-Json -Compress -InputObject @{
                 ModuleName = $module.Name
-                GitHubURI  = $module.ProjectUri.AbsoluteUri
+                GitHubURI  = $moduleURI
             }
 
             $sqsSplat = @{
@@ -181,9 +198,13 @@ if ($allModules) {
             }
             catch {
                 Write-Error $_
+                $sqsErrors = $true
             }
         }#if_GitHub
     }#foreach_module
+    if ($sqsErrors -eq $true) {
+        Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - GallerySCanner had issues sending SQS messages.'
+    }
     return
 }#if_allmodules
 else {
