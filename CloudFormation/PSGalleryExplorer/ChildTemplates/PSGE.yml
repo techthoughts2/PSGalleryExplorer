@@ -338,7 +338,7 @@ Resources:
           S3_KEY_NAME: !Ref PSGalleryXMLKey
           TELEGRAM_SECRET: !Ref TelegramSecret
       Handler: !Ref LMFunctionHandlerGalleryScanner
-      MemorySize: 2048
+      MemorySize: 3008
       Runtime: dotnetcore3.1
       Timeout: 900
       Policies:
@@ -483,7 +483,7 @@ Resources:
           TELEGRAM_SECRET: !Ref TelegramSecret
           GITHUB_SECRET: !Ref GitHubOauthSecret
       Handler: !Ref LMFunctionHandlerGitHubScanner
-      MemorySize: 832
+      MemorySize: 1024
       Runtime: dotnetcore3.1
       Timeout: 900
       Events:
@@ -769,7 +769,7 @@ Resources:
           TELEGRAM_SECRET: !Ref TelegramSecret
           GITHUB_SECRET: !Ref GitHubOauthSecret
       Handler: !Ref LMFunctionHandlerGitLabScanner
-      MemorySize: 832
+      MemorySize: 1024
       Runtime: dotnetcore3.1
       Timeout: 900
       Events:
@@ -999,7 +999,7 @@ Resources:
           S3_KEY_NAME: !Ref GitXMLKey
           TELEGRAM_SECRET: !Ref TelegramSecret
       Handler: !Ref LMFunctionHandlerGCombine
-      MemorySize: 2048
+      MemorySize: 3008
       Runtime: dotnetcore3.1
       Timeout: 900
       Policies:
@@ -1112,6 +1112,49 @@ Outputs:
     Description: The Arn of the GitHubScannerSMDelay State Machine
     Export:
       Name: GitHubScannerSMDelayStateMachineArn
+
+  GitLabDataDlqName:
+    Description: DLQ Name for GitLab XML processing
+    Value: !GetAtt GitLabDataDlq.QueueName
+  GitLabDataDlqUrl:
+    Description: DLQ URL for GitLab XML processing
+    Value: !Ref GitLabDataDlq
+  GitLabDataDlqArn:
+    Value: !GetAtt GitLabDataDlq.Arn
+    Description: DLQ Arn for GitLab XML processing
+    Export:
+      Name: GitLabDataDlqArn
+  GitLabDataDlqAlarmName:
+    Value: !Ref AlarmNumberOfMessagesVisibleUpdateGitLabDataDlq
+  GitLabDataQueueName:
+    Description: Queue Name for GitLab XML processing
+    Value: !GetAtt GitLabDataQueue.QueueName
+  GitLabDataQueueUrl:
+    Description: Queue URL for GitLab XML processing
+    Value: !Ref GitLabDataQueue
+  GitLabDataQueueArn:
+    Value: !GetAtt GitLabDataQueue.Arn
+    Description: Queue Arn for GitLab XML processing
+    Export:
+      Name: GitLabDataQueue
+
+  GitLabScanner:
+    Description: Arn for GitLab scanning Lambda
+    Value: !GetAtt GitLabScanner.Arn
+
+  GitLabSMScanner:
+    Description: Arn for GitLab scanning Lambda in state machine
+    Value: !GetAtt GitLabSMScanner.Arn
+  GitLabScannerSMDelayStateMachineName:
+    Value: !GetAtt GitLabScannerSMDelay.Name
+    Description: The name of the GitLabScannerSMDelay State Machine
+    Export:
+      Name: GitLabScannerSMDelayStateMachineName
+  GitLabScannerSMDelayStateMachineArn:
+    Value: !Ref GitLabScannerSMDelay
+    Description: The Arn of the GitLabScannerSMDelay State Machine
+    Export:
+      Name: GitLabScannerSMDelayStateMachineArn
 
   GCombine:
     Description: Arn for GCombine scanning Lambda

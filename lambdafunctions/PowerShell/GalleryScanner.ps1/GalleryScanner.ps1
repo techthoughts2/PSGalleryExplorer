@@ -227,7 +227,7 @@ if ($allModules) {
 
             $messageBody = ConvertTo-Json -Compress -InputObject @{
                 ModuleName = $module.Name
-                GitHubURI  = $moduleURI
+                GitLabURI  = $moduleURI
             }
 
             $sqsSplat = @{
