@@ -23,3 +23,13 @@ artifacts:
   files:
     - '**/*'
   base-directory: 'src/Archive'
+reports:
+  PesterTestReport:
+    files:
+      - '**/*'
+    file-format: NunitXml
+    base-directory: 'src\Artifacts\testOutput'
+  CodeCoverageReport:
+    files:
+      - 'src\Artifacts\ccReport\CodeCoverage.xml'
+    file-format: 'JaCoCoXml'
