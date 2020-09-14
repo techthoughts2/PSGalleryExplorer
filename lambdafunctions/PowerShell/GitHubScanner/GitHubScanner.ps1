@@ -119,6 +119,7 @@ function Get-GitHubProjectInfo {
                 Updated     = $githubProjectInfo.updated_at
                 Forks       = $githubProjectInfo.forks_count
                 License     = $githubProjectInfo.license.name
+                OpenIssues  = $githubProjectInfo.open_issues_count
             }
         }
         #####################################
@@ -245,16 +246,16 @@ function Send-TelegramError {
         [string]
         $ErrorMessage
     )
-    if ($null -eq $script:token ) {
-        $script:token = Get-SECSecretValue -SecretId $env:TELEGRAM_SECRET -Region 'us-west-2' -ErrorAction Stop
+    if ($null -eq $script:telegramToken ) {
+        $script:telegramToken = Get-SECSecretValue -SecretId $env:TELEGRAM_SECRET -Region 'us-west-2' -ErrorAction Stop
     }
     try {
-        if ($null -eq $script:token ) {
+        if ($null -eq $script:telegramToken ) {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
             Write-Host "Secret retrieved."
-            $sObj = $script:token.SecretString | ConvertFrom-Json
+            $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
             Send-TelegramTextMessage -BotToken $token -ChatID $channel -Message $ErrorMessage
@@ -293,10 +294,10 @@ function Send-TelegramError {
     https://developer.github.com/v3/rate_limit/
 #>
 
-$y = 'https://api.github.com/repos/qbikez/ps-entropy.git'
-$y = 'https://api.github.com/repos/techthoughts2/PoshGram'
-$s = $y.Substring(0, $y.lastIndexOf('.git'))
-'https://api.github.com/repos/dfensgmbh/biz.dfch.PS.Activiti.Client.git'
+# $y = 'https://api.github.com/repos/qbikez/ps-entropy.git'
+# $y = 'https://api.github.com/repos/techthoughts2/PoshGram'
+# $s = $y.Substring(0, $y.lastIndexOf('.git'))
+# 'https://api.github.com/repos/dfensgmbh/biz.dfch.PS.Activiti.Client.git'
 
 
 #handle not found differently
@@ -310,7 +311,7 @@ documentation_url	"https://developer.github.com/v3/repos/#get"
 $stateMachineName = $env:STATE_MACHINE_NAME
 $stateMachineNameArn = $env:STATE_MACHINE_ARN
 $bucketName = $env:S3_BUCKET_NAME
-$script:token = $null
+$script:telegramToken = $null
 
 Write-Host "State Machine Name: $stateMachineName"
 Write-Host "State Machine Arn: $stateMachineNameArn"

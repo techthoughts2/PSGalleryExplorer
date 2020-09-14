@@ -64,6 +64,22 @@ Parameters:
     Type: String
     Description: GitHubSMScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
 
+  LMFunctionS3KeyGitLabScanner:
+    Type: String
+    Description: S3 Key for the GitLabScanner Lambda function(s) zip file
+
+  LMFunctionHandlerGitLabScanner:
+    Type: String
+    Description: GitLabScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
+
+  LMFunctionS3KeyGitLabSMScanner:
+    Type: String
+    Description: S3 Key for the GitLabSMScanner Lambda function(s) zip file
+
+  LMFunctionHandlerGitLabSMScanner:
+    Type: String
+    Description: GitLabSMScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
+
   LMFunctionS3KeyPubXMLPopulator:
     Type: String
     Description: S3 Key for the PubXMLPopulator Lambda function(s) zip file
@@ -129,6 +145,10 @@ Resources:
         LMFunctionHandlerGitHubScanner: !Ref LMFunctionHandlerGitHubScanner
         LMFunctionS3KeyGitHubSMScanner: !Ref LMFunctionS3KeyGitHubSMScanner
         LMFunctionHandlerGitHubSMScanner: !Ref LMFunctionHandlerGitHubSMScanner
+        LMFunctionS3KeyGitLabScanner: !Ref LMFunctionS3KeyGitLabScanner
+        LMFunctionHandlerGitLabScanner: !Ref LMFunctionHandlerGitLabScanner
+        LMFunctionS3KeyGitLabSMScanner: !Ref LMFunctionS3KeyGitLabSMScanner
+        LMFunctionHandlerGitLabSMScanner: !Ref LMFunctionHandlerGitLabSMScanner
         LMFunctionS3KeyPubXMLPopulator: !Ref LMFunctionS3KeyPubXMLPopulator
         LMFunctionHandlerPubXMLPopulator: !Ref LMFunctionHandlerPubXMLPopulator
       Tags:

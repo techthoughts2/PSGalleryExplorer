@@ -74,6 +74,22 @@ Parameters:
     Type: String
     Description: GitHubSMScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
 
+  LMFunctionS3KeyGitLabScanner:
+    Type: String
+    Description: S3 Key for the GitLabScanner Lambda function(s) zip file
+
+  LMFunctionHandlerGitLabScanner:
+    Type: String
+    Description: GitLabScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
+
+  LMFunctionS3KeyGitLabSMScanner:
+    Type: String
+    Description: S3 Key for the GitLabSMScanner Lambda function(s) zip file
+
+  LMFunctionHandlerGitLabSMScanner:
+    Type: String
+    Description: GitLabSMScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
+
   LMFunctionS3KeyPubXMLPopulator:
     Type: String
     Description: S3 Key for the PubXMLPopulator Lambda function(s) zip file
@@ -317,11 +333,12 @@ Resources:
       Environment:
         Variables:
           GITHUB_SQS_NAME: !Ref GitHubDataQueue
+          GITLAB_SQS_NAME: !Ref GitLabDataQueue
           S3_BUCKET_NAME: !ImportValue StageTriggerBN
           S3_KEY_NAME: !Ref PSGalleryXMLKey
           TELEGRAM_SECRET: !Ref TelegramSecret
       Handler: !Ref LMFunctionHandlerGalleryScanner
-      MemorySize: 1280
+      MemorySize: 2048
       Runtime: dotnetcore3.1
       Timeout: 900
       Policies:
@@ -339,7 +356,9 @@ Resources:
               Effect: Allow
               Action:
                 - sqs:SendMessage
-              Resource: !GetAtt GitHubDataQueue.Arn
+              Resource:
+                - !GetAtt GitHubDataQueue.Arn
+                - !GetAtt GitLabDataQueue.Arn
       Tags:
         ServiceName: !Ref ServiceName
         StackName: !Ref AWS::StackName
@@ -513,7 +532,7 @@ Resources:
       RetentionInDays: 7
 
   #______________________________________________________________________________________________
-  # STEP FUNCTION DELAY
+  # STEP FUNCTION DELAY - GitHubSM
 
   # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
   GitHubSMScanner:
@@ -637,7 +656,292 @@ Resources:
             }
           }
         - { SMScannerLambda: !GetAtt GitHubSMScanner.Arn }
+  #______________________________________________________________________________________________
+  #GITLAB SCANNER
 
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
+  GitLabDataDlq:
+    Type: AWS::SQS::Queue
+    Properties:
+      # ContentBasedDeduplication: Boolean
+      # DelaySeconds: Integer
+      # FifoQueue: Boolean
+      # KmsDataKeyReusePeriodSeconds: Integer
+      # KmsMasterKeyId: String
+      # MaximumMessageSize: Integer
+      # MessageRetentionPeriod: Integer
+      # QueueName: String
+      # ReceiveMessageWaitTimeSeconds: Integer
+      # RedrivePolicy: Json
+      VisibilityTimeout: 160
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
+  AlarmNumberOfMessagesVisibleUpdateGitLabDataDlq:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      ActionsEnabled: true
+      AlarmActions:
+        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+      AlarmDescription: Alarms if the GitLabDataDlq Dead Letter Queue has too many messages
+      AlarmName: GitLabDataDlq_NumberOfMessagesVisible
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      # DatapointsToAlarm: Integer
+      # EvaluateLowSampleCountPercentile: String
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt GitLabDataDlq.QueueName
+      EvaluationPeriods: 1
+      # ExtendedStatistic: String
+      # InsufficientDataActions:
+      #   - String
+      MetricName: ApproximateNumberOfMessagesVisible
+      # Metrics:
+      #   - MetricDataQuery
+      Namespace: AWS/SQS
+      # OKActions:
+      #   - String
+      Period: 300
+      Statistic: Maximum
+      Threshold: 1
+      # ThresholdMetricId: String
+      TreatMissingData: notBreaching
+      # Unit: String
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
+  GitLabDataQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      # ContentBasedDeduplication: Boolean
+      # DelaySeconds: Integer
+      # FifoQueue: Boolean
+      # KmsDataKeyReusePeriodSeconds: Integer
+      # KmsMasterKeyId: String
+      # MaximumMessageSize: Integer
+      # MessageRetentionPeriod: Integer
+      # QueueName: String
+      # ReceiveMessageWaitTimeSeconds: Integer
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt GitLabDataDlq.Arn
+        maxReceiveCount: 3
+      VisibilityTimeout: 1000
+      Tags:
+        - Key: Service
+          Value: !Ref ServiceName
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html
+  GitLabDataQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref GitLabDataQueue
+      PolicyDocument:
+        Id: AllowIncomingAccess
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !Ref 'AWS::AccountId'
+            Action:
+              - sqs:SendMessage
+              - sqs:ReceiveMessage
+            Resource:
+              - !GetAtt GitLabDataQueue.Arn
+
+  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  GitLabScanner:
+    Type: 'AWS::Serverless::Function'
+    DependsOn: GitLabDataQueue
+    Properties:
+      CodeUri:
+        Bucket: !Ref LambdaS3BucketName
+        Key: !Ref LMFunctionS3KeyGitLabScanner
+      Description: 'Processes SQS queue containing module info and retrieves data from GitLab.'
+      Environment:
+        Variables:
+          STATE_MACHINE_NAME: !GetAtt GitLabScannerSMDelay.Name
+          STATE_MACHINE_ARN: !Ref GitLabScannerSMDelay
+          S3_BUCKET_NAME: !ImportValue GitXMLDataBN
+          TELEGRAM_SECRET: !Ref TelegramSecret
+          GITHUB_SECRET: !Ref GitHubOauthSecret
+      Handler: !Ref LMFunctionHandlerGitLabScanner
+      MemorySize: 832
+      Runtime: dotnetcore3.1
+      Timeout: 900
+      Events:
+        GitLabScanQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt GitLabDataQueue.Arn
+            BatchSize: 10
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - S3CrudPolicy:
+            BucketName: !ImportValue GitXMLDataBN
+        - Statement:
+            - Sid: SecretsOauthRetrieve
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${GitHubOauthSecret}-v09KRX'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
+            - Sid: StateMachineExecute
+              Effect: Allow
+              Action:
+                - states:StartExecution
+              Resource: !Ref GitLabScannerSMDelay
+            - Sid: GitLabDataQueueReadAcc
+              Effect: Allow
+              Action:
+                - sqs:SendMessage
+                - sqs:ListQueues
+                - sqs:ListDeadLetterSourceQueues
+                - sqs:ReceiveMessage
+                - sqs:GetQueueAttributes
+                - sqs:ListQueueTags
+              Resource: !GetAtt GitLabDataQueue.Arn
+      Tags:
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
+
+  #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  GitLabScannerLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GitLabScanner
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${GitLabScanner}'
+      RetentionInDays: 7
+
+  #______________________________________________________________________________________________
+  # STEP FUNCTION DELAY - GitLabSM
+
+  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  GitLabSMScanner:
+    Type: 'AWS::Serverless::Function'
+    DependsOn: GitLabDataQueue
+    Properties:
+      CodeUri:
+        Bucket: !Ref LambdaS3BucketName
+        Key: !Ref LMFunctionS3KeyGitLabSMScanner
+      Description: 'State machine lambda for delayed GitLab info processing.'
+      Environment:
+        Variables:
+          S3_BUCKET_NAME: !ImportValue GitXMLDataBN
+          TELEGRAM_SECRET: !Ref TelegramSecret
+          GITHUB_SECRET: !Ref GitHubOauthSecret
+      Handler: !Ref LMFunctionHandlerGitLabSMScanner
+      MemorySize: 768
+      Runtime: dotnetcore3.1
+      Timeout: 900
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - S3CrudPolicy:
+            BucketName: !ImportValue GitXMLDataBN
+        - Statement:
+            - Sid: SecretsOauthRetrieve
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${GitHubOauthSecret}-v09KRX'
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
+      Tags:
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
+
+  #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  GitLabSMScannerLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GitLabSMScanner
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${GitLabSMScanner}'
+      RetentionInDays: 7
+
+  #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
+  GitLabStatesExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - !Sub states.${AWS::Region}.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchFullAccess
+      Policies:
+        - PolicyName: InvokeLambda
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  - !GetAtt GitLabSMScanner.Arn
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  GitLabScannerSMDelayLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html
+  # https://states-language.net/spec.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html
+  GitLabScannerSMDelay:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      LoggingConfiguration:
+        Level: ALL
+        IncludeExecutionData: True
+        Destinations:
+          - CloudWatchLogsLogGroup:
+              LogGroupArn: !GetAtt
+                - GitLabScannerSMDelayLogGroup
+                - Arn
+      RoleArn: !GetAtt [GitLabStatesExecutionRole, Arn]
+      # StateMachineName: String
+      StateMachineType: STANDARD
+      Tags:
+        - Key: Service
+          Value: !Ref ServiceName
+      DefinitionString: !Sub
+        - |-
+          {
+            "Comment": "Backs off API calls to GitLab to align with their API limits.",
+            "StartAt": "wait_using_seconds",
+            "States": {
+              "wait_using_seconds": {
+                "Type": "Wait",
+                "Seconds": 3605,
+                "Next": "Invoke GitLab Scanner Lambda"
+              },
+              "Invoke GitLab Scanner Lambda": {
+                "Type": "Task",
+                "Resource": "${SMScannerLambda}",
+                "Retry" : [
+                    {
+                      "ErrorEquals": [ "States.ALL" ],
+                      "IntervalSeconds": 5,
+                      "MaxAttempts": 15,
+                      "BackoffRate": 2.5
+                    }
+                ],
+                "End": true
+              }
+            }
+          }
+        - { SMScannerLambda: !GetAtt GitLabSMScanner.Arn }
   #______________________________________________________________________________________________
   # GitXMLCombiner
 

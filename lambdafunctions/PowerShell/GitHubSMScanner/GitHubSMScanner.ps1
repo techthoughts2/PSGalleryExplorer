@@ -114,6 +114,7 @@ function Get-GitHubProjectInfo {
                 Updated     = $githubProjectInfo.updated_at
                 Forks       = $githubProjectInfo.forks_count
                 License     = $githubProjectInfo.license.name
+                OpenIssues  = $githubProjectInfo.open_issues_count
             }
         }
         #####################################
@@ -195,16 +196,16 @@ function Send-TelegramError {
         [string]
         $ErrorMessage
     )
-    if ($null -eq $script:token ) {
-        $script:token = Get-SECSecretValue -SecretId $env:TELEGRAM_SECRET -Region 'us-west-2' -ErrorAction Stop
+    if ($null -eq $script:telegramToken ) {
+        $script:telegramToken = Get-SECSecretValue -SecretId $env:TELEGRAM_SECRET -Region 'us-west-2' -ErrorAction Stop
     }
     try {
-        if ($null -eq $script:token ) {
+        if ($null -eq $script:telegramToken ) {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
             Write-Host "Secret retrieved."
-            $sObj = $script:token.SecretString | ConvertFrom-Json
+            $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
             Send-TelegramTextMessage -BotToken $token -ChatID $channel -Message $ErrorMessage
@@ -238,7 +239,7 @@ function Send-TelegramError {
 #>
 
 $bucketName = $env:S3_BUCKET_NAME
-$script:token = $null
+$script:telegramToken = $null
 
 Write-Host "Bucket Name: $bucketName"
 
