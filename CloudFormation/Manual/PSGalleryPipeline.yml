@@ -19,7 +19,7 @@ Parameters:
     Description: The name of the GitHub user or organization who owns the GitHub repository.
     Type: String
   BranchName:
-    Default: master
+    Default: pipeline
     Description: Choose which Branch do you want to use
     Type: String
   CodeBuildImageUri:
