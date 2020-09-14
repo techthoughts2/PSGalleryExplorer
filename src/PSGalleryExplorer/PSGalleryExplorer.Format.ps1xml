@@ -28,7 +28,7 @@
                         <Alignment>right</Alignment>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Width>8</Width>
+                        <Width>7</Width>
                         <Alignment>right</Alignment>
                     </TableColumnHeader>
                     <TableColumnHeader>
@@ -45,16 +45,16 @@
                                 <PropertyName>Downloads</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>GitStar</PropertyName>
+                                <PropertyName>Star</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>GitFork</PropertyName>
+                                <PropertyName>Fork</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>GitSub</PropertyName>
+                                <PropertyName>Sub</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>GitWatch</PropertyName>
+                                <PropertyName>Watch</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>Description</PropertyName>

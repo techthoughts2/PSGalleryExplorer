@@ -136,6 +136,9 @@ function Find-PSGModule {
         if ($IncludeCorps -and $IncludeRegulars) {
             $dataSet = $script:glData
         }
+        elseif ($ByName) {
+            $dataSet = $script:glData
+        }
         elseif ($IncludeCorps) {
             $dataSet = $script:glData | Where-Object {
                 $_.Name -notin $script:regulars
@@ -214,11 +217,12 @@ function Find-PSGModule {
         $metrics = @{
             Downloads  = $item.AdditionalMetadata.downloadCount
             LastUpdate = $item.AdditionalMetadata.lastUpdated
-            GitStar    = $item.GitHubInfo.StarCount
-            GitSub     = $item.GitHubInfo.Subscribers
-            GitWatch   = $item.GitHubInfo.Watchers
-            GitFork    = $item.GitHubInfo.Forks
-            GitUpdate  = $item.GitHubInfo.Updated
+            Star       = $item.GitHubInfo.StarCount
+            Sub        = $item.GitHubInfo.Subscribers
+            Watch      = $item.GitHubInfo.Watchers
+            Fork       = $item.GitHubInfo.Forks
+            Issues     = $item.GitHubInfo.Issues
+            RepoUpdate = $item.GitHubInfo.Updated
         }
         $item | Add-Member -NotePropertyMembers $metrics -TypeName Asset -Force
         $item.PSObject.TypeNames.Insert(0, 'PSGEFormat')

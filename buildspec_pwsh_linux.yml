@@ -28,8 +28,8 @@ reports:
     files:
       - '**/*'
     file-format: NunitXml
-    base-directory: 'src\Artifacts\testOutput'
+    base-directory: 'src/Artifacts/testOutput'
   CodeCoverageReport:
     files:
-      - 'src\Artifacts\ccReport\CodeCoverage.xml'
+      - 'src/Artifacts/ccReport/CodeCoverage.xml'
     file-format: 'JaCoCoXml'
