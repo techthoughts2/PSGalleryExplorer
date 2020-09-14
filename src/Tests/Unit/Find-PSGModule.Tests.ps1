@@ -757,6 +757,12 @@ InModuleScope 'PSGalleryExplorer' {
                     $count | Should -BeExactly 1
                     $eval.Name | Should -BeExactly 'PoshGram'
                 }#it
+                It 'should return expected results when finding module name on default' {
+                    $eval = Find-PSGModule -ByName 'AWS.Tools.Common' -IncludeCorps
+                    $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
+                    $count | Should -BeExactly 1
+                    $eval.Name | Should -BeExactly 'AWS.Tools.Common'
+                }#it
                 It 'should return expected results when finding module name with corp included' {
                     $eval = Find-PSGModule -ByName 'AWS.Tools.Common' -IncludeCorps
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count

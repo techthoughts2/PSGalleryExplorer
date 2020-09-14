@@ -25,7 +25,7 @@ PSGalleryExplorer is a PowerShell module that lets you search, explore, and disc
 
 ## Description
 
-PSGalleryExplorer provides functionality to search for PowerShell modules on the PowerShell Gallery and their associated GitHub projects.
+PSGalleryExplorer provides functionality to search for PowerShell modules on the PowerShell Gallery and their associated repository projects.
 
 To aid in module discovery more common/popular modules and modules made by corporations are excluded by default. Popular modules and corporation modules can be included in results by specifying the necessary parameter switches.
 
@@ -69,16 +69,16 @@ Find-PSGModule -ByDownloads
 # return top 50
 Find-PSGModule -ByDownloads -IncludeCorps -IncludeRegulars -NumberToReturn 50
 #------------------------------------------------------------------------------------------------
-# discover PowerShell modules by # of GitHub project stars
+# discover PowerShell modules by # of repo project stars
 Find-PSGModule -ByGitHubInfo StarCount
 #------------------------------------------------------------------------------------------------
-# discover PowerShell modules by # of GitHub project subscribers
+# discover PowerShell modules by # of repo project subscribers
 Find-PSGModule -ByGitHubInfo Subscribers
 #------------------------------------------------------------------------------------------------
 # discover the most recently updated modules on the PowerShell Gallery
 Find-PSGModule -ByRecentUpdate GalleryUpdate
 #------------------------------------------------------------------------------------------------
-# discover the most recently updated modules on GitHub
+# discover the most recently updated modules on repo
 Find-PSGModule -ByRecentUpdate GitUpdate
 #------------------------------------------------------------------------------------------------
 # discover a set of random modules
@@ -98,7 +98,7 @@ Find-PSGModule -ByTag Telegram
 
 ## Notes
 
-GitHub information is provided via a [PowerShell Serverless Solution](docs/PowerShell_Serverless.md)
+Repo information is provided via a [PowerShell Serverless Solution](docs/PowerShell_Serverless.md)
 
 This PowerShell project was created with [Catesta](https://github.com/techthoughts2/Catesta).
 

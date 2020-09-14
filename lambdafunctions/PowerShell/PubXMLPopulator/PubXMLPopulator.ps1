@@ -160,6 +160,7 @@ foreach ($item in $gitData) {
             Updated     = $item.Values.Updated
             Forks       = $item.Values.Forks
             License     = $item.Values.License
+            Issues      = $item.Values.OpenIssues
         }
     }
     if ($d) {
