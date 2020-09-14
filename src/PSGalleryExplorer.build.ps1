@@ -237,7 +237,7 @@ Add-BuildTask Test {
             CodeCoverageOutputFile       = "$codeCovPath\CodeCoverage.xml"
             CodeCoverageOutputFileFormat = 'JaCoCo'
             OutputFile                   = "$testOutPutPath\PesterTests.xml"
-            OutputFormat                 = 'JUnitXml'
+            OutputFormat                 = 'NUnitXML'
         }
 
         Write-Build White '      Performing Pester Unit Tests...'
