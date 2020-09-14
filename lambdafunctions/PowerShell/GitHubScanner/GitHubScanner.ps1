@@ -359,14 +359,13 @@ foreach ($message in $LambdaInput.Records) {
 
     Write-Host 'Converting project URI to API URI...'
     $uAPI = Convert-GitHubProjectURI -URI $githubURI
-    Write-Host "API URI: $uAPI"
 
     if ($null -ne $uAPI) {
         $uriEval = Confirm-ValidGitHubAPIURL -URI $uAPI
-        Write-Warning -Message 'URI could not be converted'
+        Write-Host "API URI: $uAPI"
     }
     else {
-        Write-Host "API URI: $uAPI"
+        Write-Warning -Message 'URI could not be converted'
     }
 
     if ($uriEval -eq $true) {
