@@ -269,7 +269,13 @@ Write-Host 'Converting project URI to API URI...'
 $uAPI = Convert-GitHubProjectURI -URI $githubURI
 Write-Host "API URI: $uAPI"
 
-$uriEval = Confirm-ValidGitHubAPIURL -URI $uAPI
+if ($null -ne $uAPI) {
+    $uriEval = Confirm-ValidGitHubAPIURL -URI $uAPI
+    Write-Warning -Message 'URI could not be converted'
+}
+else {
+    Write-Host "API URI: $uAPI"
+}
 
 if ($uriEval -eq $true) {
     if ($remaining -le 50) {

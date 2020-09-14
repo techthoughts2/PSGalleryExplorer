@@ -256,7 +256,13 @@ else {
     $uAPI = Convert-GitLabProjectURI -URI $gitlabURI
     Write-Host "API URI: $uAPI"
 
-    $uriEval = Confirm-ValidGitLabAPIURL -URI $uAPI
+    if ($null -ne $uAPI) {
+        $uriEval = Confirm-ValidGitLabAPIURL -URI $uAPI
+        Write-Warning -Message 'URI could not be converted'
+    }
+    else {
+        Write-Host "API URI: $uAPI"
+    }
 
     if ($uriEval -eq $true) {
 
