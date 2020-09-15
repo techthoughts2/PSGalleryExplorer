@@ -70,16 +70,16 @@ Find-PSGModule -ByDownloads
 Find-PSGModule -ByDownloads -IncludeCorps -IncludeRegulars -NumberToReturn 50
 #------------------------------------------------------------------------------------------------
 # discover PowerShell modules by # of repo project stars
-Find-PSGModule -ByGitHubInfo StarCount
+Find-PSGModule -ByRepoInfo StarCount
 #------------------------------------------------------------------------------------------------
 # discover PowerShell modules by # of repo project subscribers
-Find-PSGModule -ByGitHubInfo Subscribers
+Find-PSGModule -ByRepoInfo Subscribers
 #------------------------------------------------------------------------------------------------
 # discover the most recently updated modules on the PowerShell Gallery
 Find-PSGModule -ByRecentUpdate GalleryUpdate
 #------------------------------------------------------------------------------------------------
 # discover the most recently updated modules on repo
-Find-PSGModule -ByRecentUpdate GitUpdate
+Find-PSGModule -ByRecentUpdate RepoUpdate
 #------------------------------------------------------------------------------------------------
 # discover a set of random modules
 Find-PSGModule -ByRandom

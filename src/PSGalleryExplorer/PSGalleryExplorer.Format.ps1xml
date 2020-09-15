@@ -28,7 +28,7 @@
                         <Alignment>right</Alignment>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Width>7</Width>
+                        <Width>6</Width>
                         <Alignment>right</Alignment>
                     </TableColumnHeader>
                     <TableColumnHeader>
@@ -51,10 +51,10 @@
                                 <PropertyName>Fork</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>Sub</PropertyName>
+                                <PropertyName>Issues</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>Watch</PropertyName>
+                                <PropertyName>Sub</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>Description</PropertyName>
@@ -83,19 +83,22 @@
                                 <PropertyName>LastUpdate</PropertyName>
                             </ListItem>
                             <ListItem>
-                                <PropertyName>GitStar</PropertyName>
+                                <PropertyName>Star</PropertyName>
                             </ListItem>
                             <ListItem>
-                                <PropertyName>GitSub</PropertyName>
+                                <PropertyName>Issues</PropertyName>
                             </ListItem>
                             <ListItem>
-                                <PropertyName>GitWatch</PropertyName>
+                                <PropertyName>Sub</PropertyName>
                             </ListItem>
                             <ListItem>
-                                <PropertyName>GitFork</PropertyName>
+                                <PropertyName>Watch</PropertyName>
                             </ListItem>
                             <ListItem>
-                                <PropertyName>GitUpdate</PropertyName>
+                                <PropertyName>Fork</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>RepoUpdate</PropertyName>
                             </ListItem>
                             <ListItem>
                                 <PropertyName>Description</PropertyName>

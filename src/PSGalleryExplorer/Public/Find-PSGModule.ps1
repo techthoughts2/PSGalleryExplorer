@@ -2,7 +2,7 @@
 .SYNOPSIS
     Finds PowerShell Gallery module(s) that match specified criteria.
 .DESCRIPTION
-    Searches PowerShell Gallery and associated GitHub project dataset for PowerShell modules based on provided criteria. By default, more common/popular modules and modules made by corporations are excluded. This is to aid in discovery of other modules. Popular modules and corporation modules can be included in results by specifying the necessary parameter switches. 35 module results are returned by default unless the NumberToReturn parameter is used.
+    Searches PowerShell Gallery for modules and their associated project repositories. Results are returned based on provided criteria. By default, more common/popular modules and modules made by corporations are excluded. This is to aid in discovery of other modules. Popular modules and corporation modules can be included in results by specifying the necessary parameter switches. 35 module results are returned by default unless the NumberToReturn parameter is used.
 .EXAMPLE
     Find-PSGModule -ByDownloads
 
@@ -16,21 +16,29 @@
 
     Returns up to 50 modules based on number of PowerShell Gallery downloads including more popular downloads, and modules made by corporations.
 .EXAMPLE
-    Find-PSGModule -ByGitHubInfo StarCount
+    Find-PSGModule -ByRepoInfo StarCount
 
-    Returns up to 35 modules based on number of GitHub stars.
+    Returns up to 35 modules based on number of stars the project's repository has.
 .EXAMPLE
-    Find-PSGModule -ByGitHubInfo Subscribers
+    Find-PSGModule -ByRepoInfo Subscribers
 
-    Returns up to 35 modules based on number of GitHub subscribers.
+    Returns up to 35 modules based on number of subscribers the project's repository has.
+.EXAMPLE
+    Find-PSGModule -ByRepoInfo Watchers
+
+    Returns up to 35 modules based on number of watchers the project's repository has.
+.EXAMPLE
+    Find-PSGModule -ByRepoInfo Forks
+
+    Returns up to 35 modules based on number of forks the project's repository has.
 .EXAMPLE
     Find-PSGModule -ByRecentUpdate GalleryUpdate
 
     Returns up to 35 modules based on their most recent PowerShell Gallery update.
 .EXAMPLE
-    Find-PSGModule -ByRecentUpdate GitUpdate
+    Find-PSGModule -ByRecentUpdate RepoUpdate
 
-    Returns up to 35 modules based on their most recent GitHub update.
+    Returns up to 35 modules based on recent updates to their associated repository.
 .EXAMPLE
     Find-PSGModule -ByRandom
 
@@ -48,16 +56,16 @@
 
     Returns up to 100 modules that contains the tag: Telegram, including more popular modules and modules made by corporations.
 .EXAMPLE
-    $results = Find-PSGModule -ByGitHubInfo Watchers -IncludeCorps -IncludeRegulars -NumberToReturn 40
+    $results = Find-PSGModule -ByRepoInfo Watchers -IncludeCorps -IncludeRegulars -NumberToReturn 40
     $results | Format-List
 
-    Returns up to 40 modules based on number of GitHub watchers. It includes more popular modules as well as modules made by corporations. A list of results is displayed.
+    Returns up to 40 modules based on number of module project repository watchers. It includes more popular modules as well as modules made by corporations. A list of results is displayed.
 .PARAMETER ByDownloads
     Find modules by number of PowerShell Gallery Downloads
-.PARAMETER ByGitHubInfo
-    Find modules based on various GitHub metrics
+.PARAMETER ByRepoInfo
+    Find modules based on various project repository metrics
 .PARAMETER ByRecentUpdate
-    Find modules based on recent updated to PowerShell Gallery or GitHub
+    Find modules based on recent updated to PowerShell Gallery or associated repository
 .PARAMETER ByRandom
     Find modules randomly from the PowerShell Gallery
 .PARAMETER ByName
@@ -84,8 +92,8 @@ function Find-PSGModule {
             HelpMessage = 'Find by PowerShell Gallery Downloads')]
         [switch]
         $ByDownloads,
-        [Parameter(ParameterSetName = 'GitHub',
-            HelpMessage = 'Find by GitHub metrics')]
+        [Parameter(ParameterSetName = 'Repo',
+            HelpMessage = 'Find by Repository metrics')]
         [ValidateSet(
             'StarCount',
             'Subscribers',
@@ -93,13 +101,13 @@ function Find-PSGModule {
             'Forks'
         )]
         [string]
-        $ByGitHubInfo,
+        $ByRepoInfo,
         [Parameter(ParameterSetName = 'Update',
             HelpMessage = 'Find by recently updated')]
         [string]
         [ValidateSet(
             'GalleryUpdate',
-            'GitUpdate'
+            'RepoUpdate'
         )]
         $ByRecentUpdate,
         [Parameter(ParameterSetName = 'GalleryDownloads',
@@ -161,11 +169,11 @@ function Find-PSGModule {
         }
         Write-Verbose -Message 'Exclusions completed.'
         #__________________________________________________________
-        if ($ByGitHubInfo) {
-            Write-Verbose -Message 'ByGitHubInfo'
+        if ($ByRepoInfo) {
+            Write-Verbose -Message 'ByRepoInfo'
             $gitModules = $dataSet | Where-Object { $_.GitHubInfo.GitStatus -eq $true }
-            $find = $gitModules | Sort-Object -Property { [int]$_.GitHubInfo.$ByGitHubInfo } -Descending | Select-Object -First $NumberToReturn
-        }#if_ByGitHubInfo
+            $find = $gitModules | Sort-Object -Property { [int]$_.GitHubInfo.$ByRepoInfo } -Descending | Select-Object -First $NumberToReturn
+        }#if_ByRepoInfo
         elseif ($ByDownloads) {
             Write-Verbose -Message 'ByDownloads'
             $find = $dataSet | Sort-Object -Property { [int]$_.AdditionalMetadata.downloadCount } -Descending | Select-Object -First $NumberToReturn
@@ -176,7 +184,7 @@ function Find-PSGModule {
                 'GalleryUpdate' {
                     $find = $dataSet | Sort-Object -Property { [datetime]$_.AdditionalMetadata.updated } -Descending | Select-Object -First $NumberToReturn
                 }
-                'GitUpdate' {
+                'RepoUpdate' {
                     $gitModules = $dataSet | Where-Object { $_.GitHubInfo.GitStatus -eq $true }
                     $find = $gitModules | Sort-Object -Property { [datetime]$_.GitHubInfo.Updated } -Descending | Select-Object -First $NumberToReturn
                 }

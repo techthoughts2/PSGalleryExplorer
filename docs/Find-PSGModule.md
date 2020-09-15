@@ -18,9 +18,9 @@ Find-PSGModule [-ByDownloads] [-ByRandom] [-IncludeCorps] [-IncludeRegulars] [-N
  [<CommonParameters>]
 ```
 
-### GitHub
+### Repo
 ```
-Find-PSGModule [-ByGitHubInfo <String>] [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>]
+Find-PSGModule [-ByRepoInfo <String>] [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>]
  [<CommonParameters>]
 ```
 
@@ -43,7 +43,8 @@ Find-PSGModule [-ByTag <String>] [-IncludeCorps] [-IncludeRegulars] [-NumberToRe
 ```
 
 ## DESCRIPTION
-Searches PowerShell Gallery and associated GitHub project dataset for PowerShell modules based on provided criteria.
+Searches PowerShell Gallery for modules and their associated project repositories.
+Results are returned based on provided criteria.
 By default, more common/popular modules and modules made by corporations are excluded.
 This is to aid in discovery of other modules.
 Popular modules and corporation modules can be included in results by specifying the necessary parameter switches.
@@ -74,67 +75,81 @@ Returns up to 50 modules based on number of PowerShell Gallery downloads includi
 
 ### EXAMPLE 4
 ```
-Find-PSGModule -ByGitHubInfo StarCount
+Find-PSGModule -ByRepoInfo StarCount
 ```
 
-Returns up to 35 modules based on number of GitHub stars.
+Returns up to 35 modules based on number of stars the project's repository has.
 
 ### EXAMPLE 5
 ```
-Find-PSGModule -ByGitHubInfo Subscribers
+Find-PSGModule -ByRepoInfo Subscribers
 ```
 
-Returns up to 35 modules based on number of GitHub subscribers.
+Returns up to 35 modules based on number of subscribers the project's repository has.
 
 ### EXAMPLE 6
+```
+Find-PSGModule -ByRepoInfo Watchers
+```
+
+Returns up to 35 modules based on number of watchers the project's repository has.
+
+### EXAMPLE 7
+```
+Find-PSGModule -ByRepoInfo Forks
+```
+
+Returns up to 35 modules based on number of forks the project's repository has.
+
+### EXAMPLE 8
 ```
 Find-PSGModule -ByRecentUpdate GalleryUpdate
 ```
 
 Returns up to 35 modules based on their most recent PowerShell Gallery update.
 
-### EXAMPLE 7
+### EXAMPLE 9
 ```
-Find-PSGModule -ByRecentUpdate GitUpdate
+Find-PSGModule -ByRecentUpdate RepoUpdate
 ```
 
-Returns up to 35 modules based on their most recent GitHub update.
+Returns up to 35 modules based on recent updates to their associated repository.
 
-### EXAMPLE 8
+### EXAMPLE 10
 ```
 Find-PSGModule -ByRandom
 ```
 
 Returns up to 35 modules randomly
 
-### EXAMPLE 9
+### EXAMPLE 11
 ```
 Find-PSGModule -ByName 'PoshGram'
 ```
 
 Returns module that equals the provided name, if found.
 
-### EXAMPLE 10
+### EXAMPLE 12
 ```
 Find-PSGModule -ByTag Telegram
 ```
 
 Returns up to 35 modules that contain the tag: Telegram.
 
-### EXAMPLE 11
+### EXAMPLE 13
 ```
 Find-PSGModule -ByTag Telegram -IncludeCorps -IncludeRegulars -NumberToReturn 100
 ```
 
 Returns up to 100 modules that contains the tag: Telegram, including more popular modules and modules made by corporations.
 
-### EXAMPLE 12
+### EXAMPLE 14
 ```
-$results = Find-PSGModule -ByGitHubInfo Watchers -IncludeCorps -IncludeRegulars -NumberToReturn 40
+$results = Find-PSGModule -ByRepoInfo Watchers -IncludeCorps -IncludeRegulars -NumberToReturn 40
 $results | Format-List
 ```
 
-Returns up to 40 modules based on number of GitHub watchers.
+Returns up to 40 modules based on number of module project repository watchers.
 It includes more popular modules as well as modules made by corporations.
 A list of results is displayed.
 
@@ -155,12 +170,12 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ByGitHubInfo
-Find modules based on various GitHub metrics
+### -ByRepoInfo
+Find modules based on various project repository metrics
 
 ```yaml
 Type: String
-Parameter Sets: GitHub
+Parameter Sets: Repo
 Aliases:
 
 Required: False
@@ -171,7 +186,7 @@ Accept wildcard characters: False
 ```
 
 ### -ByRecentUpdate
-Find modules based on recent updated to PowerShell Gallery or GitHub
+Find modules based on recent updated to PowerShell Gallery or associated repository
 
 ```yaml
 Type: String

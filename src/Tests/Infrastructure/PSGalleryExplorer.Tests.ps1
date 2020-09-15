@@ -44,9 +44,9 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $eval.Name | Should -Contain 'PoshGram'
         }#it
     }#context_ByDownloads
-    Context 'ByGitHubInfo' {
+    Context 'ByRepoInfo' {
         It 'should return expected results when finding default GitHub StarCount' {
-            $eval = Find-PSGModule -ByGitHubInfo StarCount -NumberToReturn 10000
+            $eval = Find-PSGModule -ByRepoInfo StarCount -NumberToReturn 10000
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeGreaterThan 1
             $eval.Name | Should -Not -Contain 'PSLogging'
@@ -54,7 +54,7 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $eval.Name | Should -Contain 'PoshGram'
         }#it
         It 'should return expected results when finding GitHub StarCount with corp included' {
-            $eval = Find-PSGModule -ByGitHubInfo StarCount -IncludeCorps -NumberToReturn 10000
+            $eval = Find-PSGModule -ByRepoInfo StarCount -IncludeCorps -NumberToReturn 10000
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeGreaterThan 1
             $eval.Name | Should -Not -Contain 'PSLogging'
@@ -62,7 +62,7 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $eval.Name | Should -Contain 'PoshGram'
         }#it
         It 'should return expected results when finding GitHub StarCount with popular included' {
-            $eval = Find-PSGModule -ByGitHubInfo StarCount -IncludeRegulars -NumberToReturn 10000
+            $eval = Find-PSGModule -ByRepoInfo StarCount -IncludeRegulars -NumberToReturn 10000
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeGreaterThan 1
             $eval.Name | Should -Contain 'Pester'
@@ -71,7 +71,7 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $eval.Name | Should -Contain 'PoshGram'
         }#it
         It 'should return expected results when finding GitHub StarCount with everything included' {
-            $eval = Find-PSGModule -ByGitHubInfo StarCount -IncludeRegulars -IncludeCorps -NumberToReturn 10000
+            $eval = Find-PSGModule -ByRepoInfo StarCount -IncludeRegulars -IncludeCorps -NumberToReturn 10000
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeGreaterThan 1
             $eval.Name | Should -Contain 'Pester'
@@ -80,21 +80,21 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $eval.Name | Should -Contain 'PoshGram'
         }#it
         It 'should return expected results when finding default GitHub Subscribers' {
-            $eval = Find-PSGModule -ByGitHubInfo Subscribers
+            $eval = Find-PSGModule -ByRepoInfo Subscribers
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeExactly 35
         }#it
         It 'should return expected results when finding default GitHub Watchers' {
-            $eval = Find-PSGModule -ByGitHubInfo Watchers
+            $eval = Find-PSGModule -ByRepoInfo Watchers
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeExactly 35
         }#it
         It 'should return expected results when finding default GitHub Forks' {
-            $eval = Find-PSGModule -ByGitHubInfo Forks
+            $eval = Find-PSGModule -ByRepoInfo Forks
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeExactly 35
         }#it
-    }#context_ByGitHubInfo
+    }#context_ByRepoInfo
     Context 'ByRecentUpdate' {
         It 'should return expected results when finding recent default gallery updates' {
             $eval = Find-PSGModule -ByRecentUpdate GalleryUpdate
@@ -117,7 +117,7 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $count | Should -BeExactly 35
         }#it
         It 'should return expected results when finding GitHub default updates' {
-            $eval = Find-PSGModule -ByRecentUpdate GitUpdate
+            $eval = Find-PSGModule -ByRecentUpdate RepoUpdate
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeExactly 35
         }#it

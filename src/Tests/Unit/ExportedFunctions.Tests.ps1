@@ -13,10 +13,10 @@ Import-Module $PathToManifest -Force
 Describe -Name $ModuleName -Fixture {
 
     $manifestContent = Test-ModuleManifest -Path $PathToManifest
+    $moduleExported = Get-Command -Module $ModuleName | Select-Object -ExpandProperty Name
 
     Context -Name 'Exported Commands' -Fixture {
         $manifestExported = ($manifestContent.ExportedFunctions).Keys
-        $moduleExported = Get-Command -Module $ModuleName | Select-Object -ExpandProperty Name
 
         Context -Name 'Number of commands' -Fixture {
             It -Name 'Exports the same number of public funtions as what is listed in the Module Manifest' -Test {
@@ -46,8 +46,8 @@ Describe -Name $ModuleName -Fixture {
                     $help.description.Text | Should -Not -BeNullOrEmpty
                 }
 
-                It -Name 'Includes at least one example' -Test {
-                    $help.examples.Count | Should -BeGreaterOrEqual 1
+                It -Name 'Includes an Example' -Test {
+                    $help.examples.example | Should -Not -BeNullOrEmpty
                 }
             }
         }

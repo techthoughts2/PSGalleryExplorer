@@ -5,12 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.8.2]
+## [0.8.5]
 
 - Module Updates:
+  - **Support has been added to include information for projects hosted on GitLab**
+    - Additional support for other repo locations is planned. As such several references in this module to GitHub have been replaced with Repo or repository.
+  - **ByGitHubInfo parameter has been replaced with ByRepoInfo parameter**
+  - **ByRecentUpdate parameter options have changed**
+    - Previous: GalleryUpdate, GitUpdate
+    - New: GalleryUpdate, RepoUpdate
+  - **Repository issues is now a returned parameter in all queries**
   - Added additional corps to corp list
   - Minor formatting changes to psd1 manifest
   - ByName selection now always includes all modules
+  - The default output has been adjusted:
+    - Previous: Name, Downloads, GitStar, GitFork, GitSub, GitWatch, Description
+    - New: Name, Downloads, Star, Fork, Issues, Sub, Description
+    - All data parameters are still available in the complete object return
 - Build Updates:
   - Added CodePipeline capability to deploy Serverless PSGallery solution through code
   - PSGallery lambda changes:
