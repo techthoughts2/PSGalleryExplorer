@@ -25,7 +25,9 @@ PSGalleryExplorer is a PowerShell module that lets you search, explore, and disc
 
 ## Description
 
-PSGalleryExplorer provides functionality to search for PowerShell modules on the PowerShell Gallery and their associated repository projects.
+PSGalleryExplorer extends PowerShell Gallery Module search functionality by including information about a module's associated repository.
+
+There are a variety of search options that aim to search and explore the available modules on the PowerShell Gallery.
 
 To aid in module discovery more common/popular modules and modules made by corporations are excluded by default. Popular modules and corporation modules can be included in results by specifying the necessary parameter switches.
 
@@ -71,6 +73,9 @@ Find-PSGModule -ByDownloads -IncludeCorps -IncludeRegulars -NumberToReturn 50
 #------------------------------------------------------------------------------------------------
 # discover PowerShell modules by # of repo project stars
 Find-PSGModule -ByRepoInfo StarCount
+#------------------------------------------------------------------------------------------------
+# discover PowerShell modules that could possibly use some help
+Find-PSGModule -ByRepoInfo Issues
 #------------------------------------------------------------------------------------------------
 # discover PowerShell modules by # of repo project subscribers
 Find-PSGModule -ByRepoInfo Subscribers
