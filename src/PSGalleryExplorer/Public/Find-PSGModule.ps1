@@ -20,17 +20,17 @@
 
     Returns up to 35 modules based on number of stars the project's repository has.
 .EXAMPLE
-    Find-PSGModule -ByRepoInfo Subscribers
-
-    Returns up to 35 modules based on number of subscribers the project's repository has.
-.EXAMPLE
-    Find-PSGModule -ByRepoInfo Watchers
-
-    Returns up to 35 modules based on number of watchers the project's repository has.
-.EXAMPLE
     Find-PSGModule -ByRepoInfo Forks
 
     Returns up to 35 modules based on number of forks the project's repository has.
+.EXAMPLE
+    Find-PSGModule -ByRepoInfo Issues
+
+    Returns up to 35 modules based on number of issues the project's repository has.
+.EXAMPLE
+    Find-PSGModule -ByRepoInfo Subscribers
+
+    Returns up to 35 modules based on number of subscribers the project's repository has.
 .EXAMPLE
     Find-PSGModule -ByRecentUpdate GalleryUpdate
 
@@ -96,9 +96,9 @@ function Find-PSGModule {
             HelpMessage = 'Find by Repository metrics')]
         [ValidateSet(
             'StarCount',
-            'Subscribers',
-            'Watchers',
-            'Forks'
+            'Forks',
+            'Issues',
+            'Subscribers'
         )]
         [string]
         $ByRepoInfo,

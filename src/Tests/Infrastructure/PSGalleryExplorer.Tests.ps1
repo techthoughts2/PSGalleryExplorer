@@ -45,7 +45,7 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
         }#it
     }#context_ByDownloads
     Context 'ByRepoInfo' {
-        It 'should return expected results when finding default GitHub StarCount' {
+        It 'should return expected results when finding default Repository StarCount' {
             $eval = Find-PSGModule -ByRepoInfo StarCount -NumberToReturn 10000
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeGreaterThan 1
@@ -53,7 +53,7 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $eval.Name | Should -Not -Contain 'AWS.Tools.Common'
             $eval.Name | Should -Contain 'PoshGram'
         }#it
-        It 'should return expected results when finding GitHub StarCount with corp included' {
+        It 'should return expected results when finding Repository StarCount with corp included' {
             $eval = Find-PSGModule -ByRepoInfo StarCount -IncludeCorps -NumberToReturn 10000
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeGreaterThan 1
@@ -61,7 +61,7 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $eval.Name | Should -Contain 'AWS.Tools.Common'
             $eval.Name | Should -Contain 'PoshGram'
         }#it
-        It 'should return expected results when finding GitHub StarCount with popular included' {
+        It 'should return expected results when finding Repository StarCount with popular included' {
             $eval = Find-PSGModule -ByRepoInfo StarCount -IncludeRegulars -NumberToReturn 10000
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeGreaterThan 1
@@ -70,7 +70,7 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $eval.Name | Should -Not -Contain 'AWS.Tools.Common'
             $eval.Name | Should -Contain 'PoshGram'
         }#it
-        It 'should return expected results when finding GitHub StarCount with everything included' {
+        It 'should return expected results when finding Repository StarCount with everything included' {
             $eval = Find-PSGModule -ByRepoInfo StarCount -IncludeRegulars -IncludeCorps -NumberToReturn 10000
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeGreaterThan 1
@@ -79,17 +79,17 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $eval.Name | Should -Contain 'AWS.Tools.Common'
             $eval.Name | Should -Contain 'PoshGram'
         }#it
-        It 'should return expected results when finding default GitHub Subscribers' {
+        It 'should return expected results when finding default Repository Subscribers' {
             $eval = Find-PSGModule -ByRepoInfo Subscribers
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeExactly 35
         }#it
-        It 'should return expected results when finding default GitHub Watchers' {
-            $eval = Find-PSGModule -ByRepoInfo Watchers
+        It 'should return expected results when finding default Repository Issues' {
+            $eval = Find-PSGModule -ByRepoInfo Issues
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeExactly 35
         }#it
-        It 'should return expected results when finding default GitHub Forks' {
+        It 'should return expected results when finding default Repository Forks' {
             $eval = Find-PSGModule -ByRepoInfo Forks
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeExactly 35
@@ -116,7 +116,7 @@ Describe 'Infrastructure Tests' -Tag Infrastructure {
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeExactly 35
         }#it
-        It 'should return expected results when finding GitHub default updates' {
+        It 'should return expected results when finding Repository default updates' {
             $eval = Find-PSGModule -ByRecentUpdate RepoUpdate
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeExactly 35

@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Previous: GalleryUpdate, GitUpdate
     - New: GalleryUpdate, RepoUpdate
   - **Repository issues is now a returned parameter in all queries**
+  - **ByRepoInfo** now has a new parameter choice set:
+    - StarCount, Forks, Issues, Subscribers
   - Added additional corps to corp list
   - Minor formatting changes to psd1 manifest
   - ByName selection now always includes all modules

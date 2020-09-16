@@ -241,6 +241,7 @@ InModuleScope 'PSGalleryExplorer' {
             GitStatus   = 'True'
             Forks       = '4'
             Watchers    = '28'
+            Issues      = '3'
             StarCount   = '28'
             License     = 'MIT License'
             Created     = [datetime]'06/28/18 01:42:08'
@@ -342,6 +343,7 @@ InModuleScope 'PSGalleryExplorer' {
             Created     = [datetime]'12/02/19 19:00:22'
             License     = 'MIT License'
             Updated     = [datetime]'12/26/19 01:36:56'
+            Issues      = '3'
             Watchers    = '39'
             GitStatus   = 'True'
             Forks       = '1'
@@ -570,6 +572,7 @@ InModuleScope 'PSGalleryExplorer' {
             License     = 'Apache License 2.0'
             Updated     = [datetime]'01/03/20 16:01:24'
             Watchers    = '75'
+            Issues      = '3'
             GitStatus   = 'True'
             Forks       = '21'
             Subscribers = '16'
@@ -633,43 +636,43 @@ InModuleScope 'PSGalleryExplorer' {
         }#context_ByDownloads
         Context 'ByRepoInfo' {
             Context 'Success' {
-                It 'should return expected results when finding default GitHub StarCount' {
+                It 'should return expected results when finding default Repository StarCount' {
                     $eval = Find-PSGModule -ByRepoInfo StarCount
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
                     $count | Should -BeExactly 2
                     $eval[0].Name | Should -BeExactly 'Catesta'
                 }#it
-                It 'should return expected results when finding GitHub StarCount with corp included' {
+                It 'should return expected results when finding Repository StarCount with corp included' {
                     $eval = Find-PSGModule -ByRepoInfo StarCount -IncludeCorps
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
                     $count | Should -BeExactly 3
                     $eval[0].Name | Should -BeExactly 'AWS.Tools.Common'
                 }#it
-                It 'should return expected results when finding GitHub StarCount with popular included' {
+                It 'should return expected results when finding Repository StarCount with popular included' {
                     $eval = Find-PSGModule -ByRepoInfo StarCount -IncludeRegulars
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
                     $count | Should -BeExactly 2
                     $eval[0].Name | Should -BeExactly 'Catesta'
                 }#it
-                It 'should return expected results when finding GitHub StarCount with everything included' {
+                It 'should return expected results when finding Repository StarCount with everything included' {
                     $eval = Find-PSGModule -ByRepoInfo StarCount -IncludeRegulars -IncludeCorps
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
                     $count | Should -BeExactly 3
                     $eval[0].Name | Should -BeExactly 'AWS.Tools.Common'
                 }#it
-                It 'should return expected results when finding default GitHub Subscribers' {
+                It 'should return expected results when finding default Repository Subscribers' {
                     $eval = Find-PSGModule -ByRepoInfo Subscribers
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
                     $count | Should -BeExactly 2
                     $eval[0].Name | Should -BeExactly 'PoshGram'
                 }#it
-                It 'should return expected results when finding default GitHub Watchers' {
-                    $eval = Find-PSGModule -ByRepoInfo Watchers
+                It 'should return expected results when finding default Repository Issues' {
+                    $eval = Find-PSGModule -ByRepoInfo Issues
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
                     $count | Should -BeExactly 2
-                    $eval[0].Name | Should -BeExactly 'Catesta'
+                    $eval[0].Name | Should -BeExactly 'PoshGram'
                 }#it
-                It 'should return expected results when finding default GitHub Forks' {
+                It 'should return expected results when finding default Repository Forks' {
                     $eval = Find-PSGModule -ByRepoInfo Forks
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
                     $count | Should -BeExactly 2
@@ -703,7 +706,7 @@ InModuleScope 'PSGalleryExplorer' {
                     $count | Should -BeExactly 4
                     $eval[0].Name | Should -BeExactly 'AWS.Tools.Common'
                 }#it
-                It 'should return expected results when finding GitHub default updates' {
+                It 'should return expected results when finding Repository default updates' {
                     $eval = Find-PSGModule -ByRecentUpdate RepoUpdate
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
                     $count | Should -BeExactly 2
