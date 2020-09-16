@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      dotnet: 3.1
+    commands:
+      - echo Configure AWS defaults using the configuration script added to the Docker Image.
+      - pwsh -command './CodeBuild/configure_aws_credential.ps1'
+      - echo Installing PowerShell Modules from S3
+      - pwsh -command './CodeBuild/install_modules.ps1'
+  pre_build:
+    commands:
+      - pwsh -command '$PSVersionTable'
+      - pwsh -command 'Get-ChildItem env:'
+      - echo Pre-Build started on `date`
+      - pwsh -command '& ./CodeBuild/IntegrationTest/New-IntegrationInfrastructure.ps1'
+  build:
+    commands:
+      - pwsh -command "Set-Location -Path ./CodeBuild/IntegrationTest/Tests; Invoke-Pester -EnableExit"
+    finally:
+      - pwsh -command '& ./CodeBuild/IntegrationTest/Remove-IntegrationInfrastructure.ps1'

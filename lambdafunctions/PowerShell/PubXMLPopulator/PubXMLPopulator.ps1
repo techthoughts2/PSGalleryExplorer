@@ -9,11 +9,18 @@
 # To include PowerShell modules with your Lambda function, like the AWSPowerShell.NetCore module, add a "#Requires" statement
 # indicating the module and version.
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.0.2.0'}
+# $env:S3_BUCKET_NAME
+# $env:S3_BUCKET_GALLERY_KEY
+# $env:S3_BUCKET_GIT_KEY
+# $env:S3_FINAL_BUCKET_NAME
+# $env:S3_FINAL_BUCKET_KEY
+# $env:TELEGRAM_SECRET
+
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
 #Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.10.1'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
 
 # Uncomment to send the input event to CloudWatch Logs
 Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
@@ -36,16 +43,16 @@ function Send-TelegramError {
         [string]
         $ErrorMessage
     )
-    if ($null -eq $script:token ) {
-        $script:token = Get-SECSecretValue -SecretId PoshGramTokens -Region us-west-2 -ErrorAction Stop
+    if ($null -eq $script:telegramToken ) {
+        $script:telegramToken = Get-SECSecretValue -SecretId $env:TELEGRAM_SECRET -Region 'us-west-2' -ErrorAction Stop
     }
     try {
-        if ($null -eq $script:token ) {
+        if ($null -eq $script:telegramToken ) {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
             Write-Host "Secret retrieved."
-            $sObj = $script:token.SecretString | ConvertFrom-Json
+            $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
             Send-TelegramTextMessage -BotToken $token -ChatID $channel -Message $ErrorMessage
@@ -74,7 +81,7 @@ $s3BucketGalleryKey = $env:S3_BUCKET_GALLERY_KEY
 $s3BucketGitKey = $env:S3_BUCKET_GIT_KEY
 $s3FinalBucket = $env:S3_FINAL_BUCKET_NAME
 $s3FinalBucketKey = $env:S3_FINAL_BUCKET_KEY
-$script:token = $null
+$script:telegramToken = $null
 
 Write-Host "Bucket Name: $s3Bucket"
 Write-Host "Bucket Gallery Key: $s3BucketGalleryKey"
@@ -140,7 +147,7 @@ Write-Host "Conversions completed."
 Write-Host "Merging Git info into PSGallery..."
 foreach ($item in $gitData) {
     $d = $null
-    $d = $galleryData | ? { $_.Name -eq $item.Values.ModuleName }
+    $d = $galleryData | Where-Object { $_.Name -eq $item.Values.ModuleName }
 
     # $gitHubData = New-Object -TypeName PSObject
     $gitHubData = @{
@@ -153,6 +160,7 @@ foreach ($item in $gitData) {
             Updated     = $item.Values.Updated
             Forks       = $item.Values.Forks
             License     = $item.Values.License
+            Issues      = $item.Values.OpenIssues
         }
     }
     if ($d) {

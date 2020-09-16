@@ -1,0 +1,561 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'MANUAL DEPLOYMENT: PSGalleryPipeline.yml: Creates CodePipeline to create and deploy PowerShell Lambdas. '
+# https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials-cloudformation-github.html
+
+Parameters:
+  ProjectName:
+    Default: PSGalleryExplorer
+    Type: String
+  RepositoryName:
+    Description: Name of the GitHub repo to pull from and build off of
+    Default: PSGalleryExplorer
+    Type: String
+  RepositoryUrl:
+    Description: "HTTPS Clone URL of the repository in GitHub. Example: 'https://github.com/owner/repo.git'"
+    Default: 'https://github.com/techthoughts2/PSGalleryExplorer.git'
+    Type: String
+  GitHubOwner:
+    Description: The name of the GitHub user or organization who owns the GitHub repository.
+    Type: String
+  BranchName:
+    Default: pipeline
+    Description: Choose which Branch do you want to use
+    Type: String
+  CodeBuildImageUri:
+    Default: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+    Description: CodeBuild image to use
+    Type: String
+
+Resources:
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-lifecycleconfig.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-lifecycleconfig-rule.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-lifecycleconfig-rule-transition.html
+  ArtifactS3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      AccessControl: BucketOwnerFullControl
+      LifecycleConfiguration:
+        Rules:
+          - Id: OneZoneRule
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: ONEZONE_IA
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ProjectName
+          Value: !Ref ProjectName
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
+  CodePipelineArtifactsS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ArtifactS3Bucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - 's3:*'
+            Effect: Allow
+            Principal:
+              AWS:
+                - !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Resource:
+              - !Sub 'arn:aws:s3:::${ArtifactS3Bucket}'
+              - !Sub 'arn:aws:s3:::${ArtifactS3Bucket}/*'
+          - Sid: DenyInsecureConnections
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: !Join
+              - ''
+              - - !GetAtt
+                  - ArtifactS3Bucket
+                  - Arn
+                - /*
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-policy.html
+  PSModuleAccess:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        - !Ref CodeBuildServiceRole
+      PolicyName: 'PSModuleAccess'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetAccessPoint
+              - s3:GetLifecycleConfiguration
+              - s3:GetBucketTagging
+              - s3:GetInventoryConfiguration
+              - s3:GetObjectVersionTagging
+              - s3:ListBucketVersions
+              - s3:GetBucketLogging
+              - s3:GetAccelerateConfiguration
+              - s3:GetBucketPolicy
+              - s3:GetObjectVersionTorrent
+              - s3:GetObjectAcl
+              - s3:GetEncryptionConfiguration
+              - s3:GetBucketObjectLockConfiguration
+              - s3:GetBucketRequestPayment
+              - s3:GetAccessPointPolicyStatus
+              - s3:GetObjectVersionAcl
+              - s3:GetObjectTagging
+              - s3:GetMetricsConfiguration
+              - s3:GetBucketPublicAccessBlock
+              - s3:GetBucketPolicyStatus
+              - s3:ListBucketMultipartUploads
+              - s3:GetObjectRetention
+              - s3:GetBucketWebsite
+              - s3:GetJobTagging
+              - s3:ListAccessPoints
+              - s3:ListJobs
+              - s3:GetBucketVersioning
+              - s3:GetBucketAcl
+              - s3:GetObjectLegalHold
+              - s3:GetBucketNotification
+              - s3:GetReplicationConfiguration
+              - s3:ListMultipartUploadParts
+              - s3:GetObject
+              - s3:GetObjectTorrent
+              - s3:GetAccountPublicAccessBlock
+              - s3:DescribeJob
+              - s3:GetBucketCORS
+              - s3:GetAnalyticsConfiguration
+              - s3:GetObjectVersionForReplication
+              - s3:GetBucketLocation
+              - s3:GetAccessPointPolicy
+              - s3:GetObjectVersion"
+            Resource:
+              - 'arn:aws:s3:::ps-invoke-modules'
+              - 'arn:aws:s3:::ps-invoke-modules/*'
+
+  # The IAM Role CodeBuild will run the container as
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: CBCloudWatchPublishing
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${ProjectName}*'
+        - PolicyName: CBS3ArtifactAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Sub arn:aws:s3:::codepipeline-${AWS::Region}-*
+                  - !Sub 'arn:aws:s3:::${ArtifactS3Bucket}'
+                  - !Sub 'arn:aws:s3:::${ArtifactS3Bucket}/*'
+              - Effect: 'Allow'
+                Action:
+                  - 's3:ListBucket'
+                Resource:
+                  - '*'
+        - PolicyName: 'CFNTesting'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'cloudformation:ValidateTemplate'
+                  - 'cloudformation:ListExports'
+                Resource: '*'
+        - PolicyName: 'IntegrationTestPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'sqs:*'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'sts:AssumeRole'
+                Resource: '*'
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
+  UnitTestAndBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: S3
+        Location: !Ref ArtifactS3Bucket
+        Name: !Sub '${AWS::StackName}-UnitTestAndBuild'
+      Name: !Sub '${ProjectName}-${AWS::StackName}-UnitTestAndBuild'
+      Description: Unit Testing and Building
+      BadgeEnabled: true
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: !Ref CodeBuildImageUri
+        EnvironmentVariables:
+          - Name: ARTIFACT_S3_BUCKET
+            Value: !Ref ArtifactS3Bucket
+          - Name: S3_KEY_PREFIX
+            Value: !Ref ProjectName
+          - Name: GIT_SOURCE
+            Value: !Ref RepositoryName
+          - Name: AWSRegion
+            Value: !Sub ${AWS::Region}
+      Source:
+        Type: GITHUB
+        Auth:
+          Type: OAUTH
+        Location: !Ref RepositoryUrl
+        BuildSpec: CodeBuild/UnitTestAndBuild/buildspec.yml
+      TimeoutInMinutes: 30
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${AWS::StackName}-UnitTestAndBuild'
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ProjectName
+          Value: !Ref ProjectName
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
+  # IntegrationTestIAMRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     RoleName: IntegrationTestIAMRole
+  #     AssumeRolePolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             AWS:
+  #               - !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+  #           Action:
+  #             - sts:AssumeRole
+  #     Path: /
+  #     Policies:
+  #       - PolicyName: !Sub 'IntegrationTestAccess-${ProjectName}'
+  #         PolicyDocument:
+  #           Version: '2012-10-17'
+  #           Statement:
+  #             - Effect: Allow
+  #               Action:
+  #                 - 'cloudformation:ListExports'
+  #               Resource: '*'
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
+  IntegrationTestProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Name: !Sub '${ProjectName}-${AWS::StackName}--IntegrationTest'
+      Description: Integration Testing
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: !Ref CodeBuildImageUri
+        EnvironmentVariables:
+          - Name: ARTIFACT_S3_BUCKET
+            Value: !Ref ArtifactS3Bucket
+          - Name: AWSAccountId
+            Value: !Ref AWS::AccountId
+          - Name: AWSRegion
+            Value: !Ref AWS::Region
+          - Name: projectName
+            Value: !Ref ProjectName
+      Source:
+        Type: GITHUB
+        Auth:
+          Type: OAUTH
+        Location: !Ref RepositoryUrl
+        BuildSpec: CodeBuild/IntegrationTest/buildspec.yml
+      TimeoutInMinutes: 45
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${AWS::StackName}-IntegrationTest'
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ProjectName
+          Value: !Ref ProjectName
+
+  # An SNS Topic used for CodePipeline status updates
+  SNSTopicForPipelineUpdates:
+    Type: AWS::SNS::Topic
+
+  # https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create-service-role.html
+  # https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-custom-role
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+                - cloudformation.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: 'CodePipelineNestedCFNAccessPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 'sns:Publish'
+                Resource:
+                  - !Ref SNSTopicForPipelineUpdates
+              - Effect: 'Allow'
+                Action:
+                  - 'cloudformation:*'
+                Resource:
+                  - '*'
+              - Effect: 'Allow'
+                Action:
+                  - 'codebuild:StartBuild'
+                  - 'codebuild:BatchGetBuilds'
+                Resource:
+                  - !Sub arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${UnitTestAndBuildProject}
+                  - !Sub arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:build/${UnitTestAndBuildProject}:*
+                  - !Sub arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${IntegrationTestProject}
+                  - !Sub arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:build/${IntegrationTestProject}:*
+              - Effect: 'Allow'
+                Action:
+                  - 's3:*'
+                Resource:
+                  - !Sub 'arn:aws:s3:::${ArtifactS3Bucket}'
+                  - !Sub 'arn:aws:s3:::${ArtifactS3Bucket}/*'
+              - Effect: 'Allow'
+                Action:
+                  - 'iam:ListRoles'
+                  - 'iam:PassRole'
+                Resource:
+                  - '*'
+              # - Effect: 'Allow'
+              #   Action:
+              #     - 'ssm:GetParameters'
+              #   Resource: '*'
+
+  # This role is assumed by the AWS CodePipeline.
+  # It performs CloudFormation "setup" actions, such as resolving SSM Parameter Store values.
+  # It then performs an "iam:PassRole" so the CloudFormationRoleForStackDeployment IAM Role
+  # is used for the actual CloudFormation Stack deployments.
+  # CodePipelineRoleForAccess:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Effect: 'Allow'
+  #           Principal:
+  #             AWS:
+  #               - !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+  #           Action:
+  #             - 'sts:AssumeRole'
+  #         - Effect: 'Allow'
+
+  #     Path: /
+  #     Policies:
+  #       - PolicyName: CloudFormationAssumeRolePolicy
+  #         PolicyDocument:
+  #           Version: '2012-10-17'
+  #           Statement:
+  #             - Effect: 'Allow'
+  #               Action:
+  #                 - 'cloudformation:*'
+  #                 - 'ec2:DescribeKeyPairs'
+  #                 - 'iam:PassRole'
+  #                 - 's3:*'
+  #                 - 'ssm:GetParameters'
+  #               Resource: '*'
+
+  # The IAM Role used for CloudFormation Stack deployments. This must have all required
+  # AWS Policies for creating, updating and removing AWS Resources.
+  CloudFormationRoleForStackDeployment:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+                - cloudformation.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+      Policies:
+        - PolicyName: 'CloudFormationDeploymentPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - '*'
+                Resource: '*'
+
+  # https://docs.aws.amazon.com/codepipeline/latest/userguide/update-change-detection.html#update-change-detection-cfn-github
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-webhook.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-webhook-webhookfilterrule.html
+  # https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements
+  PipelineWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: '{{resolve:secretsmanager:GitHubOauth:SecretString:GitHubCC}}'
+      Filters:
+        -
+          JsonPath: "$.ref"
+          MatchEquals: !Sub refs/heads/${BranchName}
+      TargetPipeline: !Ref CodePipeline
+      TargetAction: GitHubSource
+      Name: AppPipelineWebhook
+      TargetPipelineVersion: !GetAtt CodePipeline.Version
+      RegisterWithThirdParty: true
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-pipeline.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions-actiontypeid.html
+  # https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#actions-valid-providers
+  # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-GitHub.html
+  # https://docs.aws.amazon.com/codepipeline/latest/userguide/update-change-detection.html#update-change-detection-cfn-github
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
+  # {{resolve:secretsmanager:secret-id:secret-string:json-key:version-stage:version-id}}
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Ref AWS::StackName
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactS3Bucket
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+        - Name: GitHubSource
+          Actions:
+            - Name: GitHubSource
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: '1'
+                Provider: GitHub
+              OutputArtifacts:
+                - Name: GitHubSource
+              Configuration:
+                Owner: !Ref GitHubOwner
+                Repo: !Ref RepositoryName
+                Branch: !Ref BranchName
+                OAuthToken: '{{resolve:secretsmanager:GitHubOauth:SecretString:GitHubCC}}'
+                PollForSourceChanges: false
+              RunOrder: 1
+        - Name: Build
+          Actions:
+            - Name: CodeBuild
+              InputArtifacts:
+                - Name: GitHubSource
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: '1'
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: CFNTemplateArtifact
+              Configuration:
+                ProjectName:
+                  Ref: UnitTestAndBuildProject
+              RunOrder: 1
+        - Name: Deploy
+          Actions:
+            - Name: Deploy
+              InputArtifacts:
+                - Name: CFNTemplateArtifact
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: '1'
+                Provider: CloudFormation
+              OutputArtifacts:
+                - Name: CreatedStack
+              Configuration:
+                ActionMode: CREATE_UPDATE
+                RoleArn: !GetAtt CloudFormationRoleForStackDeployment.Arn
+                Capabilities: CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND
+                StackName: !Ref ProjectName
+                TemplateConfiguration: !Sub 'CFNTemplateArtifact::CloudFormation/${ProjectName}/ControlPlane-Parameters/${ProjectName}.json'
+                TemplatePath: !Sub 'CFNTemplateArtifact::CloudFormation/${ProjectName}/${ProjectName}-ControlPlane.yml'
+              RunOrder: 1
+              # RoleArn: !GetAtt CodePipelineRoleForAccess.Arn
+            - Name: ValidateStack
+              InputArtifacts:
+                - Name: GitHubSource
+              ActionTypeId:
+                Category: Test
+                Owner: AWS
+                Version: '1'
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: ValidatedStack
+              Configuration:
+                ProjectName: !Ref IntegrationTestProject
+              RunOrder: 2
+
+Outputs:
+  UnitTestAndBuildProject:
+    Description: The name of the CodeBuild project
+    Value: !Ref UnitTestAndBuildProject
+
+  # IntegrationTestIAMRoleArn:
+  #   Value: !GetAtt IntegrationTestIAMRole.Arn
+  #   Export:
+  #     Name: IntegrationTestIAMRoleArn
+
+  # CodePipelineRoleForAccess:
+  #   Description: IAM Role used for AWS CodePipeline access.
+  #   Value: !GetAtt CodePipelineRoleForAccess.Arn
+
+  IAMRoleForStackDeployment:
+    Description: IAM Role used to deploy CloudFormation Templates
+    Value: !GetAtt CloudFormationRoleForStackDeployment.Arn

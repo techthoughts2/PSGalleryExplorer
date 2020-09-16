@@ -3,11 +3,13 @@
     An Invoke-Build Build file.
 .DESCRIPTION
     Build steps can include:
-        - Clean
         - ValidateRequirements
-        - FormattingCheck
+        - ImportModuleManifest
+        - Clean
         - Analyze
+        - FormattingCheck
         - Test
+        - DevCC
         - CreateHelpStart
         - Build
         - InfraTest
@@ -22,18 +24,30 @@
     This will perform only the Analyze and Test Add-BuildTasks.
 .NOTES
     This build will pull in configurations from the "<module>.Settings.ps1" file as well, where users can more easily customize the build process if required.
-    The 'InstallDependencies' Add-BuildTask isn't present here. pre-requisite modules are installed at a previous step in the pipeline.
     https://github.com/nightroman/Invoke-Build
     https://github.com/nightroman/Invoke-Build/wiki/Build-Scripts-Guidelines
+    If using VSCode you can use the generated tasks.json to execute the various tasks in this build file.
+        Ctrl + P | then type task (add space) - you will then be presented with a list of available tasks to run
+    The 'InstallDependencies' Add-BuildTask isn't present here.
+        Module dependencies are installed at a previous step in the pipeline.
+        If your manifest has module dependencies include all required modules in your CI/CD bootstrap file:
+            AWS - install_modules.ps1
+            Azure - actions_bootstrap.ps1
+            GitHub Actions - actions_bootstrap.ps1
+            AppVeyor  - actions_bootstrap.ps1
 #>
 
 #Include: Settings
 $ModuleName = (Split-Path -Path $BuildFile -Leaf).Split('.')[0]
 . "./$ModuleName.Settings.ps1"
 
+function Test-ManifestBool ($Path) {
+    Get-ChildItem $Path | Test-ModuleManifest -ErrorAction SilentlyContinue | Out-Null; $?
+}
+
 #Default Build
 $str = @()
-$str = 'Clean', 'ValidateRequirements'
+$str = 'Clean', 'ValidateRequirements', 'ImportModuleManifest'
 $str += 'FormattingCheck'
 $str += 'Analyze', 'Test'
 $str += 'CreateHelpStart'
@@ -41,10 +55,10 @@ $str += 'Build', 'InfraTest', 'Archive'
 Add-BuildTask -Name . -Jobs $str
 
 #Local testing build process
-Add-BuildTask TestLocal Clean, Analyze, Test
+Add-BuildTask TestLocal Clean, ImportModuleManifest, Analyze, Test
 
 #Local help file creation process
-Add-BuildTask HelpLocal Clean, CreateHelpStart, UpdateCBH
+Add-BuildTask HelpLocal Clean, ImportModuleManifest, CreateHelpStart
 
 # Pre-build variables to be used by other portions of the script
 Enter-Build {
@@ -59,7 +73,7 @@ Enter-Build {
     $manifestInfo = Import-PowerShellDataFile -Path $script:ModuleManifestFile
     $script:ModuleVersion = $manifestInfo.ModuleVersion
     $script:ModuleDescription = $manifestInfo.Description
-    $Script:FunctionsToExport = $manifestInfo.FunctionsToExport
+    $script:FunctionsToExport = $manifestInfo.FunctionsToExport
 
     $script:TestsPath = Join-Path -Path $BuildRoot -ChildPath 'Tests'
     $script:UnitTestsPath = Join-Path -Path $script:TestsPath -ChildPath 'Unit'
@@ -93,6 +107,34 @@ Set-BuildFooter {
     # Write-Build Gray ('=' * 79)
 }#Set-BuildFooter
 
+#Synopsis: Validate system requirements are met
+Add-BuildTask ValidateRequirements {
+    # this setting comes from the *.Settings.ps1
+    Write-Build White "      Verifying at least PowerShell $script:requiredPSVersion..."
+    Assert-Build ($PSVersionTable.PSVersion.Major.ToString() -ge $script:requiredPSVersion) "At least Powershell $script:requiredPSVersion is required for this build to function properly"
+    Write-Build Green '      ...Verification Complete!'
+}#ValidateRequirements
+
+# Synopsis: Import the current module manifest file for processing
+Add-BuildTask TestModuleManifest -Before ImportModuleManifest {
+    Write-Build White '      Running module manifest tests...'
+    Assert-Build (Test-Path $script:ModuleManifestFile) 'Unable to locate the module manifest file.'
+    Assert-Build (Test-ManifestBool -Path $script:ModuleManifestFile) 'Module Manifest test did not pass verification.'
+    Write-Build Green '      ...Module Manifest Verification Complete!'
+}
+
+# Synopsis: Load the module project
+Add-BuildTask ImportModuleManifest {
+    Write-Build White '      Attempting to load the project module.'
+    try {
+        Import-Module $script:ModuleManifestFile -Force -PassThru -ErrorAction Stop
+    }
+    catch {
+        throw 'Unable to load the project module'
+    }
+    Write-Build Green "      ...$script:ModuleName imported successfully"
+}
+
 #Synopsis: Clean and reset Artifacts/Archive Directory
 Add-BuildTask Clean {
     Write-Build White '      Clean up our Artifacts/Archive directory...'
@@ -105,20 +147,12 @@ Add-BuildTask Clean {
     Write-Build Green '      ...Clean Complete!'
 }#Clean
 
-#Synopsis: Validate system requirements are met
-Add-BuildTask ValidateRequirements {
-    #running at least powershell 5?
-    Write-Build White '      Verifying at least PowerShell 5...'
-    Assert-Build ($PSVersionTable.PSVersion.Major.ToString() -ge '5') 'At least Powershell 5 is required for this build to function properly'
-    Write-Build Green '      ...Verification Complete!'
-}#ValidateRequirements
-
 #Synopsis: Invokes PSScriptAnalyzer against the Module source path
 Add-BuildTask Analyze {
 
     $scriptAnalyzerParams = @{
         Path    = $script:ModuleSourcePath
-        Setting = "PSScriptAnalyzerSettings.psd1"
+        Setting = 'PSScriptAnalyzerSettings.psd1'
         Recurse = $true
         Verbose = $false
     }
@@ -140,10 +174,11 @@ Add-BuildTask AnalyzeTests -After Analyze {
     if (Test-Path -Path $script:TestsPath) {
 
         $scriptAnalyzerParams = @{
-            Path    = $script:TestsPath
-            Setting = "PSScriptAnalyzerSettings.psd1"
-            Recurse = $true
-            Verbose = $false
+            Path        = $script:TestsPath
+            Setting     = "PSScriptAnalyzerSettings.psd1"
+            ExcludeRule = 'PSAvoidOverwritingBuiltInCmdlets'
+            Recurse     = $true
+            Verbose     = $false
         }
 
         Write-Build White '      Performing Test ScriptAnalyzer checks...'
@@ -154,7 +189,7 @@ Add-BuildTask AnalyzeTests -After Analyze {
             throw '      One or more PSScriptAnalyzer errors/warnings where found.'
         }
         else {
-            Write-Build White Green '      ...Test Analyze Complete!'
+            Write-Build Green '      ...Test Analyze Complete!'
         }
     }
 }#AnalyzeTests
@@ -168,8 +203,6 @@ Add-BuildTask FormattingCheck {
         Recurse     = $true
         Verbose     = $false
     }
-
-
 
     Write-Build White '      Performing script formatting checks...'
     $scriptAnalyzerResults = Get-ChildItem -Path $script:ModuleSourcePath -Exclude "*.psd1" | Invoke-ScriptAnalyzer @scriptAnalyzerParams
@@ -186,21 +219,25 @@ Add-BuildTask FormattingCheck {
 #Synopsis: Invokes all Pester Unit Tests in the Tests\Unit folder (if it exists)
 Add-BuildTask Test {
     $codeCovPath = "$script:ArtifactsPath\ccReport\"
+    $testOutPutPath = "$script:ArtifactsPath\testOutput\"
     if (-not(Test-Path $codeCovPath)) {
         New-Item -Path $codeCovPath -ItemType Directory | Out-Null
     }
+    if (-not(Test-Path $testOutPutPath)) {
+        New-Item -Path $testOutPutPath -ItemType Directory | Out-Null
+    }
     if (Test-Path -Path $script:UnitTestsPath) {
         $invokePesterParams = @{
-            Path                   = 'Tests\Unit'
-            Strict                 = $true
-            PassThru               = $true
-            Verbose                = $false
-            EnableExit             = $false
-            CodeCoverage           = "$ModuleName\*\*.ps1"
-            CodeCoverageOutputFile = "$codeCovPath\CodeCoverage.xml"
-            # CodeCoverage                 = "$ModuleName\*\*.ps1"
-            # CodeCoverageOutputFile       = "$codeCovPath\codecoverage.xml"
-            # CodeCoverageOutputFileFormat = 'JaCoCo'
+            Path                         = 'Tests\Unit'
+            Strict                       = $true
+            PassThru                     = $true
+            Verbose                      = $false
+            EnableExit                   = $false
+            CodeCoverage                 = "$ModuleName\*\*.ps1"
+            CodeCoverageOutputFile       = "$codeCovPath\CodeCoverage.xml"
+            CodeCoverageOutputFileFormat = 'JaCoCo'
+            OutputFile                   = "$testOutPutPath\PesterTests.xml"
+            OutputFormat                 = 'NUnitXML'
         }
 
         Write-Build White '      Performing Pester Unit Tests...'
@@ -221,6 +258,7 @@ Add-BuildTask Test {
 
         # Ensure our builds fail until if below a minimum defined code test coverage threshold
         $coverageThreshold = 50
+        $coveragePercent = '{0:N2}' -f ($testResults.CodeCoverage.NumberOfCommandsExecuted / $testResults.CodeCoverage.NumberOfCommandsAnalyzed * 100)
 
         if ($testResults.CodeCoverage.NumberOfCommandsExecuted -ne 0) {
             $coveragePercent = '{0:N2}' -f ($testResults.CodeCoverage.NumberOfCommandsExecuted / $testResults.CodeCoverage.NumberOfCommandsAnalyzed * 100)
@@ -298,7 +336,7 @@ Add-BuildTask CreateMarkdownHelp -After CreateHelpStart {
         }
     }
     # Replace each missing element we need for a proper generic module page .md file
-    $ModulePageFileContent = Get-Content -raw $ModulePage
+    $ModulePageFileContent = Get-Content -Raw $ModulePage
     $ModulePageFileContent = $ModulePageFileContent -replace '{{Manually Enter Description Here}}', $script:ModuleDescription
     $Script:FunctionsToExport | ForEach-Object {
         Write-Build DarkGray "             Updating definition for the following function: $($_)"
@@ -310,16 +348,41 @@ Add-BuildTask CreateMarkdownHelp -After CreateHelpStart {
     $ModulePageFileContent | Out-File $ModulePage -Force -Encoding:utf8
     Write-Build Gray '           ...Markdown replacements complete.'
 
-    Write-Build Gray '           Verifying documentation...'
+    Write-Build Gray '           Verifying GUID...'
+    $MissingGUID = Select-String -Path "$($script:ArtifactsPath)\docs\*.md" -Pattern "(00000000-0000-0000-0000-000000000000)"
+    if ($MissingGUID.Count -gt 0) {
+        Write-Build Yellow '             The documentation that got generated resulted in a generic GUID. Check the GUID entry of your module manifest.'
+        throw 'Missing GUID. Please review and rebuild.'
+    }
+
+    Write-Build Gray '           Checking for missing documentation in md files...'
     $MissingDocumentation = Select-String -Path "$($script:ArtifactsPath)\docs\*.md" -Pattern "({{.*}})"
     if ($MissingDocumentation.Count -gt 0) {
         Write-Build Yellow '             The documentation that got generated resulted in missing sections which should be filled out.'
         Write-Build Yellow '             Please review the following sections in your comment based help, fill out missing information and rerun this build:'
         Write-Build Yellow '             (Note: This can happen if the .EXTERNALHELP CBH is defined for a function before running this build.)'
         Write-Build Yellow "             Path of files with issues: $($script:ArtifactsPath)\docs\"
-        $MissingDocumentation | Select-Object FileName, Matches | Format-Table -AutoSize
+        $MissingDocumentation | Select-Object FileName, LineNumber, Line | Format-Table -AutoSize
         throw 'Missing documentation. Please review and rebuild.'
     }
+
+    Write-Build Gray '           Checking for missing SYNOPSIS in md files...'
+    $fSynopsisOutput = @()
+    $synopsisEval = Select-String -Path "$($script:ArtifactsPath)\docs\*.md" -Pattern "^## SYNOPSIS$" -Context 0, 1
+    $synopsisEval | ForEach-Object {
+        $chAC = $_.Context.DisplayPostContext.ToCharArray()
+        if ($null -eq $chAC) {
+            $fSynopsisOutput += $_.FileName
+        }
+    }
+    if ($fSynopsisOutput) {
+        Write-Build Yellow "             The following files are missing SYNOPSIS:"
+        $fSynopsisOutput
+        throw 'SYNOPSIS information missing. Please review.'
+    }
+
+    # Write-Host '      Creating markdown documentation with PlatyPS'
+    # Write-Host -ForegroundColor Green '...Complete!'
 
     Write-Build Gray '           ...Markdown generation complete.'
 }#CreateMarkdownHelp
@@ -356,6 +419,8 @@ Add-BuildTask UpdateCBH -After AssetCopy {
 Add-BuildTask AssetCopy -Before Build {
     Write-Build Gray '        Copying assets to Artifacts...'
     Copy-Item -Path "$script:ModuleSourcePath\*" -Destination $script:ArtifactsPath -Exclude *.psd1, *.psm1 -Recurse -ErrorAction Stop
+    # Copy-Item -Path "$script:ModuleSourcePath\Resources\Module\src\PSScriptAnalyzerSettings.psd1" -Destination "$script:ArtifactsPath\Resources\Module\src\PSScriptAnalyzerSettings.psd1" -ErrorAction Stop
+    # Copy-Item -Path "$script:ModuleSourcePath\Resources\Module\src\Module\Module.psm1" -Destination "$script:ArtifactsPath\Resources\Module\src\Module\Module.psm1" -ErrorAction Stop
     Write-Build Gray '        ...Assets copy complete.'
 }#AssetCopy
 
@@ -373,7 +438,7 @@ Add-BuildTask Build {
     $scriptContent = [System.Text.StringBuilder]::new()
     #$powerShellScripts = Get-ChildItem -Path $script:ModuleSourcePath -Filter '*.ps1' -Recurse
     # $powerShellScripts = Get-ChildItem -Path $script:ArtifactsPath -Filter '*.ps1' -Recurse
-    $powerShellScripts = Get-ChildItem -Path $script:ArtifactsPath -Recurse | Where-Object {$_.Name -match '^*.ps1$'}
+    $powerShellScripts = Get-ChildItem -Path $script:ArtifactsPath -Recurse | Where-Object { $_.Name -match '^*.ps1$' }
 
     foreach ($script in $powerShellScripts) {
         $null = $scriptContent.Append((Get-Content -Path $script.FullName -Raw))
@@ -391,7 +456,7 @@ Add-BuildTask Build {
     if (Test-Path "$($script:ArtifactsPath)\Private") {
         Remove-Item "$($script:ArtifactsPath)\Private" -Recurse -Force -ErrorAction Stop
     }
-
+    Remove-Item "$($script:ArtifactsPath)\Imports.ps1" -Force -ErrorAction SilentlyContinue
     # here you could move your docs up to your repos doc level if you wanted
     Write-Build Gray '        Overwriting docs output...'
     Move-Item "$($script:ArtifactsPath)\docs\*.md" -Destination "..\docs\" -Force

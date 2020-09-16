@@ -9,11 +9,16 @@
 # To include PowerShell modules with your Lambda function, like the AWSPowerShell.NetCore module, add a "#Requires" statement
 # indicating the module and version.
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.0.2.0'}
+# $env:GIT_S3_BUCKET_NAME
+# $env:S3_BUCKET_NAME
+# $env:S3_KEY_NAME
+# $env:TELEGRAM_SECRET
+
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
 #Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.10.1'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
 
 # Uncomment to send the input event to CloudWatch Logs
 Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
@@ -61,16 +66,16 @@ function Send-TelegramError {
         [string]
         $ErrorMessage
     )
-    if ($null -eq $script:token ) {
-        $script:token = Get-SECSecretValue -SecretId PoshGramTokens -Region us-west-2 -ErrorAction Stop
+    if ($null -eq $script:telegramToken ) {
+        $script:telegramToken = Get-SECSecretValue -SecretId $env:TELEGRAM_SECRET -Region 'us-west-2' -ErrorAction Stop
     }
     try {
-        if ($null -eq $script:token ) {
+        if ($null -eq $script:telegramToken ) {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
             Write-Host "Secret retrieved."
-            $sObj = $script:token.SecretString | ConvertFrom-Json
+            $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
             Send-TelegramTextMessage -BotToken $token -ChatID $channel -Message $ErrorMessage
@@ -97,7 +102,7 @@ function Send-TelegramError {
 $gitXMLBucket = $env:GIT_S3_BUCKET_NAME
 $destXMLBucket = $env:S3_BUCKET_NAME
 $fKey = $env:S3_KEY_NAME
-$script:token = $null
+$script:telegramToken = $null
 
 Write-Host "Git XML Bucket Name: $gitXMLBucket"
 Write-Host "Bucket Name: $destXMLBucket"

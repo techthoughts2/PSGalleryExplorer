@@ -2,14 +2,14 @@
 
 ## Synopsis
 
-PSGalleryExplorer includes a module's corresponding GitHub project information when returning module results.
+PSGalleryExplorer includes a module's corresponding project repository information when returning module results.
 
-A fully PowerShell serverless solution is deployed to continually collect and update GitHub information for PSGalleryExplorer's use.
+A fully PowerShell serverless solution is deployed to continually collect and update repository information for PSGalleryExplorer's use.
 
 ## Deployment Stack
 
-* [Cloudformation for Serverless deployment](../CloudFormation/PSGE.yml)
-* [PowerShell Lambdas used](../PSLambda/)
+* [Cloudformation for Serverless deployment](../CloudFormation/PSGalleryExplorer/)
+* [PowerShell Lambdas used](../lambdafunctions/)
 
 ## Serverless Design Diagram
 
@@ -21,11 +21,17 @@ A fully PowerShell serverless solution is deployed to continually collect and up
     * Retrieves all module information from [PowerShell Gallery](https://www.powershellgallery.com/)
       * Saves module info to **stagetrigger** in XML format using [Convert](https://github.com/austoonz/Convert)
     * For each module found an [SQS](https://aws.amazon.com/sqs/) message is sent containing relevant module information.
-1. **GitHubScanner** [lambda](https://aws.amazon.com/lambda/) picks up [SQS](https://aws.amazon.com/sqs/) messages in batches of 10.
-    * Retrieves the Github Oauth token from [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
-    * Queries [GitHub API](https://developer.github.com/v3/) for module project information.
-      * If GitHub API rate limit is exceeded - triggers [step function](https://aws.amazon.com/step-functions/) to delay hitting API by 1 hour.
-    * Saves GitHub information in XML format using [Convert](https://github.com/austoonz/Convert) to **gitxml**.
+1. Repository Lambda scanners pick up [SQS](https://aws.amazon.com/sqs/) messages in batches of 10.
+    * **GitHubScanner**
+      * Retrieves the Github Oauth token from [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
+      * Queries [GitHub API](https://developer.github.com/v3/) for module project information.
+        * If GitHub API rate limit is exceeded - triggers [step function](https://aws.amazon.com/step-functions/) to delay hitting API by 1 hour.
+      * Saves GitHub information in XML format using [Convert](https://github.com/austoonz/Convert) to **gitxml**.
+    * **GitLabScanner**
+      * Retrieves the GitLab token from [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
+      * Queries [GitLab API](https://docs.gitlab.com/ee/api/README.html) for module project information.
+        * If GitLab API rate limit is exceeded - triggers [step function](https://aws.amazon.com/step-functions/) to delay hitting API by 1 hour.
+      * Saves GitLab information in XML format using [Convert](https://github.com/austoonz/Convert) to **gitxml**.
 1. [Cloud Watch Event](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html) triggers **GCCombine** [lambda](https://aws.amazon.com/lambda/) once per day.
     * Downloads all xml files from **gitxml** and merges into memory.
     * Diffs the combined data set with consolidated file in **stagetrigger**.

@@ -25,7 +25,9 @@ PSGalleryExplorer is a PowerShell module that lets you search, explore, and disc
 
 ## Description
 
-PSGalleryExplorer provides functionality to search for PowerShell modules on the PowerShell Gallery and their associated GitHub projects.
+PSGalleryExplorer extends PowerShell Gallery Module search functionality by including information about a module's associated repository.
+
+There are a variety of search options that aim to search and explore the available modules on the PowerShell Gallery.
 
 To aid in module discovery more common/popular modules and modules made by corporations are excluded by default. Popular modules and corporation modules can be included in results by specifying the necessary parameter switches.
 
@@ -69,17 +71,20 @@ Find-PSGModule -ByDownloads
 # return top 50
 Find-PSGModule -ByDownloads -IncludeCorps -IncludeRegulars -NumberToReturn 50
 #------------------------------------------------------------------------------------------------
-# discover PowerShell modules by # of GitHub project stars
-Find-PSGModule -ByGitHubInfo StarCount
+# discover PowerShell modules by # of repo project stars
+Find-PSGModule -ByRepoInfo StarCount
 #------------------------------------------------------------------------------------------------
-# discover PowerShell modules by # of GitHub project subscribers
-Find-PSGModule -ByGitHubInfo Subscribers
+# discover PowerShell modules that could possibly use some help
+Find-PSGModule -ByRepoInfo Issues
+#------------------------------------------------------------------------------------------------
+# discover PowerShell modules by # of repo project subscribers
+Find-PSGModule -ByRepoInfo Subscribers
 #------------------------------------------------------------------------------------------------
 # discover the most recently updated modules on the PowerShell Gallery
 Find-PSGModule -ByRecentUpdate GalleryUpdate
 #------------------------------------------------------------------------------------------------
-# discover the most recently updated modules on GitHub
-Find-PSGModule -ByRecentUpdate GitUpdate
+# discover the most recently updated modules on repo
+Find-PSGModule -ByRecentUpdate RepoUpdate
 #------------------------------------------------------------------------------------------------
 # discover a set of random modules
 Find-PSGModule -ByRandom
@@ -98,7 +103,7 @@ Find-PSGModule -ByTag Telegram
 
 ## Notes
 
-GitHub information is provided via a [PowerShell Serverless Solution](docs/PowerShell_Serverless.md)
+Repo information is provided via a [PowerShell Serverless Solution](docs/PowerShell_Serverless.md)
 
 This PowerShell project was created with [Catesta](https://github.com/techthoughts2/Catesta).
 

@@ -9,16 +9,17 @@
 # To include PowerShell modules with your Lambda function, like the AWSPowerShell.NetCore module, add a "#Requires" statement
 # indicating the module and version.
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.StepFunctions';ModuleVersion='4.0.2.0'}
-#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.10.1'}
+# $env:S3_BUCKET_NAME
+# $env:TELEGRAM_SECRET
+# $env:GITHUB_SECRET
 
-# SQS -> Lambda -> S3
-#  -or-
-# SQS -> Lambda -> State Machine Execution
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
+#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
+
+# State Machine Execution -> Lambda -> S3
 
 # Uncomment to send the input event to CloudWatch Logs
 Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
@@ -113,6 +114,7 @@ function Get-GitHubProjectInfo {
                 Updated     = $githubProjectInfo.updated_at
                 Forks       = $githubProjectInfo.forks_count
                 License     = $githubProjectInfo.license.name
+                OpenIssues  = $githubProjectInfo.open_issues_count
             }
         }
         #####################################
@@ -138,51 +140,6 @@ function Get-GitHubProjectInfo {
     }
     return $xml
 }#Get-GitHubProjectInfo
-
-<#
-.SYNOPSIS
-    Triggers specified State Machine.
-.COMPONENT
-    PSGalleryExplorer
-#>
-function Start-StateMExecution {
-    param (
-        [Parameter(Mandatory = $true,
-            HelpMessage = 'JSON Message with Module info')]
-        [string]
-        $MessageJSON,
-        [Parameter(Mandatory = $true,
-            HelpMessage = 'Arn of target State Machine')]
-        [string]
-        $StateMachineArn,
-        [Parameter(Mandatory = $true,
-            HelpMessage = 'Name of target State Macine')]
-        [string]
-        $StateMachineName
-    )
-
-    # Invoke the State Machine
-    $startSFNExecution = @{
-        StateMachineArn = $StateMachineArn
-        Input           = $MessageJSON
-        ErrorAction     = 'Stop'
-    }
-    try {
-        $sfnExecution = Start-SFNExecution @startSFNExecution
-    }
-    catch {
-        $message = 'Exception caught calling Start-SFNExecution. {0}' -f $_.Exception.Message
-        Write-Warning -Message $message
-        throw
-    }
-
-    # Write log entry of what was invoked.
-    # $StateMachineName = $env:StateMachineArn.Split(':')[-1]
-    Write-Host (ConvertTo-Json -Compress -InputObject @{
-            StateMachineName = $StateMachineName
-            ExecutionArn     = $sfnExecution.ExecutionArn
-        })
-}#Start-StateMExecution
 
 <#
 .SYNOPSIS
@@ -239,16 +196,16 @@ function Send-TelegramError {
         [string]
         $ErrorMessage
     )
-    if ($null -eq $script:token ) {
-        $script:token = Get-SECSecretValue -SecretId PoshGramTokens -Region us-west-2 -ErrorAction Stop
+    if ($null -eq $script:telegramToken ) {
+        $script:telegramToken = Get-SECSecretValue -SecretId $env:TELEGRAM_SECRET -Region 'us-west-2' -ErrorAction Stop
     }
     try {
-        if ($null -eq $script:token ) {
+        if ($null -eq $script:telegramToken ) {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
             Write-Host "Secret retrieved."
-            $sObj = $script:token.SecretString | ConvertFrom-Json
+            $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
             Send-TelegramTextMessage -BotToken $token -ChatID $channel -Message $ErrorMessage
@@ -279,39 +236,15 @@ function Send-TelegramError {
     State Machine Trigger
 .COMPONENT
     PSGalleryExplorer
-.LINK
-    https://developer.github.com/
-.LINK
-    https://developer.github.com/v3/#rate-limiting
-.LINK
-    https://developer.github.com/v3/rate_limit/
 #>
 
-$y = 'https://api.github.com/repos/qbikez/ps-entropy.git'
-$y = 'https://api.github.com/repos/techthoughts2/PoshGram'
-$s = $y.Substring(0, $y.lastIndexOf('.git'))
-'https://api.github.com/repos/dfensgmbh/biz.dfch.PS.Activiti.Client.git'
-
-
-#handle not found differently
-#check for null json value before sending message
-<#
-
-message	"Not Found"
-documentation_url	"https://developer.github.com/v3/repos/#get"
-#>
-
-$stateMachineName = $env:STATE_MACHINE_NAME
-$stateMachineNameArn = $env:STATE_MACHINE_ARN
 $bucketName = $env:S3_BUCKET_NAME
-$script:token = $null
+$script:telegramToken = $null
 
-Write-Host "State Machine Name: $stateMachineName"
-Write-Host "State Machine Arn: $stateMachineNameArn"
 Write-Host "Bucket Name: $bucketName"
 
 Write-Host 'Retrieving GitHub Oauth token...'
-$s = Get-SECSecretValue -SecretId GitHubOauth -Region us-west-2 -ErrorAction Stop
+$s = Get-SECSecretValue -SecretId $env:GITHUB_SECRET -Region 'us-west-2' -ErrorAction Stop
 if ($null -eq $s) {
     Write-Warning -Message 'Nothing was returned from secrets query'
     throw
@@ -326,75 +259,61 @@ Write-Host "Determing number of remaining GitHub API calls..."
 $remaining = Test-GitHubRateLimit -Token $token
 Write-Host "Remaining GitHub limit: $remaining"
 
-foreach ($message in $LambdaInput.Records) {
+$githubURI = $LambdaInput.GitHubURI
+$moduleName = $LambdaInput.ModuleName
 
-    Write-Host $message.body
+Write-Host "GitHub URI: $githubURI"
+Write-Host "Module Name: $moduleName"
 
-    #___________________
-    # resets
-    $messageData = $null
-    $githubURI = $null
-    $moduleName = $null
-    $uAPI = $null
-    $xml = $null
-    $uriEval = $false
-    #___________________
+Write-Host 'Converting project URI to API URI...'
+$uAPI = Convert-GitHubProjectURI -URI $githubURI
 
-    $messageData = $message.body | ConvertFrom-Json
-    $githubURI = $messageData.GitHubURI
-    $moduleName = $messageData.ModuleName
-
-    $startStateMExecutionSplat = @{
-        StateMachineName = $stateMachineName
-        StateMachineArn  = $stateMachineNameArn
-        MessageJSON      = $message.body
-    }
-
-    Write-Host 'Converting project URI to API URI...'
-    $uAPI = Convert-GitHubProjectURI -URI $githubURI
-    Write-Host "API URI: $uAPI"
-
+if ($null -ne $uAPI) {
     $uriEval = Confirm-ValidGitHubAPIURL -URI $uAPI
+    Write-Host "API URI: $uAPI"
+}
+else {
+    Write-Warning -Message 'URI could not be converted'
+}
 
-    if ($uriEval -eq $true) {
-        if ($remaining -le 300) {
-            Write-Host 'API calls low... triggering State Machine delay...'
-            Start-StateMExecution @startStateMExecutionSplat
-            Start-Sleep -Milliseconds (20)
-        }#if_API_lt_300
-        else {
-            Write-Host 'Quering GitHub API for project info...'
-            $xml = Get-GitHubProjectInfo -Token $token -ModuleName $moduleName -URI $uAPI
-            if ($xml) {
-                Write-Host 'Outputting XML file to S3 bucket...'
-                try {
-                    $xml | Out-File -FilePath "$env:TEMP/$moduleName.xml" -ErrorAction Stop
-                    $s3Splat = @{
-                        BucketName  = $bucketName
-                        Key         = "$moduleName.xml"
-                        File        = "$env:TEMP/$moduleName.xml"
-                        Force       = $true
-                        ErrorAction = 'Stop'
-                    }
-                    Write-S3Object @s3Splat
-                    Remove-Item -Path "$env:TEMP/$moduleName.xml" -Force
-                    Write-Host 'Output to S3 complete.'
-                }
-                catch {
-                    Write-Warning -Message 'An error was encountered outputting raw PSGallery XML file to S3:'
-                    Write-Error $_
-                    Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - GitHubScanner could not write XML to S3 bucket.'
-                    return
-                }
-            }
-            else {
-                # reason has already been logged in child function
-            }
-        }#else_API_lt_300
-    }#if_valid_uri
+if ($uriEval -eq $true) {
+    if ($remaining -le 50) {
+        Write-Host 'API calls still too low after delay...'
+        return
+    }#if_API_lt_300
     else {
-        Write-Host 'GitHub URI was not use-able for GitHub data query'
-    }#else_valid_uri
-}#foreach_SQS
+        Write-Host 'Quering GitHub API for project info...'
+        $xml = Get-GitHubProjectInfo -Token $token -ModuleName $moduleName -URI $uAPI
+        if ($xml) {
+            Write-Host 'Outputting XML file to S3 bucket...'
+            try {
+                $xml | Out-File -FilePath "$env:TEMP/$moduleName.xml" -ErrorAction Stop
+                $s3Splat = @{
+                    BucketName  = $bucketName
+                    Key         = "$moduleName.xml"
+                    File        = "$env:TEMP/$moduleName.xml"
+                    Force       = $true
+                    ErrorAction = 'Stop'
+                }
+                Write-S3Object @s3Splat
+                Remove-Item -Path "$env:TEMP/$moduleName.xml" -Force
+                Write-Host 'Output to S3 complete.'
+            }
+            catch {
+                Write-Warning -Message 'An error was encountered outputting raw PSGallery XML file to S3:'
+                Write-Error $_
+                Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - GitHubSMScanner could not output XML to S3 bucket.'
+                return
+            }
+        }
+        else {
+            Write-Warning -Message 'No data was returned from GitHub query.'
+        }
+    }#else_API_lt_300
+}#if_valid_uri
+else {
+    Write-Host 'GitHub URI was not use-able for GitHub data query'
+}#else_valid_uri
+
 
 #endregion

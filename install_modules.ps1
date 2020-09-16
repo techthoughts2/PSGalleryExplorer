@@ -39,13 +39,13 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
-            ModuleVersion = '5.5.7'
+            ModuleVersion = '5.6.1'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PSScriptAnalyzer'
-            ModuleVersion = '1.18.3'
+            ModuleVersion = '1.19.1'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
