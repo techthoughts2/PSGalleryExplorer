@@ -13,7 +13,7 @@ A fully PowerShell serverless solution is deployed to continually collect and up
 
 ## Serverless Design Diagram
 
-![PSGalleryExplorer Serverless GitHub scrape](../media/serverless_powershell_datapull.png "PSGalleryExplorer Serverless PowerShell Module GitHub project scrape")
+![PSGalleryExplorer Serverless GitHub scrape](../media/Serverless_PowerShell_DataPull.png "PSGalleryExplorer Serverless PowerShell Module GitHub project scrape")
 
 ## Outline
 
