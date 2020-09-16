@@ -227,9 +227,8 @@ Resources:
       Environment:
         #ComputeType: !Ref CodeBuildComputeType
         ComputeType: BUILD_GENERAL1_MEDIUM
-        Image: "aws/codebuild/windows-base:2.0"
-        #Type: !Ref CodeBuildEnvironment
-        Type: WINDOWS_CONTAINER
+        Image: aws/codebuild/windows-base:2019-1.0
+        Type: WINDOWS_SERVER_2019_CONTAINER
       Name: !Join
         - "-"
         - - !Ref ProjectName
@@ -259,6 +258,12 @@ Resources:
               Pattern: ^refs/heads/master$
             - Type: FILE_PATH
               Pattern: "^README.*"
+              ExcludeMatchedPattern: true
+            - Type: FILE_PATH
+              Pattern: "^CloudFormation.*"
+              ExcludeMatchedPattern: true
+            - Type: FILE_PATH
+              Pattern: "^lambdafunctions.*"
               ExcludeMatchedPattern: true
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
@@ -324,9 +329,8 @@ Resources:
       Environment:
         #ComputeType: !Ref CodeBuildComputeType
         ComputeType: BUILD_GENERAL1_MEDIUM
-        Image: "aws/codebuild/windows-base:2.0"
-        #Type: !Ref CodeBuildEnvironment
-        Type: WINDOWS_CONTAINER
+        Image: aws/codebuild/windows-base:2019-1.0
+        Type: WINDOWS_SERVER_2019_CONTAINER
       Name: !Join
         - "-"
         - - !Ref ProjectName
@@ -356,6 +360,12 @@ Resources:
               Pattern: ^refs/heads/master$
             - Type: FILE_PATH
               Pattern: "^README.*"
+              ExcludeMatchedPattern: true
+            - Type: FILE_PATH
+              Pattern: "^CloudFormation.*"
+              ExcludeMatchedPattern: true
+            - Type: FILE_PATH
+              Pattern: "^lambdafunctions.*"
               ExcludeMatchedPattern: true
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
@@ -421,7 +431,7 @@ Resources:
       Environment:
         #ComputeType: !Ref CodeBuildComputeType
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/standard:3.0"
+        Image: aws/codebuild/standard:4.0
         #Type: !Ref CodeBuildEnvironment
         Type: LINUX_CONTAINER
       Name: !Join
@@ -453,6 +463,12 @@ Resources:
               Pattern: ^refs/heads/master$
             - Type: FILE_PATH
               Pattern: "^README.*"
+              ExcludeMatchedPattern: true
+            - Type: FILE_PATH
+              Pattern: "^CloudFormation.*"
+              ExcludeMatchedPattern: true
+            - Type: FILE_PATH
+              Pattern: "^lambdafunctions.*"
               ExcludeMatchedPattern: true
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
