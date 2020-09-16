@@ -241,7 +241,7 @@ InModuleScope 'PSGalleryExplorer' {
             GitStatus   = 'True'
             Forks       = '4'
             Watchers    = '28'
-            Issues      = '3'
+            Issues      = '13'
             StarCount   = '28'
             License     = 'MIT License'
             Created     = [datetime]'06/28/18 01:42:08'
