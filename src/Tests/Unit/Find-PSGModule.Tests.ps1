@@ -784,6 +784,12 @@ InModuleScope 'PSGalleryExplorer' {
                     $count | Should -BeExactly 1
                     $eval.Name | Should -BeExactly 'AWS.Tools.Common'
                 }#it
+                It 'should return expteced results when finding module name with wild card' {
+                    $eval = Find-PSGModule -ByName 'P*' -IncludeRegulars -IncludeCorps
+                    $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
+                    $count | Should -BeExactly 2
+                    $eval[0].Name | Should -BeExactly 'PoshGram'
+                }#it
             }#context_Success
         }#context_ByName
         Context 'ByTag' {
@@ -824,5 +830,21 @@ InModuleScope 'PSGalleryExplorer' {
                 }#it
             }#context_Success
         }#context_ByTag
+        Context 'Everything' {
+            Context 'Success' {
+                It 'should return expected results when no options are specified' {
+                    $eval = Find-PSGModule
+                    $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
+                    $count | Should -BeExactly 2
+                    $eval[0].Name | Should -BeExactly 'PoshGram'
+                }#it
+                It 'should return expected results when no options are specified with everything included' {
+                    $eval = Find-PSGModule -IncludeCorps -IncludeRegulars
+                    $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
+                    $count | Should -BeExactly 4
+                    $eval[0].Name | Should -BeExactly 'PSLogging'
+                }#it
+            }#context_Success
+        }#context_everything
     }#describe_Find-PSGModule
 }#inModule

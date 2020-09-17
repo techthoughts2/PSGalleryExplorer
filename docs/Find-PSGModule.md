@@ -12,6 +12,11 @@ Finds PowerShell Gallery module(s) that match specified criteria.
 
 ## SYNTAX
 
+### none (Default)
+```
+Find-PSGModule [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>] [<CommonParameters>]
+```
+
 ### GalleryDownloads
 ```
 Find-PSGModule [-ByDownloads] [-ByRandom] [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>]
@@ -131,19 +136,26 @@ Returns module that equals the provided name, if found.
 
 ### EXAMPLE 12
 ```
+Find-PSGModule -ByName 'Posh*'
+```
+
+Returns all modules that match the wild card provided name, if found.
+
+### EXAMPLE 13
+```
 Find-PSGModule -ByTag Telegram
 ```
 
 Returns up to 35 modules that contain the tag: Telegram.
 
-### EXAMPLE 13
+### EXAMPLE 14
 ```
 Find-PSGModule -ByTag Telegram -IncludeCorps -IncludeRegulars -NumberToReturn 100
 ```
 
 Returns up to 100 modules that contains the tag: Telegram, including more popular modules and modules made by corporations.
 
-### EXAMPLE 14
+### EXAMPLE 15
 ```
 $results = Find-PSGModule -ByRepoInfo Watchers -IncludeCorps -IncludeRegulars -NumberToReturn 40
 $results | Format-List
@@ -152,6 +164,20 @@ $results | Format-List
 Returns up to 40 modules based on number of module project repository watchers.
 It includes more popular modules as well as modules made by corporations.
 A list of results is displayed.
+
+### EXAMPLE 16
+```
+Find-PSGModule
+```
+
+Returns all non-corp/non-regular modules
+
+### EXAMPLE 17
+```
+Find-PSGModule -IncludeCorps -IncludeRegulars
+```
+
+Returns all modules
 
 ## PARAMETERS
 
