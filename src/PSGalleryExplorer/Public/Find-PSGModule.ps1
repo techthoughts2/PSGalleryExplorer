@@ -48,6 +48,10 @@
 
     Returns module that equals the provided name, if found.
 .EXAMPLE
+    Find-PSGModule -ByName 'Posh*'
+
+    Returns all modules that match the wild card provided name, if found.
+.EXAMPLE
     Find-PSGModule -ByTag Telegram
 
     Returns up to 35 modules that contain the tag: Telegram.
@@ -60,6 +64,14 @@
     $results | Format-List
 
     Returns up to 40 modules based on number of module project repository watchers. It includes more popular modules as well as modules made by corporations. A list of results is displayed.
+.EXAMPLE
+    Find-PSGModule
+
+    Returns all non-corp/non-regular modules
+.EXAMPLE
+    Find-PSGModule -IncludeCorps -IncludeRegulars
+
+    Returns all modules
 .PARAMETER ByDownloads
     Find modules by number of PowerShell Gallery Downloads
 .PARAMETER ByRepoInfo
@@ -86,7 +98,7 @@
     PSGalleryExplorer
 #>
 function Find-PSGModule {
-    [CmdletBinding()]
+    [CmdletBinding(defaultparametersetname = 'none')]
     param (
         [Parameter(ParameterSetName = 'GalleryDownloads',
             HelpMessage = 'Find by PowerShell Gallery Downloads')]
@@ -117,7 +129,6 @@ function Find-PSGModule {
         [Parameter(ParameterSetName = 'Names',
             HelpMessage = 'Find by name')]
         [string]
-        [ValidatePattern('^[-_.A-Za-z0-9]+')]
         $ByName,
         [Parameter(ParameterSetName = 'Tags',
             HelpMessage = 'Find by tag')]
@@ -204,13 +215,21 @@ function Find-PSGModule {
         }#elseif_ByRandom
         elseif ($ByName) {
             Write-Verbose -Message 'ByName'
-            $find = $dataSet | Where-Object { $_.Name -eq $ByName }
+            if ($ByName -like '*`**') {
+                $find = $dataSet | Where-Object { $_.Name -like $ByName }
+            }
+            else {
+                $find = $dataSet | Where-Object { $_.Name -eq $ByName }
+            }
         }#ByName
         elseif ($ByTag) {
             Write-Verbose -Message 'ByTag'
             $tagModules = $dataSet | Where-Object { $ByTag -in $_.Tags }
             $find = $tagModules | Sort-Object -Property { [int]$_.AdditionalMetadata.downloadCount } -Descending | Select-Object -First $NumberToReturn
         }#ByTag
+        else {
+            $find = $dataSet | Sort-Object -Property { [int]$_.AdditionalMetadata.downloadCount } -Descending
+        }#everything
         #__________________________________________________________
     }#if_Import-XMLDataSet
     else {
