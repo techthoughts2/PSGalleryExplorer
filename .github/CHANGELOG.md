@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0]
+
+- Module Updates
+  - Module manifest
+    - Added additional tags
+    - Bumped Convert requirement to ```0.6.0```
+  - Separated Pester unit tests into separate test folders
+  - Added support for Pester 5
+  - Minor formatting changes to most functions
+- Build Updates:
+  - Refreshed CodeBuild module build process
+    - Minor updates to AWS CodeBuild buildspec files
+      - pwsh_windows updated to utilize native pwsh using dotnet 3.1
+    - refreshed installed modules to latest available versions
+  - Appveyor MacOS now produces artifacts
+- Minor updates to VSCode settings/tasks/extension files
+- Updated PSGalleryExplorer.build file to align with latest bug fixes
+
 ## [0.8.7]
 
 - Added support for including wildcards in ByName ```Find-PSGModule -ByName Posh*```
