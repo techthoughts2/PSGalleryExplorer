@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "PS CodeBuild Stack: PSGalleryExplorer"
+Description: "MANUAL DEPLOYMENT: PS CodeBuild Stack - PSGalleryExplorer"
 
 Parameters:
 
@@ -19,7 +19,7 @@ Parameters:
     Default: https://github.com/techthoughts2/PSGalleryExplorer
 
   #BranchName:
-  #  Default: master
+  #  Default: main
   #  Description: the GitHub branch that will be monitored for builds (CASE SENSITIVE).
   #  Type: String
 
@@ -171,7 +171,12 @@ Resources:
               Service: codebuild.amazonaws.com
             Action:
               - sts:AssumeRole
+      Description: IAM Role for CodeCommit CodeBuild project
+      # ManagedPolicyArns:
+      #   - String
+      # MaxSessionDuration: Integer
       Path: /
+      # PermissionsBoundary: String
       ManagedPolicyArns:
         - !Ref PolicyArnS3Access
       Policies:
@@ -216,34 +221,55 @@ Resources:
 
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-environment.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html
   # https://docs.amazonaws.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
-  MCodeBuildpsProject:
+  MCBWPowerShell:
     Type: AWS::CodeBuild::Project
     Properties:
       Artifacts:
         Type: NO_ARTIFACTS
       BadgeEnabled: !Ref CodeBuildBadgeEnabled
+      # BuildBatchConfig:
+      #   ProjectBuildBatchConfig
+      # Cache:
+      #   ProjectCache
+      # ConcurrentBuildLimit: Integer
       Description: !Ref ProjectDescription
+      # EncryptionKey: !GetAtt KMSKey.Arn
       Environment:
-        #ComputeType: !Ref CodeBuildComputeType
+        # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
-        Image: aws/codebuild/windows-base:2019-1.0
         Type: WINDOWS_SERVER_2019_CONTAINER
-      Name: !Join
-        - "-"
-        - - !Ref ProjectName
-          - master
-          - powershell_windows
+        Image: aws/codebuild/windows-base:2019-1.0
+        # EnvironmentVariables:
+        #   - Name: ARTIFACT_S3_BUCKET
+        #     Value: !Ref something
+      # LogsConfig:
+      Name: !Sub '${ProjectName}-main-windows-powershell'
+      # QueuedTimeoutInMinutes: Integer
+      # SecondaryArtifacts:
+      #   - Artifacts
+      # SecondarySources:
+      #   - Source
+      # SecondarySourceVersions:
+      #   - ProjectSourceVersion
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
-        Type: GITHUB
         Auth:
           Type: OAUTH
-        Location: !Ref RepositoryUrl
         BuildSpec: buildspec_powershell_windows.yml
-      Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        # GitCloneDepth: Integer
+        # GitSubmodulesConfig:
+        #   GitSubmodulesConfig
+        # InsecureSsl: Boolean
+        Location: !Ref RepositoryUrl
+        ReportBuildStatus: true
+        # SourceIdentifier:
+        Type: GITHUB
+      # SourceVersion:
       TimeoutInMinutes: !Ref CodeBuildTimeoutInMinutes
       Triggers:
         Webhook: true
@@ -251,11 +277,11 @@ Resources:
           - - Type: EVENT
               Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
             - Type: HEAD_REF
-              Pattern: ^refs/heads/master$
+              Pattern: ^refs/heads/main$
           - - Type: EVENT
               Pattern: PUSH
             - Type: HEAD_REF
-              Pattern: ^refs/heads/master$
+              Pattern: ^refs/heads/main$
             - Type: FILE_PATH
               Pattern: "^README.*"
               ExcludeMatchedPattern: true
@@ -265,36 +291,65 @@ Resources:
             - Type: FILE_PATH
               Pattern: "^lambdafunctions.*"
               ExcludeMatchedPattern: true
+      # Visibility: String
+      # VpcConfig:
+      Tags:
+        - Key: Service
+          Value: !Ref ProjectName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
-  # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
-  ECodeBuildpsProject:
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-environment.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html
+  # https://docs.amazonaws.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
+  ECBWPowerShell:
     Type: AWS::CodeBuild::Project
     Properties:
       Artifacts:
         Type: NO_ARTIFACTS
       BadgeEnabled: !Ref CodeBuildBadgeEnabled
+      # BuildBatchConfig:
+      #   ProjectBuildBatchConfig
+      # Cache:
+      #   ProjectCache
+      # ConcurrentBuildLimit: Integer
       Description: !Ref ProjectDescription
+      # EncryptionKey: !GetAtt KMSKey.Arn
       Environment:
-        #ComputeType: !Ref CodeBuildComputeType
+        # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
-        Image: aws/codebuild/windows-base:2019-1.0
         Type: WINDOWS_SERVER_2019_CONTAINER
-      Name: !Join
-        - "-"
-        - - !Ref ProjectName
-          - enhancements
-          - powershell_windows
+        Image: aws/codebuild/windows-base:2019-1.0
+        # EnvironmentVariables:
+        #   - Name: ARTIFACT_S3_BUCKET
+        #     Value: !Ref something
+      # LogsConfig:
+      Name: !Sub '${ProjectName}-Enhancements-windows-powershell'
+      # QueuedTimeoutInMinutes: Integer
+      # SecondaryArtifacts:
+      #   - Artifacts
+      # SecondarySources:
+      #   - Source
+      # SecondarySourceVersions:
+      #   - ProjectSourceVersion
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
-        Type: GITHUB
         Auth:
           Type: OAUTH
-        Location: !Ref RepositoryUrl
         BuildSpec: buildspec_powershell_windows.yml
-      Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        # GitCloneDepth: Integer
+        # GitSubmodulesConfig:
+        #   GitSubmodulesConfig
+        # InsecureSsl: Boolean
+        Location: !Ref RepositoryUrl
+        ReportBuildStatus: true
+        # SourceIdentifier:
+        Type: GITHUB
+      # SourceVersion:
       TimeoutInMinutes: !Ref CodeBuildTimeoutInMinutes
       Triggers:
         Webhook: true
@@ -316,36 +371,66 @@ Resources:
             - Type: FILE_PATH
               Pattern: "^lambdafunctions.*"
               ExcludeMatchedPattern: true
+      # Visibility: String
+      # VpcConfig:
+      Tags:
+        - Key: Service
+          Value: !Ref ProjectName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
+
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
-  # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
-  MCodeBuildpwshcoreProject:
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-environment.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html
+  # https://docs.amazonaws.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
+  MCBWpwsh:
     Type: AWS::CodeBuild::Project
     Properties:
       Artifacts:
         Type: NO_ARTIFACTS
       BadgeEnabled: !Ref CodeBuildBadgeEnabled
+      # BuildBatchConfig:
+      #   ProjectBuildBatchConfig
+      # Cache:
+      #   ProjectCache
+      # ConcurrentBuildLimit: Integer
       Description: !Ref ProjectDescription
+      # EncryptionKey: !GetAtt KMSKey.Arn
       Environment:
-        #ComputeType: !Ref CodeBuildComputeType
+        # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
-        Image: aws/codebuild/windows-base:2019-1.0
         Type: WINDOWS_SERVER_2019_CONTAINER
-      Name: !Join
-        - "-"
-        - - !Ref ProjectName
-          - master
-          - pwsh_windows
+        Image: aws/codebuild/windows-base:2019-1.0
+        # EnvironmentVariables:
+        #   - Name: ARTIFACT_S3_BUCKET
+        #     Value: !Ref something
+      # LogsConfig:
+      Name: !Sub '${ProjectName}-main-windows-pwsh'
+      # QueuedTimeoutInMinutes: Integer
+      # SecondaryArtifacts:
+      #   - Artifacts
+      # SecondarySources:
+      #   - Source
+      # SecondarySourceVersions:
+      #   - ProjectSourceVersion
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
-        Type: GITHUB
         Auth:
           Type: OAUTH
-        Location: !Ref RepositoryUrl
         BuildSpec: buildspec_pwsh_windows.yml
-      Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        # GitCloneDepth: Integer
+        # GitSubmodulesConfig:
+        #   GitSubmodulesConfig
+        # InsecureSsl: Boolean
+        Location: !Ref RepositoryUrl
+        ReportBuildStatus: true
+        # SourceIdentifier:
+        Type: GITHUB
+      # SourceVersion:
       TimeoutInMinutes: !Ref CodeBuildTimeoutInMinutes
       Triggers:
         Webhook: true
@@ -353,11 +438,11 @@ Resources:
           - - Type: EVENT
               Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
             - Type: HEAD_REF
-              Pattern: ^refs/heads/master$
+              Pattern: ^refs/heads/main$
           - - Type: EVENT
               Pattern: PUSH
             - Type: HEAD_REF
-              Pattern: ^refs/heads/master$
+              Pattern: ^refs/heads/main$
             - Type: FILE_PATH
               Pattern: "^README.*"
               ExcludeMatchedPattern: true
@@ -367,36 +452,66 @@ Resources:
             - Type: FILE_PATH
               Pattern: "^lambdafunctions.*"
               ExcludeMatchedPattern: true
+      # Visibility: String
+      # VpcConfig:
+      Tags:
+        - Key: Service
+          Value: !Ref ProjectName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
+
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
-  # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
-  ECodeBuildpwshcoreProject:
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-environment.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html
+  # https://docs.amazonaws.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
+  ECBWpwsh:
     Type: AWS::CodeBuild::Project
     Properties:
       Artifacts:
         Type: NO_ARTIFACTS
       BadgeEnabled: !Ref CodeBuildBadgeEnabled
+      # BuildBatchConfig:
+      #   ProjectBuildBatchConfig
+      # Cache:
+      #   ProjectCache
+      # ConcurrentBuildLimit: Integer
       Description: !Ref ProjectDescription
+      # EncryptionKey: !GetAtt KMSKey.Arn
       Environment:
-        #ComputeType: !Ref CodeBuildComputeType
+        # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
-        Image: aws/codebuild/windows-base:2019-1.0
         Type: WINDOWS_SERVER_2019_CONTAINER
-      Name: !Join
-        - "-"
-        - - !Ref ProjectName
-          - enhancements
-          - pwsh_windows
+        Image: aws/codebuild/windows-base:2019-1.0
+        # EnvironmentVariables:
+        #   - Name: ARTIFACT_S3_BUCKET
+        #     Value: !Ref something
+      # LogsConfig:
+      Name: !Sub '${ProjectName}-Enhancements-windows-pwsh'
+      # QueuedTimeoutInMinutes: Integer
+      # SecondaryArtifacts:
+      #   - Artifacts
+      # SecondarySources:
+      #   - Source
+      # SecondarySourceVersions:
+      #   - ProjectSourceVersion
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
-        Type: GITHUB
         Auth:
           Type: OAUTH
-        Location: !Ref RepositoryUrl
         BuildSpec: buildspec_pwsh_windows.yml
-      Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        # GitCloneDepth: Integer
+        # GitSubmodulesConfig:
+        #   GitSubmodulesConfig
+        # InsecureSsl: Boolean
+        Location: !Ref RepositoryUrl
+        ReportBuildStatus: true
+        # SourceIdentifier:
+        Type: GITHUB
+      # SourceVersion:
       TimeoutInMinutes: !Ref CodeBuildTimeoutInMinutes
       Triggers:
         Webhook: true
@@ -418,37 +533,66 @@ Resources:
             - Type: FILE_PATH
               Pattern: "^lambdafunctions.*"
               ExcludeMatchedPattern: true
+      # Visibility: String
+      # VpcConfig:
+      Tags:
+        - Key: Service
+          Value: !Ref ProjectName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
+
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
-  # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
-  MCodeBuildpwshProject:
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-environment.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html
+  # https://docs.amazonaws.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
+  MCBLpwsh:
     Type: AWS::CodeBuild::Project
     Properties:
       Artifacts:
         Type: NO_ARTIFACTS
       BadgeEnabled: !Ref CodeBuildBadgeEnabled
+      # BuildBatchConfig:
+      #   ProjectBuildBatchConfig
+      # Cache:
+      #   ProjectCache
+      # ConcurrentBuildLimit: Integer
       Description: !Ref ProjectDescription
+      # EncryptionKey: !GetAtt KMSKey.Arn
       Environment:
         #ComputeType: !Ref CodeBuildComputeType
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:4.0
-        #Type: !Ref CodeBuildEnvironment
         Type: LINUX_CONTAINER
-      Name: !Join
-        - "-"
-        - - !Ref ProjectName
-          - master
-          - pwsh_linux
+        Image: aws/codebuild/standard:5.0
+        # EnvironmentVariables:
+        #   - Name: ARTIFACT_S3_BUCKET
+        #     Value: !Ref something
+      # LogsConfig:
+      Name: !Sub '${ProjectName}-main-linux-pwsh'
+      # QueuedTimeoutInMinutes: Integer
+      # SecondaryArtifacts:
+      #   - Artifacts
+      # SecondarySources:
+      #   - Source
+      # SecondarySourceVersions:
+      #   - ProjectSourceVersion
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
-        Type: GITHUB
         Auth:
           Type: OAUTH
-        Location: !Ref RepositoryUrl
         BuildSpec: buildspec_pwsh_linux.yml
-      Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        # GitCloneDepth: Integer
+        # GitSubmodulesConfig:
+        #   GitSubmodulesConfig
+        # InsecureSsl: Boolean
+        Location: !Ref RepositoryUrl
+        ReportBuildStatus: true
+        # SourceIdentifier:
+        Type: GITHUB
+      # SourceVersion:
       TimeoutInMinutes: !Ref CodeBuildTimeoutInMinutes
       Triggers:
         Webhook: true
@@ -456,11 +600,11 @@ Resources:
           - - Type: EVENT
               Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
             - Type: HEAD_REF
-              Pattern: ^refs/heads/master$
+              Pattern: ^refs/heads/main$
           - - Type: EVENT
               Pattern: PUSH
             - Type: HEAD_REF
-              Pattern: ^refs/heads/master$
+              Pattern: ^refs/heads/main$
             - Type: FILE_PATH
               Pattern: "^README.*"
               ExcludeMatchedPattern: true
@@ -470,37 +614,66 @@ Resources:
             - Type: FILE_PATH
               Pattern: "^lambdafunctions.*"
               ExcludeMatchedPattern: true
+      # Visibility: String
+      # VpcConfig:
+      Tags:
+        - Key: Service
+          Value: !Ref ProjectName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
+
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
-  # https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
-  ECodeBuildpwshProject:
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-environment.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html
+  # https://docs.amazonaws.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-webhookfilter.html
+  ECBLpwsh:
     Type: AWS::CodeBuild::Project
     Properties:
       Artifacts:
         Type: NO_ARTIFACTS
       BadgeEnabled: !Ref CodeBuildBadgeEnabled
+      # BuildBatchConfig:
+      #   ProjectBuildBatchConfig
+      # Cache:
+      #   ProjectCache
+      # ConcurrentBuildLimit: Integer
       Description: !Ref ProjectDescription
+      # EncryptionKey: !GetAtt KMSKey.Arn
       Environment:
         #ComputeType: !Ref CodeBuildComputeType
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:4.0
-        #Type: !Ref CodeBuildEnvironment
         Type: LINUX_CONTAINER
-      Name: !Join
-        - "-"
-        - - !Ref ProjectName
-          - enhancements
-          - pwsh_linux
+        Image: aws/codebuild/standard:5.0
+        # EnvironmentVariables:
+        #   - Name: ARTIFACT_S3_BUCKET
+        #     Value: !Ref something
+      # LogsConfig:
+      Name: !Sub '${ProjectName}-Enhancements-linux-pwsh'
+      # QueuedTimeoutInMinutes: Integer
+      # SecondaryArtifacts:
+      #   - Artifacts
+      # SecondarySources:
+      #   - Source
+      # SecondarySourceVersions:
+      #   - ProjectSourceVersion
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
-        Type: GITHUB
         Auth:
           Type: OAUTH
-        Location: !Ref RepositoryUrl
         BuildSpec: buildspec_pwsh_linux.yml
-      Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        # GitCloneDepth: Integer
+        # GitSubmodulesConfig:
+        #   GitSubmodulesConfig
+        # InsecureSsl: Boolean
+        Location: !Ref RepositoryUrl
+        ReportBuildStatus: true
+        # SourceIdentifier:
+        Type: GITHUB
+      # SourceVersion:
       TimeoutInMinutes: !Ref CodeBuildTimeoutInMinutes
       Triggers:
         Webhook: true
@@ -522,11 +695,29 @@ Resources:
             - Type: FILE_PATH
               Pattern: "^lambdafunctions.*"
               ExcludeMatchedPattern: true
+      Tags:
+        - Key: Service
+          Value: !Ref ProjectName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
 
   # An SNS Topic used for CodeBuild status updates
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html
   SNSTopicForCodeBuildUpdates:
     Type: AWS::SNS::Topic
+    Properties:
+    #   ContentBasedDeduplication: Boolean
+    #   DisplayName: String
+    #   FifoTopic: Boolean
+    #   KmsMasterKeyId: String
+    #   Subscription:
+    #     - Subscription
+      Tags:
+          - Key: Service
+            Value: !Ref ProjectName
+          - Key: StackName
+            Value: !Ref AWS::StackName
 
   # The SNS Topic Policy
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html
@@ -575,12 +766,12 @@ Resources:
             - FAILED
             - STOPPED
           project-name:
-            - !Ref MCodeBuildpsProject
-            - !Ref MCodeBuildpwshcoreProject
-            - !Ref MCodeBuildpwshProject
-            - !Ref ECodeBuildpsProject
-            - !Ref ECodeBuildpwshcoreProject
-            - !Ref ECodeBuildpwshProject
+            - !Ref MCBWPowerShell
+            - !Ref MCBWpwsh
+            - !Ref MCBLpwsh
+            - !Ref ECBWPowerShell
+            - !Ref ECBWpwsh
+            - !Ref ECBLpwsh
       State: ENABLED
       Targets:
         - Arn: !Ref SNSTopicForCodeBuildUpdates
@@ -595,45 +786,105 @@ Resources:
 
 Outputs:
 
+  CodeBuildRoleArn:
+    Description: Arn of the CodeBuild IAM Role
+    Value: !GetAtt CodeBuildServiceRole.Arn
+
   SNSTopic:
     Description: The SNS Topic used for CodeBuild status updates
     Value: !Ref SNSTopicForCodeBuildUpdates
-  CodeBuildpsProject:
-    Description: The name of the CodeBuild Project.
-    Value: !Ref MCodeBuildpsProject
-  CodeBuildpsURL:
-    Description: CodeBuild URL
+
+  # -------------------------------------------------------------
+  # MAIN
+  MCBWPowerShellName:
+    Description: The name of the main Windows - Windows PowerShell CodeBuild Project.
+    Value: !Ref MCBWPowerShell
+
+  MCBWPowerShellURL:
+    Description: main Windows - Windows PowerShell CodeBuild URL
     Value:
       Fn::Join:
         - ""
         - - https://console.aws.amazon.com/codebuild/home?region=
           - Ref: AWS::Region
           - "#/projects/"
-          - Ref: MCodeBuildpsProject
+          - Ref: MCBWPowerShell
           - "/view"
-  CodeBuildpwshcoreProject:
-    Description: The name of the CodeBuild Project.
-    Value: !Ref MCodeBuildpwshcoreProject
-  CodeBuildpwshcoreURL:
-    Description: CodeBuild URL
+
+  MCBWpwshName:
+    Description: The name of the main Windows - PowerShell CodeBuild Project.
+    Value: !Ref MCBWpwsh
+
+  MCBWpwshURL:
+    Description: main Windows - PowerShell CodeBuild URL
     Value:
       Fn::Join:
         - ""
         - - https://console.aws.amazon.com/codebuild/home?region=
           - Ref: AWS::Region
           - "#/projects/"
-          - Ref: MCodeBuildpwshcoreProject
+          - Ref: MCBWpwsh
           - "/view"
-  CodeBuildpwshProject:
-    Description: The name of the CodeBuild Project.
-    Value: !Ref MCodeBuildpwshProject
-  CodeBuildpwshURL:
-    Description: CodeBuild URL
+
+  MCBLpwshName:
+    Description: The name of the main Linux - PowerShell CodeBuild Project.
+    Value: !Ref MCBLpwsh
+
+  MCBLpwshURL:
+    Description: main Linux - PowerShell CodeBuild URL
     Value:
       Fn::Join:
         - ""
         - - https://console.aws.amazon.com/codebuild/home?region=
           - Ref: AWS::Region
           - "#/projects/"
-          - Ref: MCodeBuildpwshProject
+          - Ref: MCBLpwsh
           - "/view"
+
+  # -------------------------------------------------------------
+  # ENHANCEMENTS
+  ECBWPowerShellName:
+    Description: The name of the Enhancements Windows - Windows PowerShell CodeBuild Project.
+    Value: !Ref ECBWPowerShell
+
+  ECBWPowerShellURL:
+    Description: Enhancements Windows - Windows PowerShell CodeBuild URL
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/codebuild/home?region=
+          - Ref: AWS::Region
+          - "#/projects/"
+          - Ref: ECBWPowerShell
+          - "/view"
+
+  ECBWpwshName:
+    Description: The name of the Enhancements Windows - PowerShell CodeBuild Project.
+    Value: !Ref ECBWpwsh
+
+  ECBWpwshURL:
+    Description: Enhancements Windows - PowerShell CodeBuild URL
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/codebuild/home?region=
+          - Ref: AWS::Region
+          - "#/projects/"
+          - Ref: ECBWpwsh
+          - "/view"
+
+  ECBLpwshName:
+    Description: The name of the Enhancements Linux - PowerShell CodeBuild Project.
+    Value: !Ref ECBLpwsh
+
+  ECBLpwshURL:
+    Description: Enhancements Linux - PowerShell CodeBuild URL
+    Value:
+      Fn::Join:
+        - ""
+        - - https://console.aws.amazon.com/codebuild/home?region=
+          - Ref: AWS::Region
+          - "#/projects/"
+          - Ref: ECBLpwsh
+          - "/view"
+  # -------------------------------------------------------------

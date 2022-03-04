@@ -20,8 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       - pwsh_windows updated to utilize native pwsh using dotnet 3.1
     - refreshed installed modules to latest available versions
   - Appveyor MacOS now produces artifacts
+  - Updated PSGalleryExplorer.build file to align with latest bug fixes
+  - Updated CodeBuild images to latest available
+  - Added support for using new main branch instead of master
 - Minor updates to VSCode settings/tasks/extension files
-- Updated PSGalleryExplorer.build file to align with latest bug fixes
 
 ## [0.8.7]
 
