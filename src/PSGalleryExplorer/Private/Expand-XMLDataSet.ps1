@@ -12,7 +12,7 @@
 .NOTES
     Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
 .COMPONENT
-    pwshCloudCommnads
+    PSGalleryExplorer
 #>
 function Expand-XMLDataSet {
     [CmdletBinding()]
