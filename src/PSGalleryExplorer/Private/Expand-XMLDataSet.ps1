@@ -2,7 +2,7 @@
 .SYNOPSIS
     Unzips the XML data set.
 .DESCRIPTION
-    Evalutes for previous version of XML data set and removes if required. Expands the XML data set for use.
+    Evaluates for previous version of XML data set and removes if required. Expands the XML data set for use.
 .EXAMPLE
     Expand-XMLDataSet
 
@@ -21,7 +21,7 @@ function Expand-XMLDataSet {
     $result = $true #assume the best
     $dataFile = '{0}/{1}' -f $script:dataPath, $script:dataFile
 
-    Write-Verbose -Message 'Testing if data set file alread exists...'
+    Write-Verbose -Message 'Testing if data set file already exists...'
     try {
         $pathEval = Test-Path -Path $dataFile -ErrorAction Stop
         Write-Verbose -Message "EVAL: $true"

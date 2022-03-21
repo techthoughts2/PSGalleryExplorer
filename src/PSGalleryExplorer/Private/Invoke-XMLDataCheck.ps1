@@ -63,10 +63,10 @@ function Invoke-XMLDataCheck {
                         $results = $false
                     }
                 } #if_Confirm
-            } #if_dataoutput
+            } #if_data_output
             else {
                 $results = $false
-            } #else_dataoutput
+            } #else_data_output
 
         } #if_Should
     } #process
