@@ -10,7 +10,7 @@
 .OUTPUTS
     System.Boolean
 .NOTES
-    Used for PSGalleryExplorer
+    Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
 .COMPONENT
     PSGalleryExplorer
 #>
@@ -19,22 +19,22 @@ function Confirm-XMLDataSet {
     param (
     )
     $result = $true #assume the best
-    $dataFile = "$script:dataPath\$script:dataFile"
+    $dataFile = '{0}/{1}' -f $script:dataPath, $script:dataFile
 
     Write-Verbose -Message 'Confirming valid and current data set...'
 
     try {
         $pathEval = Test-Path -Path $dataFile -ErrorAction Stop
-    }#try
+    }
     catch {
         $result = $false
         Write-Error $_
         return $result
-    }#catch
+    }
 
     if (-not ($pathEval)) {
         $result = $false
-    }#if_TestPath
+    } #if_pathEval
     else {
         Write-Verbose 'Data file found. Checking date of file...'
         try {
@@ -55,13 +55,13 @@ function Confirm-XMLDataSet {
             else {
                 Write-Verbose 'Data file verified'
             }
-        }
+        } #if_fileData
         else {
             Write-Warning 'Unable to retrieve file information for PSGalleryExplorer data set.'
             $result = $false
             return $result
-        }
-    }
+        } #else_fileData
+    } #else_pathEval
 
     return $result
-}#Confirm-XMLDataSet
+} #Confirm-XMLDataSet

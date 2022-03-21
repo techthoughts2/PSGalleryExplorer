@@ -21,7 +21,7 @@ Enhancements | ![E-W-Build Status](https://codebuild.us-west-2.amazonaws.com/bad
 
 PSGalleryExplorer is a PowerShell module that lets you search, explore, and discover PowerShell Gallery modules based on various criteria.
 
-![PSGalleryExplorer Gif Demo](media/psgalleryexplorer.gif "PSGalleryExplorer in action")
+![PSGalleryExplorer Gif Demo](media/psgalleryexplorer.gif)
 
 ## Description
 

@@ -10,6 +10,7 @@
 .OUTPUTS
     System.Boolean
 .NOTES
+    Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
     Parent process for getting XML data.
 .COMPONENT
     PSGalleryExplorer
@@ -31,15 +32,15 @@ function Import-XMLDataSet {
                 }
                 $fileData = Get-Content @getContentSplat
                 $script:glData = $fileData | ConvertFrom-Clixml -ErrorAction Stop
-            }#try
+            } #try
             catch {
                 $result = $false
                 Write-Error $_
-            }#catch
-        }#if_dataCheck
+            } #catch
+        } #if_dataCheck
         else {
             $result = $false
-        }#else_dataCheck
-    }#if_gldata
+        } #else_dataCheck
+    } #if_gldata
     return $result
-}#Import-XMLDataSet
+} #Import-XMLDataSet
