@@ -33,7 +33,7 @@ Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
 .COMPONENT
     PSGalleryExplorer
 #>
-function Test-HashValues {
+function Test-HashValue {
     param (
         [Parameter(Mandatory = $true,
             HelpMessage = 'Original File Path')]
@@ -51,7 +51,7 @@ function Test-HashValues {
         $match = $true
     }
     return $match
-}
+} #Test-HashValue
 
 <#
 .SYNOPSIS
@@ -193,7 +193,7 @@ if ($gitXMLFileInfo) {
     #_____________________________________________
     Write-Host "Comparing hash of two files..."
     if ($dlEval -eq $true) {
-        $hashComparison = Test-HashValues -orgPath "$env:TEMP/$fKey" -newPath "$env:TEMP/original.xml"
+        $hashComparison = Test-HashValue -orgPath "$env:TEMP/$fKey" -newPath "$env:TEMP/original.xml"
     }
     else {
         $hashComparison = $false
