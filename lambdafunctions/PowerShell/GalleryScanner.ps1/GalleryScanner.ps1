@@ -17,12 +17,12 @@
 
 #Requires -Modules @{ModuleName='PackageManagement';ModuleVersion='1.4.7'}
 #Requires -Modules @{ModuleName='PowerShellGet';ModuleVersion='2.2.4.1'}
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SQS';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SQS';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.6.0'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.0.0'}
 
 # Uncomment to send the input event to CloudWatch Logs
 Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
@@ -208,7 +208,7 @@ if ($allModules) {
                 Write-Error $_
                 $sqsErrors = $true
             }
-        }#if_GitHub
+        } #if_GitHub
         #---------------------------
         # gitlab
         if ($moduleURI -match $gitlabCriteria1) {
@@ -245,16 +245,16 @@ if ($allModules) {
                 Write-Error $_
                 $sqsErrors = $true
             }
-        }#if_GitLab
+        } #if_GitLab
         #---------------------------
-    }#foreach_module
+    } #foreach_module
     if ($sqsErrors -eq $true) {
         Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - GallerySCanner had issues sending SQS messages.'
     }
     return
-}#if_allmodules
+} #if_allmodules
 else {
     Write-Warning -Message 'No data was returned from Find-Module'
     Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - GallerySCanner no data was returend from Find-Module.'
     return
-}#else_allmodules
+} #else_allmodules

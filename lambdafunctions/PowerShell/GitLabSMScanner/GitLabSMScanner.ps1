@@ -13,11 +13,11 @@
 # $env:TELEGRAM_SECRET
 # $env:GITHUB_SECRET
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.6.0'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.0.0'}
 
 # State Machine Execution -> Lambda -> S3
 
@@ -57,7 +57,7 @@ function Send-TelegramError {
     catch {
         Write-Error $_
     }
-}#Send-TelegramError
+} #Send-TelegramError
 
 <#
 .SYNOPSIS
@@ -88,7 +88,7 @@ function Convert-GitLabProjectURI {
     }
 
     return $reconstruct
-}#Convert-GitLabProjectURI
+} #Convert-GitLabProjectURI
 
 <#
 .SYNOPSIS
@@ -194,7 +194,7 @@ function Get-GitLabProjectInfo {
         }
     }
     return $xml
-}#Get-GitLabProjectInfo
+} #Get-GitLabProjectInfo
 
 #endregion
 
@@ -250,7 +250,7 @@ $uriEval = Confirm-ValidGitLabAPIURL -URI $uAPI
 if ($script:rateLimit -eq $true) {
     Write-Host 'API calls still too low after delay...'
     return
-}#if_rate_limit
+} #if_rate_limit
 else {
     Write-Host 'Converting project URI to API URI...'
     $uAPI = Convert-GitLabProjectURI -URI $gitlabURI
@@ -297,11 +297,11 @@ else {
             # reason has already been logged in child function
         }
 
-    }#if_valid_uri
+    } #if_valid_uri
     else {
         Write-Host 'GitLab URI was not use-able for GitLab data query'
-    }#else_valid_uri
+    } #else_valid_uri
 
-}##else_rate_limit
+} ##else_rate_limit
 
 #endregion

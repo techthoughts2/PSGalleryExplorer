@@ -113,7 +113,7 @@ if ($galleryDownload -eq $false) {
         # Expand downloaded file
         Expand-Archive -Path $localFile -DestinationPath $moduleVersionPath -Force
     }
-}#if_GalleryDownload
+} #if_GalleryDownload
 else {
     Get-PackageProvider -Name Nuget -ForceBootstrap | Out-Null
     'Installing PowerShell Modules'

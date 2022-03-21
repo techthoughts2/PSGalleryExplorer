@@ -7,21 +7,26 @@ Parameters:
   ProjectName:
     Default: PSGalleryExplorer
     Type: String
+
   RepositoryName:
     Description: Name of the GitHub repo to pull from and build off of
     Default: PSGalleryExplorer
     Type: String
+
   RepositoryUrl:
     Description: "HTTPS Clone URL of the repository in GitHub. Example: 'https://github.com/owner/repo.git'"
     Default: 'https://github.com/techthoughts2/PSGalleryExplorer.git'
     Type: String
+
   GitHubOwner:
     Description: The name of the GitHub user or organization who owns the GitHub repository.
     Type: String
+
   BranchName:
     Default: pipeline
     Description: Choose which Branch do you want to use
     Type: String
+
   CodeBuildImageUri:
     Default: aws/codebuild/amazonlinux2-x86_64-standard:3.0
     Description: CodeBuild image to use
@@ -160,7 +165,12 @@ Resources:
               Service: codebuild.amazonaws.com
             Action:
               - sts:AssumeRole
+      Description: IAM Role for CodeBuild project
+      # ManagedPolicyArns:
+      #   - String
+      # MaxSessionDuration: Integer
       Path: /
+      # PermissionsBoundary: String
       Policies:
         - PolicyName: CBCloudWatchPublishing
           PolicyDocument:
@@ -214,6 +224,10 @@ Resources:
                 Resource: '*'
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-environment.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html
   UnitTestAndBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -221,13 +235,18 @@ Resources:
         Type: S3
         Location: !Ref ArtifactS3Bucket
         Name: !Sub '${AWS::StackName}-UnitTestAndBuild'
-      Name: !Sub '${ProjectName}-${AWS::StackName}-UnitTestAndBuild'
-      Description: Unit Testing and Building
       BadgeEnabled: true
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      # BuildBatchConfig:
+      #   ProjectBuildBatchConfig
+      # Cache:
+      #   ProjectCache
+      # ConcurrentBuildLimit: Integer
+      Description: Unit Testing and Building
+      # EncryptionKey: !GetAtt KMSKey.Arn
       Environment:
+        # Certificate:
+        ComputeType: BUILD_GENERAL1_SMALL #3GB Memory | 2 vCPU | 64GB HD
         Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
         Image: !Ref CodeBuildImageUri
         EnvironmentVariables:
           - Name: ARTIFACT_S3_BUCKET
@@ -238,13 +257,33 @@ Resources:
             Value: !Ref RepositoryName
           - Name: AWSRegion
             Value: !Sub ${AWS::Region}
+      # LogsConfig:
+      Name: !Sub '${ProjectName}-${AWS::StackName}-UnitTestAndBuild'
+      # QueuedTimeoutInMinutes: Integer
+      # SecondaryArtifacts:
+      #   - Artifacts
+      # SecondarySources:
+      #   - Source
+      # SecondarySourceVersions:
+      #   - ProjectSourceVersion
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
-        Type: GITHUB
         Auth:
           Type: OAUTH
-        Location: !Ref RepositoryUrl
         BuildSpec: CodeBuild/UnitTestAndBuild/buildspec.yml
+        # GitCloneDepth: Integer
+        # GitSubmodulesConfig:
+        #   GitSubmodulesConfig
+        # InsecureSsl: Boolean
+        Location: !Ref RepositoryUrl
+        # SourceIdentifier:
+        Type: GITHUB
+      # SourceVersion:
       TimeoutInMinutes: 30
+      # Triggers:
+      #   ProjectTriggers
+      # Visibility: String
+      # VpcConfig:
       Tags:
         - Key: Name
           Value: !Sub '${ProjectName}-${AWS::StackName}-UnitTestAndBuild'
@@ -284,12 +323,18 @@ Resources:
     Properties:
       Artifacts:
         Type: NO_ARTIFACTS
-      Name: !Sub '${ProjectName}-${AWS::StackName}--IntegrationTest'
+      # BadgeEnabled: Boolean
+      # BuildBatchConfig:
+      #   ProjectBuildBatchConfig
+      # Cache:
+      #   ProjectCache
+      # ConcurrentBuildLimit: Integer
       Description: Integration Testing
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      # EncryptionKey: !GetAtt KMSKey.Arn
       Environment:
+        # Certificate:
         Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
+        ComputeType: BUILD_GENERAL1_SMALL #3GB Memory | 2 vCPU | 64GB HD
         Image: !Ref CodeBuildImageUri
         EnvironmentVariables:
           - Name: ARTIFACT_S3_BUCKET
@@ -300,13 +345,34 @@ Resources:
             Value: !Ref AWS::Region
           - Name: projectName
             Value: !Ref ProjectName
+      # LogsConfig:
+      Name: !Sub '${ProjectName}-${AWS::StackName}--IntegrationTest'
+      # QueuedTimeoutInMinutes: Integer
+      # SecondaryArtifacts:
+      #   - Artifacts
+      # SecondarySources:
+      #   - Source
+      # SecondarySourceVersions:
+      #   - ProjectSourceVersion
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
-        Type: GITHUB
         Auth:
           Type: OAUTH
-        Location: !Ref RepositoryUrl
         BuildSpec: CodeBuild/IntegrationTest/buildspec.yml
+        # GitCloneDepth: Integer
+        # GitSubmodulesConfig:
+        #   GitSubmodulesConfig
+        # InsecureSsl: Boolean
+        Location: !Ref RepositoryUrl
+        ReportBuildStatus: true
+        # SourceIdentifier:
+        Type: GITHUB
+      # SourceVersion:
       TimeoutInMinutes: 45
+      # Triggers:
+      #   ProjectTriggers
+      # Visibility: String
+      # VpcConfig:
       Tags:
         - Key: Name
           Value: !Sub '${ProjectName}-${AWS::StackName}-IntegrationTest'
@@ -335,6 +401,10 @@ Resources:
                 - cloudformation.amazonaws.com
             Action:
               - 'sts:AssumeRole'
+      Description: IAM Role for CodePipeline GitHub project
+      # ManagedPolicyArns:
+      #   - String
+      # MaxSessionDuration: Integer
       Path: /
       Policies:
         - PolicyName: 'CodePipelineNestedCFNAccessPolicy'
@@ -543,6 +613,20 @@ Resources:
               RunOrder: 2
 
 Outputs:
+  ArtifactS3BucketName:
+    Description: Name of the ArtifactS3Bucket Amazon S3 bucket
+    Value: !Ref ArtifactS3Bucket
+    Export:
+      Name: !Sub ${ProjectName}-ArtifactS3BucketName
+
+  ArtifactS3BucketARN:
+    Description: ARN of the ArtifactS3Bucket Amazon S3 bucket
+    Value: !GetAtt ArtifactS3Bucket.Arn
+
+  CodeBuildServiceRoleArn:
+    Description: Arn of the CodeBuildServiceRole IAM Role
+    Value: !GetAtt CodeBuildServiceRole.Arn
+
   UnitTestAndBuildProject:
     Description: The name of the CodeBuild project
     Value: !Ref UnitTestAndBuildProject

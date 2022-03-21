@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated PSGalleryExplorer.build file to align with latest bug fixes
   - Updated CodeBuild images to latest available
   - Added support for using new main branch instead of master
+  - Updated CodeBuild image from ```aws/codebuild/amazonlinux2-x86_64-standard:3.0``` to ```aws/codebuild/standard:5.0```
+  - Added tagging to Lambda log groups
+  - ***Updated all lambdas from ```.NET 3.1``` to ```.NET 6```***
+  - Bumped all PowerShell module versions to latest version
+  - Added Pester 5 support
 - Minor updates to VSCode settings/tasks/extension files
 
 ## [0.8.7]

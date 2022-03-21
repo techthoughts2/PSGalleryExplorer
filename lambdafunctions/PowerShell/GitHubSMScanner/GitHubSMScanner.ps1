@@ -13,11 +13,11 @@
 # $env:TELEGRAM_SECRET
 # $env:GITHUB_SECRET
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.6.0'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.0.0'}
 
 # State Machine Execution -> Lambda -> S3
 
@@ -65,7 +65,7 @@ function Test-GitHubRateLimit {
     }
 
     return $remaining
-}#Test-GitHubRateLimit
+} #Test-GitHubRateLimit
 
 <#
 .SYNOPSIS
@@ -139,7 +139,7 @@ function Get-GitHubProjectInfo {
         }
     }
     return $xml
-}#Get-GitHubProjectInfo
+} #Get-GitHubProjectInfo
 
 <#
 .SYNOPSIS
@@ -280,7 +280,7 @@ if ($uriEval -eq $true) {
     if ($remaining -le 50) {
         Write-Host 'API calls still too low after delay...'
         return
-    }#if_API_lt_300
+    } #if_API_lt_300
     else {
         Write-Host 'Quering GitHub API for project info...'
         $xml = Get-GitHubProjectInfo -Token $token -ModuleName $moduleName -URI $uAPI
@@ -309,11 +309,11 @@ if ($uriEval -eq $true) {
         else {
             Write-Warning -Message 'No data was returned from GitHub query.'
         }
-    }#else_API_lt_300
-}#if_valid_uri
+    } #else_API_lt_300
+} #if_valid_uri
 else {
     Write-Host 'GitHub URI was not use-able for GitHub data query'
-}#else_valid_uri
+} #else_valid_uri
 
 
 #endregion

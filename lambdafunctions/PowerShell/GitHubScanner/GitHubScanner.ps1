@@ -15,12 +15,12 @@
 # $env:TELEGRAM_SECRET
 # $env:GITHUB_SECRET
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.StepFunctions';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.StepFunctions';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.6.0'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.0.0'}
 
 # SQS -> Lambda -> S3
 #  -or-
@@ -70,7 +70,7 @@ function Test-GitHubRateLimit {
     }
 
     return $remaining
-}#Test-GitHubRateLimit
+} #Test-GitHubRateLimit
 
 <#
 .SYNOPSIS
@@ -144,7 +144,7 @@ function Get-GitHubProjectInfo {
         }
     }
     return $xml
-}#Get-GitHubProjectInfo
+} #Get-GitHubProjectInfo
 
 <#
 .SYNOPSIS
@@ -189,7 +189,7 @@ function Start-StateMExecution {
             StateMachineName = $StateMachineName
             ExecutionArn     = $sfnExecution.ExecutionArn
         })
-}#Start-StateMExecution
+} #Start-StateMExecution
 
 <#
 .SYNOPSIS
@@ -373,7 +373,7 @@ foreach ($message in $LambdaInput.Records) {
             Write-Host 'API calls low... triggering State Machine delay...'
             Start-StateMExecution @startStateMExecutionSplat
             Start-Sleep -Milliseconds (20)
-        }#if_API_lt_300
+        } #if_API_lt_300
         else {
             Write-Host 'Quering GitHub API for project info...'
             $xml = Get-GitHubProjectInfo -Token $token -ModuleName $moduleName -URI $uAPI
@@ -402,11 +402,11 @@ foreach ($message in $LambdaInput.Records) {
             else {
                 # reason has already been logged in child function
             }
-        }#else_API_lt_300
-    }#if_valid_uri
+        } #else_API_lt_300
+    } #if_valid_uri
     else {
         Write-Host 'GitHub URI was not use-able for GitHub data query'
-    }#else_valid_uri
-}#foreach_SQS
+    } #else_valid_uri
+} #foreach_SQS
 
 #endregion

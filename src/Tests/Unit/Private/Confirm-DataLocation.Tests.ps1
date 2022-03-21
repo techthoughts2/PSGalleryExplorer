@@ -30,7 +30,7 @@ InModuleScope 'PSGalleryExplorer' {
             It 'should return false if an error is encountered with Test-Path' {
                 Mock -CommandName Test-Path -MockWith {
                     throw 'FakeError'
-                }#endMock
+                } #endMock
                 Confirm-DataLocation | Should -BeExactly $false
             } #it
             It 'should return false if an error is encountered with New-Item' {

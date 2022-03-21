@@ -3,14 +3,15 @@
 # $env:AWSRegion = the AWS Region hosting the service under test
 # $env:projectName = name of the project
 
-try {
-    $cfnExports = Get-CFNExport -ErrorAction Stop
-}
-catch {
-    throw
-}
-
 Describe -Name 'Infrastructure Tests' -Fixture {
+    BeforeAll {
+        try {
+            $cfnExports = Get-CFNExport -ErrorAction Stop
+        }
+        catch {
+            throw
+        }
+    } #before_all
 
     Context -Name 'PSGES3Buckets.yml' -Fixture {
 
@@ -26,14 +27,14 @@ Describe -Name 'Infrastructure Tests' -Fixture {
             $assertion4 | Should -BeLike $expected
             $logEval = ($cfnExports | Where-Object { $_.Name -eq 'S3BucketLogsBN' }).Value
             $logEval | Should -Not -BeNullOrEmpty
-        }#it
+        } #it
 
         It -Name 'Should create a SNS topic for S3 trigger updates' -Test {
             $assertion = ($cfnExports | Where-Object { $_.Name -eq 'UpdateSNSTopicArn' }).Value
             $expected = 'arn:aws:sns:{0}:{1}:*' -f $env:AWSRegion, $env:AWSAccountId
             $assertion | Should -BeLike $expected
-        }#it
+        } #it
 
-    }#context_PSGES3Buckets
+    } #context_PSGES3Buckets
 
-}#describe_infra_tests
+} #describe_infra_tests
