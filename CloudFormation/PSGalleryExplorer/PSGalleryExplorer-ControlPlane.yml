@@ -156,3 +156,23 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
+
+  # Deploys the alarms used for the PSGalleryExplorer project
+  PSGEAlarms:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: PSGE
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${ArtifactS3Bucket}.s3.amazonaws.com/${ArtifactS3KeyPrefix}/${FileName}'
+        - #AWSRegion: !Ref "AWS::Region"
+          ArtifactS3Bucket: !Ref ArtifactS3Bucket
+          ArtifactS3KeyPrefix: !Ref ArtifactS3KeyPrefix
+          FileName: CloudFormation/PSGalleryExplorer/ChildTemplates/PSGEAlarms.yml
+      TimeoutInMinutes: 5 #make sure it can actually complete in this time period
+      Parameters: #much match the parameters of nested template
+        ServiceName: !Ref ServiceName
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
