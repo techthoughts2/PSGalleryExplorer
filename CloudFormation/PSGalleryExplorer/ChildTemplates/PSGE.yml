@@ -637,54 +637,6 @@ Resources:
         - Key: StackName
           Value: !Ref AWS::StackName
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html
-  # https://states-language.net/spec.html
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html
-  # GitHubScannerSMDelay:
-  #   Type: AWS::StepFunctions::StateMachine
-  #   Properties:
-  #     LoggingConfiguration:
-  #       Level: ALL
-  #       IncludeExecutionData: True
-  #       Destinations:
-  #         - CloudWatchLogsLogGroup:
-  #             LogGroupArn: !GetAtt
-  #               - GitHubScannerSMDelayLogGroup
-  #               - Arn
-  #     RoleArn: !GetAtt [StatesExecutionRole, Arn]
-  #     # StateMachineName: String
-  #     StateMachineType: STANDARD
-  #     Tags:
-  #       - Key: Service
-  #         Value: !Ref ServiceName
-  #     DefinitionString: !Sub
-  #       - |-
-  #         {
-  #           "Comment": "Backs off API calls to GitHub to align with their API limits.",
-  #           "StartAt": "wait_using_seconds",
-  #           "States": {
-  #             "wait_using_seconds": {
-  #               "Type": "Wait",
-  #               "Seconds": 3605,
-  #               "Next": "Invoke GitHub Scanner Lambda"
-  #             },
-  #             "Invoke GitHub Scanner Lambda": {
-  #               "Type": "Task",
-  #               "Resource": "${SMScannerLambda}",
-  #               "Retry" : [
-  #                   {
-  #                     "ErrorEquals": [ "States.ALL" ],
-  #                     "IntervalSeconds": 5,
-  #                     "MaxAttempts": 15,
-  #                     "BackoffRate": 2.5
-  #                   }
-  #               ],
-  #               "End": true
-  #             }
-  #           }
-  #         }
-  #       - { SMScannerLambda: !GetAtt GitHubSMScanner.Arn }
-
   GitHubScannerSMDelay:
     Type: AWS::Serverless::StateMachine
     Properties:
@@ -978,54 +930,6 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html
-  # https://states-language.net/spec.html
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html
-  # GitLabScannerSMDelay:
-  #   Type: AWS::StepFunctions::StateMachine
-  #   Properties:
-  #     LoggingConfiguration:
-  #       Level: ALL
-  #       IncludeExecutionData: True
-  #       Destinations:
-  #         - CloudWatchLogsLogGroup:
-  #             LogGroupArn: !GetAtt
-  #               - GitLabScannerSMDelayLogGroup
-  #               - Arn
-  #     RoleArn: !GetAtt [GitLabStatesExecutionRole, Arn]
-  #     # StateMachineName: String
-  #     StateMachineType: STANDARD
-  #     Tags:
-  #       - Key: Service
-  #         Value: !Ref ServiceName
-  #     DefinitionString: !Sub
-  #       - |-
-  #         {
-  #           "Comment": "Backs off API calls to GitLab to align with their API limits.",
-  #           "StartAt": "wait_using_seconds",
-  #           "States": {
-  #             "wait_using_seconds": {
-  #               "Type": "Wait",
-  #               "Seconds": 3605,
-  #               "Next": "Invoke GitLab Scanner Lambda"
-  #             },
-  #             "Invoke GitLab Scanner Lambda": {
-  #               "Type": "Task",
-  #               "Resource": "${SMScannerLambda}",
-  #               "Retry" : [
-  #                   {
-  #                     "ErrorEquals": [ "States.ALL" ],
-  #                     "IntervalSeconds": 5,
-  #                     "MaxAttempts": 15,
-  #                     "BackoffRate": 2.5
-  #                   }
-  #               ],
-  #               "End": true
-  #             }
-  #           }
-  #         }
-  #       - { SMScannerLambda: !GetAtt GitLabSMScanner.Arn }
 
   # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
   # https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/building-stepfunctions.html#starting-stepfunctions
