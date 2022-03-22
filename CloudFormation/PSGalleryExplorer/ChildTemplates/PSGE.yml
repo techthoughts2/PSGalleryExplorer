@@ -1,7 +1,7 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
 
-Description: 'PSGalleryExplorer: Serverless Deployment Logic'
+Description: 'AUTOMATED: PSGalleryExplorer - Serverless Deployment Logic'
 
 Transform: 'AWS::Serverless-2016-10-31'
 
@@ -106,18 +106,6 @@ Resources:
   UpdatePubXMLDataDlq:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DeduplicationScope: String
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
-      # RedriveAllowPolicy: Json
-      # RedrivePolicy: Json
       VisibilityTimeout: 160
       Tags:
         - Key: ServiceName
@@ -125,53 +113,10 @@ Resources:
         - Key: StackName
           Value: !Ref AWS::StackName
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
-  AlarmNumberOfMessagesVisibleUpdatePubXMLDataDlq:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: Alarms if the UpdatePubXMLDataDlq Dead Letter Queue has too many messages
-      AlarmName: UpdatePubXMLDataDlq_NumberOfMessagesVisible
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: QueueName
-          Value: !GetAtt UpdatePubXMLDataDlq.QueueName
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ApproximateNumberOfMessagesVisible
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/SQS
-      # OKActions:
-      #   - String
-      Period: 300
-      Statistic: Maximum
-      Threshold: 1
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
-
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   UpdatePubXMLDataQueue:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DeduplicationScope: String
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
-      # RedriveAllowPolicy: Json
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt UpdatePubXMLDataDlq.Arn
         maxReceiveCount: 3
@@ -397,38 +342,6 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
-  AlarmNumberOfMessagesVisibleUpdateGitHubDataDlq:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: Alarms if the GitHubDataDlq Dead Letter Queue has too many messages
-      AlarmName: GitHubDataDlq_NumberOfMessagesVisible
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: QueueName
-          Value: !GetAtt GitHubDataDlq.QueueName
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ApproximateNumberOfMessagesVisible
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/SQS
-      # OKActions:
-      #   - String
-      Period: 300
-      Statistic: Maximum
-      Threshold: 1
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   GitHubDataQueue:
@@ -672,38 +585,6 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
-  AlarmNumberOfMessagesVisibleUpdateGitLabDataDlq:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: Alarms if the GitLabDataDlq Dead Letter Queue has too many messages
-      AlarmName: GitLabDataDlq_NumberOfMessagesVisible
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: QueueName
-          Value: !GetAtt GitLabDataDlq.QueueName
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ApproximateNumberOfMessagesVisible
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/SQS
-      # OKActions:
-      #   - String
-      Period: 300
-      Statistic: Maximum
-      Threshold: 1
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   GitLabDataQueue:
@@ -1206,6 +1087,8 @@ Outputs:
   UpdatePubXMLDataDlqName:
     Description: DLQ Name for Public XML processing
     Value: !GetAtt UpdatePubXMLDataDlq.QueueName
+    Export:
+      Name: !Sub ${ServiceName}-UpdatePubXMLDataDlqName
   UpdatePubXMLDataDlqUrl:
     Description: DLQ URL for Public XML processing
     Value: !Ref UpdatePubXMLDataDlq
@@ -1213,10 +1096,7 @@ Outputs:
     Value: !GetAtt UpdatePubXMLDataDlq.Arn
     Description: DLQ Arn for Public XML processing
     Export:
-      Name: UpdatePubXMLDataDlqArn
-
-  PubXMLDataDlqAlarmName:
-    Value: !Ref AlarmNumberOfMessagesVisibleUpdatePubXMLDataDlq
+      Name: !Sub ${ServiceName}-UpdatePubXMLDataDlqARN
 
   UpdatePubXMLDataQueueName:
     Description: Queue Name for Public XML processing
@@ -1228,7 +1108,7 @@ Outputs:
     Value: !GetAtt UpdatePubXMLDataQueue.Arn
     Description: Queue Arn for Public XML processing
     Export:
-      Name: UpdatePubXMLDataQueueArn
+      Name: !Sub ${ServiceName}-UpdatePubXMLDataQueueARN
 
   PubXMLPopulator:
     Description: Arn for Public XML processing Lambda
@@ -1248,6 +1128,8 @@ Outputs:
   GitHubDataDlqName:
     Description: DLQ Name for GitHub XML processing
     Value: !GetAtt GitHubDataDlq.QueueName
+    Export:
+      Name: !Sub ${ServiceName}-GitHubDataDlqName
   GitHubDataDlqUrl:
     Description: DLQ URL for GitHub XML processing
     Value: !Ref GitHubDataDlq
@@ -1255,9 +1137,7 @@ Outputs:
     Value: !GetAtt GitHubDataDlq.Arn
     Description: DLQ Arn for GitHub XML processing
     Export:
-      Name: GitHubDataDlqArn
-  GitHubDataDlqAlarmName:
-    Value: !Ref AlarmNumberOfMessagesVisibleUpdateGitHubDataDlq
+      Name: !Sub ${ServiceName}-GitHubDataDlqARN
   GitHubDataQueueName:
     Description: Queue Name for GitHub XML processing
     Value: !GetAtt GitHubDataQueue.QueueName
@@ -1268,7 +1148,7 @@ Outputs:
     Value: !GetAtt GitHubDataQueue.Arn
     Description: Queue Arn for GitHub XML processing
     Export:
-      Name: GitHubDataQueue
+      Name: !Sub ${ServiceName}-GitHubDataQueueARN
 
   GitHubScanner:
     Description: Arn for GitHub scanning Lambda
@@ -1281,16 +1161,18 @@ Outputs:
     Value: !GetAtt GitHubScannerSMDelay.Name
     Description: The name of the GitHubScannerSMDelay State Machine
     Export:
-      Name: GitHubScannerSMDelayStateMachineName
+      Name: !Sub ${ServiceName}-GitHubScannerSMDelayStateMachineName
   GitHubScannerSMDelayStateMachineArn:
     Value: !Ref GitHubScannerSMDelay
     Description: The Arn of the GitHubScannerSMDelay State Machine
     Export:
-      Name: GitHubScannerSMDelayStateMachineArn
+      Name: !Sub ${ServiceName}-GitHubScannerSMDelayStateMachineARN
 
   GitLabDataDlqName:
     Description: DLQ Name for GitLab XML processing
     Value: !GetAtt GitLabDataDlq.QueueName
+    Export:
+      Name: !Sub ${ServiceName}-GitLabDataDlqName
   GitLabDataDlqUrl:
     Description: DLQ URL for GitLab XML processing
     Value: !Ref GitLabDataDlq
@@ -1298,9 +1180,7 @@ Outputs:
     Value: !GetAtt GitLabDataDlq.Arn
     Description: DLQ Arn for GitLab XML processing
     Export:
-      Name: GitLabDataDlqArn
-  GitLabDataDlqAlarmName:
-    Value: !Ref AlarmNumberOfMessagesVisibleUpdateGitLabDataDlq
+      Name: !Sub ${ServiceName}-GitLabDataDlqARN
   GitLabDataQueueName:
     Description: Queue Name for GitLab XML processing
     Value: !GetAtt GitLabDataQueue.QueueName
@@ -1311,7 +1191,7 @@ Outputs:
     Value: !GetAtt GitLabDataQueue.Arn
     Description: Queue Arn for GitLab XML processing
     Export:
-      Name: GitLabDataQueue
+      Name: !Sub ${ServiceName}-GitLabDataQueueARN
 
   GitLabScanner:
     Description: Arn for GitLab scanning Lambda
@@ -1324,12 +1204,12 @@ Outputs:
     Value: !GetAtt GitLabScannerSMDelay.Name
     Description: The name of the GitLabScannerSMDelay State Machine
     Export:
-      Name: GitLabScannerSMDelayStateMachineName
+      Name: !Sub ${ServiceName}-GitLabScannerSMDelayStateMachineName
   GitLabScannerSMDelayStateMachineArn:
     Value: !Ref GitLabScannerSMDelay
     Description: The Arn of the GitLabScannerSMDelay State Machine
     Export:
-      Name: GitLabScannerSMDelayStateMachineArn
+      Name: !Sub ${ServiceName}-GitLabScannerSMDelayStateMachineArn
 
   GCombine:
     Description: Arn for GCombine scanning Lambda
