@@ -1173,87 +1173,166 @@ Resources:
     Properties:
       DashboardBody: !Sub |-
         {
-          "widgets": [
-            {
-              "height": 8,
-              "width": 9,
-              "y": 3,
-              "x": 0,
-              "type": "metric",
-              "properties": {
-                "metrics": [
-                  [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "${GitLabScannerSMDelay}", { "label": "Started" } ],
-                  [ "AWS/States", "ExecutionsSucceeded", "StateMachineArn", "${GitLabScannerSMDelay}", { "color": "#2ca02c", "label": "Succeeded" } ],
-                  [ "AWS/States", "ExecutionsAborted", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Aborted" } ],
-                  [ "AWS/States", "ExecutionsTimedOut", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Timed Out" } ],
-                  [ "AWS/States", "ExecutionThrottled", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Throttled" } ],
-                  [ "AWS/States", "ExecutionsFailed", "StateMachineArn", "${GitLabScannerSMDelay}", { "color": "#d62728", "yAxis": "right", "label": "Failed" } ]
-                ],
-                "view": "timeSeries",
-                "stacked": false,
-                "region": "${AWS::Region}",
-                "stat": "Sum",
-                "period": 900,
-                "title": "Executions"
-              }
-            },
-            {
-              "height": 3,
-              "width": 17,
-              "y": 0,
-              "x": 0,
-              "type": "metric",
-              "properties": {
-                "metrics": [
-                  [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "${GitLabScannerSMDelay}", { "label": "Started" } ],
-                  [ ".", "ExecutionsSucceeded", ".", ".", { "color": "#2ca02c", "label": "Succeeded" } ],
-                  [ ".", "ExecutionsFailed", ".", ".", { "color": "#d62728", "yAxis": "right", "label": "Failed" } ],
-                  [ ".", "ExecutionsTimedOut", ".", ".", { "yAxis": "right", "color": "#17becf", "label": "Timed Out" } ],
-                  [ ".", "ExecutionThrottled", ".", ".", { "yAxis": "right", "color": "#ff9896", "label": "Throttled" } ],
-                  [ ".", "ExecutionsAborted", ".", ".", { "yAxis": "right", "color": "#ff7f0e", "label": "Aborted" } ]
-                ],
-                "view": "singleValue",
-                "stacked": false,
-                "region": "${AWS::Region}",
-                "stat": "Sum",
-                "period": 900,
-                "title": "Executions",
-                "setPeriodToTimeRange": true,
-                "singleValueFullPrecision": false
-              }
-            },
-            {
-              "height": 8,
-              "width": 8,
-              "y": 3,
-              "x": 9,
-              "type": "metric",
-              "properties": {
-                "metrics": [
-                  [ { "expression": "m1/1000/60", "label": "p50 Duration (minutes)", "id": "e1", "region": "${AWS::Region}" } ],
-                  [ { "expression": "m2/1000/60", "label": "p90 Duration (minutes)", "id": "e2", "region": "${AWS::Region}" } ],
-                  [ "AWS/States", "ExecutionTime", "StateMachineArn", "${GitLabScannerSMDelay}", { "id": "m1", "visible": false } ],
-                  [ "AWS/States", "ExecutionTime", "StateMachineArn", "${GitLabScannerSMDelay}", { "id": "m2", "visible": false, "stat": "p90" } ]
-                ],
-                "view": "timeSeries",
-                "stacked": false,
-                "region": "${AWS::Region}",
-                "period": 300,
-                "stat": "p50",
-                "title": "Execution Time",
-                "yAxis": {
-                  "left": {
-                    "showUnits": false,
-                    "min": 0
-                  },
-                  "right": {
-                    "showUnits": false,
-                    "min": 0
-                  }
+            "widgets": [
+                {
+                    "height": 6,
+                    "width": 8,
+                    "y": 0,
+                    "x": 16,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "${GitLabScannerSMDelay}", { "label": "Started" } ],
+                            [ "AWS/States", "ExecutionsSucceeded", "StateMachineArn", "${GitLabScannerSMDelay}", { "color": "#2ca02c", "label": "Succeeded" } ],
+                            [ "AWS/States", "ExecutionsAborted", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Aborted" } ],
+                            [ "AWS/States", "ExecutionsTimedOut", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Timed Out" } ],
+                            [ "AWS/States", "ExecutionThrottled", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Throttled" } ],
+                            [ "AWS/States", "ExecutionsFailed", "StateMachineArn", "${GitLabScannerSMDelay}", { "color": "#d62728", "yAxis": "right", "label": "Failed" } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 900,
+                        "title": "Gitlab-SM-Graph"
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 9,
+                    "y": 0,
+                    "x": 0,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "${GitLabScannerSMDelay}", { "label": "Started" } ],
+                            [ "AWS/States", "ExecutionsSucceeded", "StateMachineArn", "${GitLabScannerSMDelay}", { "color": "#2ca02c", "label": "Succeeded" } ],
+                            [ "AWS/States", "ExecutionsFailed", "StateMachineArn", "${GitLabScannerSMDelay}", { "color": "#d62728", "yAxis": "right", "label": "Failed" } ],
+                            [ "AWS/States", "ExecutionsTimedOut", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#17becf", "label": "Timed Out" } ],
+                            [ "AWS/States", "ExecutionThrottled", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Throttled" } ],
+                            [ "AWS/States", "ExecutionsAborted", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff7f0e", "label": "Aborted" } ]
+                        ],
+                        "view": "singleValue",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 900,
+                        "title": "Gitlab-SM-Executions",
+                        "setPeriodToTimeRange": true,
+                        "singleValueFullPrecision": false
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 7,
+                    "y": 0,
+                    "x": 9,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ { "expression": "m1/1000/60", "label": "p50 Duration (minutes)", "id": "e1", "region": "${AWS::Region}" } ],
+                            [ { "expression": "m2/1000/60", "label": "p90 Duration (minutes)", "id": "e2", "region": "${AWS::Region}"  } ],
+                            [ "AWS/States", "ExecutionTime", "StateMachineArn", "${GitLabScannerSMDelay}", { "id": "m1", "visible": false } ],
+                            [ "AWS/States", "ExecutionTime", "StateMachineArn", "${GitLabScannerSMDelay}", { "id": "m2", "visible": false, "stat": "p90" } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "period": 300,
+                        "stat": "p50",
+                        "title": "Gitlab-SM-Execution-Time",
+                        "yAxis": {
+                            "left": {
+                                "showUnits": false,
+                                "min": 0
+                            },
+                            "right": {
+                                "showUnits": false,
+                                "min": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 7,
+                    "y": 6,
+                    "x": 9,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ { "expression": "m1/1000/60", "label": "p50 Duration (minutes)", "id": "e1", "region": "${AWS::Region}" } ],
+                            [ { "expression": "m2/1000/60", "label": "p90 Duration (minutes)", "id": "e2", "region": "${AWS::Region}" } ],
+                            [ "AWS/States", "ExecutionTime", "StateMachineArn", "${GitHubScannerSMDelay}", { "id": "m1", "visible": false } ],
+                            [ "AWS/States", "ExecutionTime", "StateMachineArn", "${GitHubScannerSMDelay}", { "id": "m2", "visible": false, "stat": "p90" } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "period": 300,
+                        "stat": "p50",
+                        "title": "GitHub-SM-Execution-Time",
+                        "yAxis": {
+                            "left": {
+                                "showUnits": false,
+                                "min": 0
+                            },
+                            "right": {
+                                "showUnits": false,
+                                "min": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 8,
+                    "y": 6,
+                    "x": 16,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "${GitHubScannerSMDelay}", { "label": "Started" } ],
+                            [ "AWS/States", "ExecutionsSucceeded", "StateMachineArn", "${GitHubScannerSMDelay}", { "color": "#2ca02c", "label": "Succeeded" } ],
+                            [ "AWS/States", "ExecutionsAborted", "StateMachineArn", "${GitHubScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Aborted" } ],
+                            [ "AWS/States", "ExecutionsTimedOut", "StateMachineArn", "${GitHubScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Timed Out" } ],
+                            [ "AWS/States", "ExecutionThrottled", "StateMachineArn", "${GitHubScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Throttled" } ],
+                            [ "AWS/States", "ExecutionsFailed", "StateMachineArn", "${GitHubScannerSMDelay}", { "color": "#d62728", "yAxis": "right", "label": "Failed" } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 900,
+                        "title": "GitHub-SM-Graph"
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 9,
+                    "y": 6,
+                    "x": 0,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "${GitHubScannerSMDelay}", { "label": "Started" } ],
+                            [ ".", "ExecutionsSucceeded", ".", ".", { "color": "#2ca02c", "label": "Succeeded" } ],
+                            [ ".", "ExecutionsFailed", ".", ".", { "color": "#d62728", "yAxis": "right", "label": "Failed" } ],
+                            [ ".", "ExecutionsTimedOut", ".", ".", { "yAxis": "right", "color": "#17becf", "label": "Timed Out" } ],
+                            [ ".", "ExecutionThrottled", ".", ".", { "yAxis": "right", "color": "#ff9896", "label": "Throttled" } ],
+                            [ ".", "ExecutionsAborted", ".", ".", { "yAxis": "right", "color": "#ff7f0e", "label": "Aborted" } ]
+                        ],
+                        "view": "singleValue",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 900,
+                        "title": "GitHub-SM-Executions",
+                        "setPeriodToTimeRange": true,
+                        "singleValueFullPrecision": false
+                    }
                 }
-              }
-            }
-          ]
+            ]
         }
       DashboardName: !Sub ${ServiceName}-StateMachine-${AWS::Region}
 
