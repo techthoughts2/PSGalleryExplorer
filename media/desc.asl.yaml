@@ -1,0 +1,18 @@
+Comment: State Machine for PowerShellGallery
+StartAt: wait_using_seconds
+States:
+    wait_using_seconds:
+        Type: Wait
+        Seconds: 3605
+        Next: Invoke GitLab Scanner Lambda
+    Invoke GitLab Scanner Lambda:
+        Type: Task
+        Resource: 'arn:aws:lambda:REGION:ACCOUNT_ID:function:FUNCTION_NAME'
+        Retry:
+            -
+                ErrorEquals:
+                    - States.ALL
+                IntervalSeconds: 5
+                MaxAttempts: 15
+                BackoffRate: 2.5
+        End: true

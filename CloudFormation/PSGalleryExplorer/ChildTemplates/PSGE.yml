@@ -640,50 +640,92 @@ Resources:
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html
   # https://states-language.net/spec.html
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html
+  # GitHubScannerSMDelay:
+  #   Type: AWS::StepFunctions::StateMachine
+  #   Properties:
+  #     LoggingConfiguration:
+  #       Level: ALL
+  #       IncludeExecutionData: True
+  #       Destinations:
+  #         - CloudWatchLogsLogGroup:
+  #             LogGroupArn: !GetAtt
+  #               - GitHubScannerSMDelayLogGroup
+  #               - Arn
+  #     RoleArn: !GetAtt [StatesExecutionRole, Arn]
+  #     # StateMachineName: String
+  #     StateMachineType: STANDARD
+  #     Tags:
+  #       - Key: Service
+  #         Value: !Ref ServiceName
+  #     DefinitionString: !Sub
+  #       - |-
+  #         {
+  #           "Comment": "Backs off API calls to GitHub to align with their API limits.",
+  #           "StartAt": "wait_using_seconds",
+  #           "States": {
+  #             "wait_using_seconds": {
+  #               "Type": "Wait",
+  #               "Seconds": 3605,
+  #               "Next": "Invoke GitHub Scanner Lambda"
+  #             },
+  #             "Invoke GitHub Scanner Lambda": {
+  #               "Type": "Task",
+  #               "Resource": "${SMScannerLambda}",
+  #               "Retry" : [
+  #                   {
+  #                     "ErrorEquals": [ "States.ALL" ],
+  #                     "IntervalSeconds": 5,
+  #                     "MaxAttempts": 15,
+  #                     "BackoffRate": 2.5
+  #                   }
+  #               ],
+  #               "End": true
+  #             }
+  #           }
+  #         }
+  #       - { SMScannerLambda: !GetAtt GitHubSMScanner.Arn }
+
   GitHubScannerSMDelay:
-    Type: AWS::StepFunctions::StateMachine
+    Type: AWS::Serverless::StateMachine
     Properties:
-      LoggingConfiguration:
-        Level: ALL
-        IncludeExecutionData: True
+      Definition:
+        StartAt: wait_using_seconds
+        States:
+          wait_using_seconds:
+              Type: Wait
+              Seconds: 3605
+              Next: Invoke GitLab Scanner Lambda
+          Invoke GitLab Scanner Lambda:
+              Type: Task
+              Resource: '${SMScannerLambdaArn}'
+              Retry:
+                  -
+                      ErrorEquals:
+                          - States.ALL
+                      IntervalSeconds: 5
+                      MaxAttempts: 15
+                      BackoffRate: 2.5
+        End: true
+      DefinitionSubstitutions:
+        SMScannerLambdaArn: !GetAtt GitHubSMScanner.Arn
+      # DefinitionUri: String | S3Location
+      Logging:
         Destinations:
           - CloudWatchLogsLogGroup:
               LogGroupArn: !GetAtt
                 - GitHubScannerSMDelayLogGroup
                 - Arn
-      RoleArn: !GetAtt [StatesExecutionRole, Arn]
-      # StateMachineName: String
-      StateMachineType: STANDARD
+        IncludeExecutionData: True
+        Level: ALL
+      # Name: String
+      # PermissionsBoundary: String
+      # Policies: String | List | Map
+      Role: !GetAtt StatesExecutionRole.Arn
       Tags:
-        - Key: Service
-          Value: !Ref ServiceName
-      DefinitionString: !Sub
-        - |-
-          {
-            "Comment": "Backs off API calls to GitHub to align with their API limits.",
-            "StartAt": "wait_using_seconds",
-            "States": {
-              "wait_using_seconds": {
-                "Type": "Wait",
-                "Seconds": 3605,
-                "Next": "Invoke GitHub Scanner Lambda"
-              },
-              "Invoke GitHub Scanner Lambda": {
-                "Type": "Task",
-                "Resource": "${SMScannerLambda}",
-                "Retry" : [
-                    {
-                      "ErrorEquals": [ "States.ALL" ],
-                      "IntervalSeconds": 5,
-                      "MaxAttempts": 15,
-                      "BackoffRate": 2.5
-                    }
-                ],
-                "End": true
-              }
-            }
-          }
-        - { SMScannerLambda: !GetAtt GitHubSMScanner.Arn }
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
+      # Tracing: TracingConfiguration
+      # Type: String
   #______________________________________________________________________________________________
   #GITLAB SCANNER
 
@@ -940,50 +982,100 @@ Resources:
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html
   # https://states-language.net/spec.html
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html
+  # GitLabScannerSMDelay:
+  #   Type: AWS::StepFunctions::StateMachine
+  #   Properties:
+  #     LoggingConfiguration:
+  #       Level: ALL
+  #       IncludeExecutionData: True
+  #       Destinations:
+  #         - CloudWatchLogsLogGroup:
+  #             LogGroupArn: !GetAtt
+  #               - GitLabScannerSMDelayLogGroup
+  #               - Arn
+  #     RoleArn: !GetAtt [GitLabStatesExecutionRole, Arn]
+  #     # StateMachineName: String
+  #     StateMachineType: STANDARD
+  #     Tags:
+  #       - Key: Service
+  #         Value: !Ref ServiceName
+  #     DefinitionString: !Sub
+  #       - |-
+  #         {
+  #           "Comment": "Backs off API calls to GitLab to align with their API limits.",
+  #           "StartAt": "wait_using_seconds",
+  #           "States": {
+  #             "wait_using_seconds": {
+  #               "Type": "Wait",
+  #               "Seconds": 3605,
+  #               "Next": "Invoke GitLab Scanner Lambda"
+  #             },
+  #             "Invoke GitLab Scanner Lambda": {
+  #               "Type": "Task",
+  #               "Resource": "${SMScannerLambda}",
+  #               "Retry" : [
+  #                   {
+  #                     "ErrorEquals": [ "States.ALL" ],
+  #                     "IntervalSeconds": 5,
+  #                     "MaxAttempts": 15,
+  #                     "BackoffRate": 2.5
+  #                   }
+  #               ],
+  #               "End": true
+  #             }
+  #           }
+  #         }
+  #       - { SMScannerLambda: !GetAtt GitLabSMScanner.Arn }
+
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+  # https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/building-stepfunctions.html#starting-stepfunctions
+  # https://docs.aws.amazon.com/step-functions/latest/dg/step-functions-dg.pdf
+  # https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultpath.html
+  # https://docs.aws.amazon.com/step-functions/latest/dg/development-options.html#development-options-format
+  # https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-create-iterate-pattern-section.html
+  # https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultpath.html
+  # https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
   GitLabScannerSMDelay:
-    Type: AWS::StepFunctions::StateMachine
+    Type: AWS::Serverless::StateMachine
     Properties:
-      LoggingConfiguration:
-        Level: ALL
-        IncludeExecutionData: True
+      Definition:
+        StartAt: wait_using_seconds
+        States:
+          wait_using_seconds:
+              Type: Wait
+              Seconds: 3605
+              Next: Invoke GitLab Scanner Lambda
+          Invoke GitLab Scanner Lambda:
+              Type: Task
+              Resource: '${SMScannerLambdaArn}'
+              Retry:
+                  -
+                      ErrorEquals:
+                          - States.ALL
+                      IntervalSeconds: 5
+                      MaxAttempts: 15
+                      BackoffRate: 2.5
+        End: true
+      DefinitionSubstitutions:
+        SMScannerLambdaArn: !GetAtt GitLabSMScanner.Arn
+      # DefinitionUri: String | S3Location
+      Logging:
         Destinations:
           - CloudWatchLogsLogGroup:
               LogGroupArn: !GetAtt
                 - GitLabScannerSMDelayLogGroup
                 - Arn
-      RoleArn: !GetAtt [GitLabStatesExecutionRole, Arn]
-      # StateMachineName: String
-      StateMachineType: STANDARD
+        IncludeExecutionData: True
+        Level: ALL
+      # Name: String
+      # PermissionsBoundary: String
+      # Policies: String | List | Map
+      Role: !GetAtt GitLabStatesExecutionRole.Arn
       Tags:
-        - Key: Service
-          Value: !Ref ServiceName
-      DefinitionString: !Sub
-        - |-
-          {
-            "Comment": "Backs off API calls to GitLab to align with their API limits.",
-            "StartAt": "wait_using_seconds",
-            "States": {
-              "wait_using_seconds": {
-                "Type": "Wait",
-                "Seconds": 3605,
-                "Next": "Invoke GitLab Scanner Lambda"
-              },
-              "Invoke GitLab Scanner Lambda": {
-                "Type": "Task",
-                "Resource": "${SMScannerLambda}",
-                "Retry" : [
-                    {
-                      "ErrorEquals": [ "States.ALL" ],
-                      "IntervalSeconds": 5,
-                      "MaxAttempts": 15,
-                      "BackoffRate": 2.5
-                    }
-                ],
-                "End": true
-              }
-            }
-          }
-        - { SMScannerLambda: !GetAtt GitLabSMScanner.Arn }
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
+      # Tracing: TracingConfiguration
+      # Type: String
   #______________________________________________________________________________________________
   # GitXMLCombiner
 
