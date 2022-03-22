@@ -119,7 +119,7 @@ Resources:
       AlarmDescription: !Sub >-
         ${ServiceName} State Machine has had an execution time out.
         This could be for any reason, investigation is required.
-      AlarmName: !Sub ${ServiceName} State Machine EXECUTION TIMED OUT (${AWS::StackName})
+      AlarmName: !Sub ${ServiceName}-GitHub State Machine EXECUTION TIMED OUT (${AWS::StackName})
       ComparisonOperator: GreaterThanThreshold
       # DatapointsToAlarm: Integer
       # EvaluateLowSampleCountPercentile: String
@@ -156,7 +156,7 @@ Resources:
         throttled. This is a limit imposed by AWS Step Functions itself within
         the state machine, not related to throttling of services used as state
         resources, such as AWS Lambda or Fargate.
-      AlarmName: !Sub ${ServiceName} State Machine STATE TRANSITION THROTTLE (${AWS::StackName})
+      AlarmName: !Sub ${ServiceName}-GitHub State Machine STATE TRANSITION THROTTLE (${AWS::StackName})
       ComparisonOperator: GreaterThanThreshold
       # DatapointsToAlarm: Integer
       # EvaluateLowSampleCountPercentile: String
@@ -193,7 +193,7 @@ Resources:
         A state machine execution failure indicates that an error occurred and
         was unable to be caught and handled gracefully. This likely means the
         job failed in some way and that some or all callbacks were unsuccessful.
-      AlarmName: !Sub ${ServiceName} State Machine EXECUTION FAILED(${AWS::StackName})
+      AlarmName: !Sub ${ServiceName}-GitHub State Machine EXECUTION FAILED(${AWS::StackName})
       ComparisonOperator: GreaterThanThreshold
       # DatapointsToAlarm: Integer
       # EvaluateLowSampleCountPercentile: String
@@ -228,7 +228,7 @@ Resources:
       AlarmDescription: !Sub >-
         ${ServiceName} State Machine has had an execution time out.
         This could be for any reason, investigation is required.
-      AlarmName: !Sub ${ServiceName} State Machine EXECUTION TIMED OUT (${AWS::StackName})
+      AlarmName: !Sub ${ServiceName}-GitLab State Machine EXECUTION TIMED OUT (${AWS::StackName})
       ComparisonOperator: GreaterThanThreshold
       # DatapointsToAlarm: Integer
       # EvaluateLowSampleCountPercentile: String
@@ -265,7 +265,7 @@ Resources:
         throttled. This is a limit imposed by AWS Step Functions itself within
         the state machine, not related to throttling of services used as state
         resources, such as AWS Lambda or Fargate.
-      AlarmName: !Sub ${ServiceName} State Machine STATE TRANSITION THROTTLE (${AWS::StackName})
+      AlarmName: !Sub ${ServiceName}-GitLab State Machine STATE TRANSITION THROTTLE (${AWS::StackName})
       ComparisonOperator: GreaterThanThreshold
       # DatapointsToAlarm: Integer
       # EvaluateLowSampleCountPercentile: String
@@ -302,7 +302,7 @@ Resources:
         A state machine execution failure indicates that an error occurred and
         was unable to be caught and handled gracefully. This likely means the
         job failed in some way and that some or all callbacks were unsuccessful.
-      AlarmName: !Sub ${ServiceName} State Machine EXECUTION FAILED(${AWS::StackName})
+      AlarmName: !Sub ${ServiceName}-GitLab State Machine EXECUTION FAILED(${AWS::StackName})
       ComparisonOperator: GreaterThanThreshold
       # DatapointsToAlarm: Integer
       # EvaluateLowSampleCountPercentile: String
