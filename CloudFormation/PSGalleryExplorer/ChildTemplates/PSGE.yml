@@ -99,7 +99,7 @@ Parameters:
     Description: PubXMLPopulator Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
 
 Resources:
-  #______________________________________________________________________________________________
+
   #PUBXML
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
@@ -289,7 +289,7 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
-  #______________________________________________________________________________________________
+
   #GALLERY SCANNER
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html
@@ -384,23 +384,13 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
-  #______________________________________________________________________________________________
+
   #GITHUB SCANNER
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   GitHubDataDlq:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
-      # RedrivePolicy: Json
       VisibilityTimeout: 160
       Tags:
         - Key: ServiceName
@@ -444,15 +434,6 @@ Resources:
   GitHubDataQueue:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt GitHubDataDlq.Arn
         maxReceiveCount: 3
@@ -549,7 +530,7 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
-  #______________________________________________________________________________________________
+
   # STEP FUNCTION DELAY - GitHubSM
 
   # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
@@ -678,23 +659,13 @@ Resources:
         StackName: !Ref AWS::StackName
       # Tracing: TracingConfiguration
       # Type: String
-  #______________________________________________________________________________________________
+
   #GITLAB SCANNER
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   GitLabDataDlq:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
-      # RedrivePolicy: Json
       VisibilityTimeout: 160
       Tags:
         - Key: ServiceName
@@ -738,15 +709,6 @@ Resources:
   GitLabDataQueue:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt GitLabDataDlq.Arn
         maxReceiveCount: 3
@@ -843,7 +805,7 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
-  #______________________________________________________________________________________________
+
   # STEP FUNCTION DELAY - GitLabSM
 
   # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
@@ -980,7 +942,7 @@ Resources:
         StackName: !Ref AWS::StackName
       # Tracing: TracingConfiguration
       # Type: String
-  #______________________________________________________________________________________________
+
   # GitXMLCombiner
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html
