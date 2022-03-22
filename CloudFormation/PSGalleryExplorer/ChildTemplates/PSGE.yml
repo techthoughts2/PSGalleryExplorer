@@ -705,7 +705,7 @@ Resources:
                       IntervalSeconds: 5
                       MaxAttempts: 15
                       BackoffRate: 2.5
-        End: true
+              End: true
       DefinitionSubstitutions:
         SMScannerLambdaArn: !GetAtt GitHubSMScanner.Arn
       # DefinitionUri: String | S3Location
@@ -1055,7 +1055,7 @@ Resources:
                       IntervalSeconds: 5
                       MaxAttempts: 15
                       BackoffRate: 2.5
-        End: true
+              End: true
       DefinitionSubstitutions:
         SMScannerLambdaArn: !GetAtt GitLabSMScanner.Arn
       # DefinitionUri: String | S3Location
