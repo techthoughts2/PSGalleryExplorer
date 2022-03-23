@@ -302,6 +302,186 @@ Resources:
         - Key: StackName
           Value: !Ref AWS::StackName
 
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-publicaccessblockconfiguration.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-websiteconfiguration.html
+  PSGECloudFrontLogBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      # AccelerateConfiguration: AccelerateConfiguration
+      AccessControl: BucketOwnerFullControl
+      # AnalyticsConfigurations:
+      #   - AnalyticsConfiguration
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      # BucketName: !Sub ${ServiceName}-${AWS::AccountId}-website
+      # CorsConfiguration:
+      #   CorsConfiguration
+      # IntelligentTieringConfigurations:
+      #   - IntelligentTieringConfiguration
+      # InventoryConfigurations:
+      #   - InventoryConfiguration
+      # LifecycleConfiguration:
+      #   Rules:
+      #       -
+      #         AbortIncompleteMultipartUpload:
+      #           DaysAfterInitiation: 7
+      #         Status: Enabled
+      #         Transitions:
+      #           -
+      #             StorageClass: GLACIER
+      #             TransitionInDays: 30
+      # LoggingConfiguration:
+      #   DestinationBucketName: !Ref StaticWebSiteLoggingBucket
+      #   LogFilePrefix: '/logs/website/'
+      # MetricsConfigurations:
+      #   - MetricsConfiguration
+      # NotificationConfiguration:
+      #   TopicConfigurations:
+      #     -
+      #       Event: s3:ObjectCreated:*
+      #       Topic: !Ref UpdateSNSTopic
+      # ObjectLockConfiguration:
+      #   ObjectLockConfiguration
+      # ObjectLockEnabled: Boolean
+      # OwnershipControls:
+      #   OwnershipControls
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      # ReplicationConfiguration:
+      #   ReplicationConfiguration
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+      # VersioningConfiguration:
+      #   VersioningConfiguration
+      # WebsiteConfiguration:
+      #   IndexDocument: index.html
+        # ErrorDocument: error.html
+        # RoutingRules:
+        #   - RoutingRuleCondition:
+        #       HttpErrorCodeReturnedEquals: '404'
+        #       KeyPrefixEquals: out1/
+        #     RedirectRule:
+        #       HostName: ec2-11-22-333-44.compute-1.amazonaws.com
+        #       ReplaceKeyPrefixWith: report-404/
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
+  PSCCCloudFrontLogBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref PSGECloudFrontLogBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: LoggingBucketPermissions
+            Effect: 'Allow'
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 's3:PutObject'
+            Resource:
+              - !Sub 'arn:aws:s3:::${PSGECloudFrontLogBucket}/AWSLogs/${AWS::AccountId}/*'
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-PSCCCloudFrontOriginAccessIdentity.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-PSCCCloudFrontOriginAccessIdentity-PSCCCloudFrontOriginAccessIdentityconfig.html
+  PSGECloudFrontOriginAccessIdentity:
+    Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Ref PubXMLData
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-distribution.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-distributionconfig.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-defaultcachebehavior.html
+  # https://github.com/aws-samples/cloudfront-authorization-at-edge/blob/master/template.yaml
+  # https://hackernoon.com/how-to-configure-cloudfront-using-cloudformation-template-2c263u56
+  PSGECloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        # Aliases:
+        #   - String
+        # CacheBehaviors:
+        #   - CacheBehavior
+        # CNAMEs:
+        #   - String
+        Comment: 'PSGalleryExplorer CloudFront for PowerShell Cloud XML'
+        # CustomErrorResponses:
+        #   - ErrorCode: 403 # not found
+        #     ResponseCode: 404
+        #     ResponsePagePath: "/index.html"
+        # CustomOrigin:
+        #   LegacyCustomOrigin
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            # - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+            # - OPTIONS
+          # CachePolicyId: String
+          Compress: true
+          DefaultTTL: 3600 # in seconds
+          # FieldLevelEncryptionId: String
+          ForwardedValues:
+            Cookies:
+              Forward: none
+            QueryString: false
+          # FunctionAssociations:
+          #   - FunctionAssociation
+          # LambdaFunctionAssociations:
+          #   - LambdaFunctionAssociation
+          MaxTTL: 86400 # in seconds
+          MinTTL: 60 # in seconds
+          # OriginRequestPolicyId: String
+          # RealtimeLogConfigArn: String
+          # ResponseHeadersPolicyId: String
+          # SmoothStreaming: Boolean
+          TargetOriginId: s3origin
+          # TrustedKeyGroups:
+          #   - String
+          # TrustedSigners:
+          #   - String
+          ViewerProtocolPolicy: 'https-only'
+        # DefaultRootObject: 'index.html'
+        Enabled: true
+        HttpVersion: http2
+        # IPV6Enabled: Boolean
+        Logging:
+          Bucket: !Sub ${PSGECloudFrontLogBucket}.s3.amazonaws.com
+          # IncludeCookies: Boolean
+          Prefix: pwshcloudcommands
+        # OriginGroups:
+        #   OriginGroups
+        Origins:
+          - DomainName: !GetAtt "PubXMLData.DomainName"
+            Id: s3origin
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${PSGECloudFrontOriginAccessIdentity}"
+        PriceClass: PriceClass_100
+        # Restrictions:
+        #   Restrictions
+        # S3Origin:
+        #   LegacyS3Origin
+        # ViewerCertificate:
+        #   ViewerCertificate
+        # WebACLId: String
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
 Outputs:
   StageTriggerDataBucketName:
     Value: !Ref StageTriggerData
@@ -353,3 +533,15 @@ Outputs:
     Description: Arn of the UpdateSNSTopic
     Export:
       Name: UpdateSNSTopicArn
+
+  PSGECloudFrontLogBucketARN:
+    Description: ARN of the PSGECloudFrontLogBucket Amazon S3 bucket
+    Value: !GetAtt PSGECloudFrontLogBucket.Arn
+    Export:
+      Name: !Sub ${ServiceName}-PSGECloudFrontLogBucketARN
+
+  PSGECloudFrontDistributionDomain:
+    Description: The domain of the PSGECloudFrontDistribution
+    Value: !GetAtt PSGECloudFrontDistribution.DomainName
+    Export:
+      Name: !Sub ${ServiceName}-PSGECloudFrontDistributionDomain
