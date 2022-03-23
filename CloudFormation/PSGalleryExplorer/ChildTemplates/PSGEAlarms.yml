@@ -356,10 +356,10 @@ Resources:
       CodeUri:
         Bucket: !Ref LambdaS3BucketName
         Key: !Ref LMFunctionS3KeyPubXMLMonitor
-      Description: 'TBD'
+      Description: 'Determines age of PubXML and sends to CloudWatch Metric'
       Environment:
         Variables:
-          S3_BUCKET_NAME: !ImportValue GitXMLDataBN
+          S3_BUCKET_NAME: !ImportValue PubXMLDataBN
           TELEGRAM_SECRET: !Ref TelegramSecret
           SERVICE_NAME: !Ref ServiceName
       Handler: !Ref LMFunctionHandlerPubXMLMonitor

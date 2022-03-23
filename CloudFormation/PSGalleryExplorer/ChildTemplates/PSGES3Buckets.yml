@@ -249,7 +249,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       AccelerateConfiguration:
-        AccelerationStatus: Enabled
+        AccelerationStatus: Suspended
       # AccessControl: String
       # AnalyticsConfigurations:
       #   - AnalyticsConfiguration
