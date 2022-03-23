@@ -88,6 +88,14 @@ Parameters:
     Type: String
     Description: PubXMLPopulator Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
 
+  LMFunctionS3KeyPubXMLMonitor:
+    Type: String
+    Description: S3 Key for the PubXMLMonitor Lambda function(s) zip file
+
+  LMFunctionHandlerPubXMLMonitor:
+    Type: String
+    Description: PubXMLMonitor Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
+
   ArtifactS3Bucket:
     Type: String
     Description: S3 Bucket for CodePipeline Artifacts
@@ -120,6 +128,7 @@ Resources:
   # Deploys the serverless logic solution for PSGalleryExplorer data gathering
   PSGE:
     Type: AWS::CloudFormation::Stack
+    DependsOn: PSGES3Buckets
     Properties:
       TemplateURL: !Sub
         - 'https://${ArtifactS3Bucket}.s3.amazonaws.com/${ArtifactS3KeyPrefix}/${FileName}'
@@ -171,6 +180,10 @@ Resources:
       TimeoutInMinutes: 5 #make sure it can actually complete in this time period
       Parameters: #much match the parameters of nested template
         ServiceName: !Ref ServiceName
+        TelegramSecret: !Ref TelegramSecret
+        LambdaS3BucketName: !Ref ArtifactS3Bucket
+        LMFunctionS3KeyPubXMLMonitor: !Ref LMFunctionS3KeyPubXMLMonitor
+        LMFunctionHandlerPubXMLMonitor: !Ref LMFunctionHandlerPubXMLMonitor
       Tags:
         - Key: ServiceName
           Value: !Ref ServiceName

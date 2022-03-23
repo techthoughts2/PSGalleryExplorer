@@ -98,6 +98,12 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
+            ModuleName    = 'AWS.Tools.CloudWatch'
+            ModuleVersion = '4.1.30.0'
+            BucketName    = 'ps-invoke-modules'
+            KeyPrefix     = ''
+        }))
+$null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Convert'
             ModuleVersion = '0.6.0'
             BucketName    = 'ps-invoke-modules'

@@ -168,7 +168,7 @@ Resources:
       # Region: String
       TopicArn: !ImportValue UpdateSNSTopicArn
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   PubXMLPopulator:
     Type: 'AWS::Serverless::Function'
     DependsOn: UpdatePubXMLDataQueue
@@ -275,8 +275,7 @@ Resources:
           - 'GSScheduledRule'
           - 'Arn'
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
-  # https://github.com/awslabs/serverless-application-model/blob/develop/examples/2016-10-31/policy_templates/all_policy_templates.yaml
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   GalleryScanner:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -374,7 +373,7 @@ Resources:
             Resource:
               - !GetAtt GitHubDataQueue.Arn
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   GitHubScanner:
     Type: 'AWS::Serverless::Function'
     DependsOn: GitHubDataQueue
@@ -446,7 +445,7 @@ Resources:
 
   # STEP FUNCTION DELAY - GitHubSM
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   GitHubSMScanner:
     Type: 'AWS::Serverless::Function'
     DependsOn: GitHubDataQueue
@@ -617,7 +616,7 @@ Resources:
             Resource:
               - !GetAtt GitLabDataQueue.Arn
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   GitLabScanner:
     Type: 'AWS::Serverless::Function'
     DependsOn: GitLabDataQueue
@@ -689,7 +688,7 @@ Resources:
 
   # STEP FUNCTION DELAY - GitLabSM
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   GitLabSMScanner:
     Type: 'AWS::Serverless::Function'
     DependsOn: GitLabDataQueue
@@ -864,7 +863,7 @@ Resources:
           - 'GCombineScheduledRule'
           - 'Arn'
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   # https://github.com/awslabs/serverless-application-model/blob/develop/examples/2016-10-31/policy_templates/all_policy_templates.yaml
   GCombine:
     Type: 'AWS::Serverless::Function'
