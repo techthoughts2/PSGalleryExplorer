@@ -38,4 +38,5 @@ A fully PowerShell serverless solution is deployed to continually collect and up
     * Saves final combined data set to **stagetrigger** if diff detected.
 1. **stagetrigger** is configured with an [S3 Event](https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html) that is tied to a [SQS](https://aws.amazon.com/sqs/). This triggers **PubXMLPopulator** [lambda](https://aws.amazon.com/lambda/) whenever a change is made to the bucket.
     * Combines PowerShell Gallery XML and GitHub XML data into a single XML data set and saves to **pubxml**
-1. PSGalleryExplorer utilizes the finale XML data set.
+1. Amazon CloudFront sources the XML data set from the S3 bucket and makes it available for public download.
+1. PSGalleryExplorer utilizes the final XML data set.
