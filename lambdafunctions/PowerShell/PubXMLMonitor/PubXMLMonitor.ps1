@@ -119,7 +119,7 @@ try {
 }
 catch {
     $errorMessage = $_.Exception.Message
-    Write-Error -Message "Something went wrong: $errorMessage"
+    Write-Error -Message ('Something went wrong: {0}' -f $errorMessage)
     Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - PubXMLMonitor Error sending metric data to CloudWatch'
 }
 

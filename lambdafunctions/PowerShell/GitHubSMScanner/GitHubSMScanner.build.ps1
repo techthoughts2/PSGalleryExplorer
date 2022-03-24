@@ -146,7 +146,7 @@ task Publish {
                 '  - Updated the json parameter "{0}" with "{1}".' -f $cfnLambdaS3KeyParameterName, $s3Key
             }
             catch {
-                '  - Unable to find the json parameter "{0}". No modifiations being made.' -f $cfnLambdaS3KeyParameterName
+                '  - Unable to find the json parameter "{0}". No modifications being made.' -f $cfnLambdaS3KeyParameterName
             }
 
             # Update cfnLambdaHandlerParameterName in json parameters
@@ -155,7 +155,7 @@ task Publish {
                 '  - Updated the json parameter "{0}" with "{1}".' -f $cfnLambdaHandlerParameterName, $script:LambdaPackage.LambdaHandler
             }
             catch {
-                '  - Unable to find the json parameter "{0}". No modifiations being made.' -f $cfnLambdaHandlerParameterName
+                '  - Unable to find the json parameter "{0}". No modifications being made.' -f $cfnLambdaHandlerParameterName
             }
 
             # Export the json back to disk

@@ -1112,6 +1112,8 @@ Outputs:
   PubXMLPopulator:
     Description: Arn for Public XML processing Lambda
     Value: !GetAtt PubXMLPopulator.Arn
+    Export:
+      Name: !Sub ${ServiceName}-PubXMLPopulatorARN
 
   GSScheduledRuleID:
     Description: Event rule ID for Public XML lambda trigger
@@ -1119,10 +1121,14 @@ Outputs:
   GSScheduledRuleArn:
     Description: Arn for Public XML lambda trigger
     Value: !GetAtt GSScheduledRule.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GSScheduledRuleARN
 
   GalleryScanner:
     Description: Arn for Gallery scanning Lambda
     Value: !GetAtt GalleryScanner.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GalleryScannerARN
 
   GitHubDataDlqName:
     Description: DLQ Name for GitHub XML processing
@@ -1152,10 +1158,14 @@ Outputs:
   GitHubScanner:
     Description: Arn for GitHub scanning Lambda
     Value: !GetAtt GitHubScanner.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GitHubScannerARN
 
   GitHubSMScanner:
     Description: Arn for GitHub scanning Lambda in state machine
     Value: !GetAtt GitHubSMScanner.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GitHubSMScannerARN
   GitHubScannerSMDelayStateMachineName:
     Value: !GetAtt GitHubScannerSMDelay.Name
     Description: The name of the GitHubScannerSMDelay State Machine
@@ -1195,10 +1205,14 @@ Outputs:
   GitLabScanner:
     Description: Arn for GitLab scanning Lambda
     Value: !GetAtt GitLabScanner.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GitLabScannerARN
 
   GitLabSMScanner:
     Description: Arn for GitLab scanning Lambda in state machine
     Value: !GetAtt GitLabSMScanner.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GitLabSMScannerARN
   GitLabScannerSMDelayStateMachineName:
     Value: !GetAtt GitLabScannerSMDelay.Name
     Description: The name of the GitLabScannerSMDelay State Machine
@@ -1213,3 +1227,5 @@ Outputs:
   GCombine:
     Description: Arn for GCombine scanning Lambda
     Value: !GetAtt GCombine.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GCombineArn

@@ -55,7 +55,7 @@ function Test-GitHubRateLimit {
         Uri         = $rateLimit
         Headers     = @{Authorization = "Bearer $Token" }
         # Method = $method
-        ContentType = "application/json"
+        ContentType = 'application/json'
         ErrorAction = 'Stop'
     }
 
@@ -100,7 +100,7 @@ function Get-GitHubProjectInfo {
         Uri         = $uri
         Headers     = @{Authorization = "Bearer $token" }
         # Method = $method
-        ContentType = "application/json"
+        ContentType = 'application/json'
         ErrorAction = 'Stop'
     }
     try {
@@ -127,7 +127,7 @@ function Get-GitHubProjectInfo {
     }
     catch {
         if ($_.exception.Response.StatusCode -eq 'NotFound') {
-            Write-Warning -Message "NOTFOUND: $URI"
+            Write-Warning -Message ('NOT FOUND: {0}' -f $URI)
             #####################################
             $gitHubData = New-Object -TypeName PSObject
             $gitHubData = @{
@@ -163,7 +163,7 @@ function Start-StateMExecution {
         [string]
         $StateMachineArn,
         [Parameter(Mandatory = $true,
-            HelpMessage = 'Name of target State Macine')]
+            HelpMessage = 'Name of target State Machine')]
         [string]
         $StateMachineName
     )
@@ -254,7 +254,7 @@ function Send-TelegramError {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
-            Write-Host "Secret retrieved."
+            Write-Host 'Secret retrieved.'
             $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
@@ -313,9 +313,9 @@ $stateMachineNameArn = $env:STATE_MACHINE_ARN
 $bucketName = $env:S3_BUCKET_NAME
 $script:telegramToken = $null
 
-Write-Host "State Machine Name: $stateMachineName"
-Write-Host "State Machine Arn: $stateMachineNameArn"
-Write-Host "Bucket Name: $bucketName"
+Write-Host ('State Machine Name: {0}' -f $stateMachineName)
+Write-Host ('State Machine Arn: {0}' -f $stateMachineNameArn)
+Write-Host ('Bucket Name: {0}' -f $bucketName)
 
 Write-Host 'Retrieving GitHub Oauth token...'
 $s = Get-SECSecretValue -SecretId $env:GITHUB_SECRET -Region 'us-west-2' -ErrorAction Stop
@@ -324,14 +324,14 @@ if ($null -eq $s) {
     throw
 }
 else {
-    Write-Host "Secret retrieved."
+    Write-Host 'Secret retrieved.'
     $sObj = $s.SecretString | ConvertFrom-Json
     $token = $sObj.GitHub
 }
 
-Write-Host "Determing number of remaining GitHub API calls..."
+Write-Host 'Determining number of remaining GitHub API calls...'
 $remaining = Test-GitHubRateLimit -Token $token
-Write-Host "Remaining GitHub limit: $remaining"
+Write-Host ('Remaining GitHub limit: {0}' -f $remaining)
 
 foreach ($message in $LambdaInput.Records) {
 
@@ -362,7 +362,7 @@ foreach ($message in $LambdaInput.Records) {
 
     if ($null -ne $uAPI) {
         $uriEval = Confirm-ValidGitHubAPIURL -URI $uAPI
-        Write-Host "API URI: $uAPI"
+        Write-Host ('API URI: {0}' -f $uAPI)
     }
     else {
         Write-Warning -Message 'URI could not be converted'
@@ -375,7 +375,7 @@ foreach ($message in $LambdaInput.Records) {
             Start-Sleep -Milliseconds (20)
         } #if_API_lt_300
         else {
-            Write-Host 'Quering GitHub API for project info...'
+            Write-Host 'Querying GitHub API for project info...'
             $xml = Get-GitHubProjectInfo -Token $token -ModuleName $moduleName -URI $uAPI
             if ($xml) {
                 Write-Host 'Outputting XML file to S3 bucket...'

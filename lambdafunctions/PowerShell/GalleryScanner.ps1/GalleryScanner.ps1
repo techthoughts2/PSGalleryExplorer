@@ -52,7 +52,7 @@ function Send-TelegramError {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
-            Write-Host "Secret retrieved."
+            Write-Host 'Secret retrieved.'
             $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
@@ -70,7 +70,9 @@ function Send-TelegramError {
 .SYNOPSIS
     Lambda that retrieves all modules from the PSGallery and fans out for GitHub data retrieval.
 .DESCRIPTION
-    This Lambda serves to retrieve all modules from the PSGallery. Each module is evaluated if it has a corresponding GitHub project. If it does, an SQS message is drafted for GitHub fanout processing.
+    This Lambda serves to retrieve all modules from the PSGallery.
+    Each module is evaluated if it has a corresponding GitHub project.
+    If it does, an SQS message is drafted for GitHub fanout processing.
 .OUTPUTS
     XML file to S3
     SQS messages
@@ -115,11 +117,11 @@ $bucketName = $env:S3_BUCKET_NAME
 $s3Key = $env:S3_KEY_NAME
 $script:telegramToken = $null
 
-Write-Host "SQS GITHUB QUEUE URL: $sqsURLGitHub"
-Write-Host "SQS GITLAB QUEUE URL: $sqsURLGitHub"
-Write-Host "Region: $region"
-Write-Host "Bucket Name: $bucketName"
-Write-Host "Key Name: $s3Key"
+Write-Host ('SQS GITHUB QUEUE URL: {0}' -f $sqsURLGitHub)
+Write-Host ('SQS GITLAB QUEUE URL: {0}' -f $sqsURLGitHub)
+Write-Host ('Region: {0}' -f $region)
+Write-Host ('Bucket Name: {0}' -f $bucketName)
+Write-Host ('Key Name: {0}' -f $s3Key)
 
 Write-Host 'Retrieving PSGallery module information...'
 try {
@@ -202,7 +204,7 @@ if ($allModules) {
 
             try {
                 Send-SQSMessage @sqsSplat
-                Write-Host "Sent an SQS response for $($module.Name)"
+                Write-Host ('Sent an SQS response for {0}' -f $module.Name)
             }
             catch {
                 Write-Error $_
@@ -239,7 +241,7 @@ if ($allModules) {
 
             try {
                 Send-SQSMessage @sqsSplat
-                Write-Host "Sent an SQS response for $($module.Name)"
+                Write-Host ('Sent an SQS response for {0}' -f $module.Name)
             }
             catch {
                 Write-Error $_
@@ -255,6 +257,6 @@ if ($allModules) {
 } #if_allmodules
 else {
     Write-Warning -Message 'No data was returned from Find-Module'
-    Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - GallerySCanner no data was returend from Find-Module.'
+    Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - GallerySCanner no data was returned from Find-Module.'
     return
 } #else_allmodules

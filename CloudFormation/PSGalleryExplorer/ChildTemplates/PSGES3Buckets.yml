@@ -168,57 +168,57 @@ Resources:
           Value: !Ref AWS::StackName
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
-  S3BucketLogs:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
-    Properties:
-      # AccelerateConfiguration: AccelerateConfiguration
-      AccessControl: LogDeliveryWrite
-      # AnalyticsConfigurations:
-      #   - AnalyticsConfiguration
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      # BucketName: String
-      # CorsConfiguration:
-      #   CorsConfiguration
-      # InventoryConfigurations:
-      #   - InventoryConfiguration
-      LifecycleConfiguration:
-        Rules:
-          -
-            AbortIncompleteMultipartUpload:
-              DaysAfterInitiation: 3
-            ExpirationInDays: 365
-            Status: Enabled
-            Transitions:
-              -
-                StorageClass: STANDARD_IA
-                TransitionInDays: 30
-      # LoggingConfiguration:
-      #   DestinationBucketName: !Ref S3BucketLogs
-      #   LogFilePrefix: '/logs/updateapcdata/'
-      # MetricsConfigurations:
-      #   - MetricsConfiguration
-      # NotificationConfiguration:
-      #   TopicConfigurations:
-      #     -
-      #       Event: s3:ObjectCreated:*
-      #       Topic: !Ref UpdateSNSTopic
-      # ObjectLockConfiguration:
-      #   ObjectLockConfiguration
-      # ObjectLockEnabled: Boolean
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      Tags:
-        - Key: ServiceName
-          Value: !Ref ServiceName
-        - Key: StackName
-          Value: !Ref AWS::StackName
+  # S3BucketLogs:
+  #   Type: AWS::S3::Bucket
+  #   DeletionPolicy: Delete
+  #   Properties:
+  #     # AccelerateConfiguration: AccelerateConfiguration
+  #     AccessControl: LogDeliveryWrite
+  #     # AnalyticsConfigurations:
+  #     #   - AnalyticsConfiguration
+  #     BucketEncryption:
+  #       ServerSideEncryptionConfiguration:
+  #         - ServerSideEncryptionByDefault:
+  #             SSEAlgorithm: AES256
+  #     # BucketName: String
+  #     # CorsConfiguration:
+  #     #   CorsConfiguration
+  #     # InventoryConfigurations:
+  #     #   - InventoryConfiguration
+  #     LifecycleConfiguration:
+  #       Rules:
+  #         -
+  #           AbortIncompleteMultipartUpload:
+  #             DaysAfterInitiation: 3
+  #           ExpirationInDays: 365
+  #           Status: Enabled
+  #           Transitions:
+  #             -
+  #               StorageClass: STANDARD_IA
+  #               TransitionInDays: 30
+  #     # LoggingConfiguration:
+  #     #   DestinationBucketName: !Ref S3BucketLogs
+  #     #   LogFilePrefix: '/logs/updateapcdata/'
+  #     # MetricsConfigurations:
+  #     #   - MetricsConfiguration
+  #     # NotificationConfiguration:
+  #     #   TopicConfigurations:
+  #     #     -
+  #     #       Event: s3:ObjectCreated:*
+  #     #       Topic: !Ref UpdateSNSTopic
+  #     # ObjectLockConfiguration:
+  #     #   ObjectLockConfiguration
+  #     # ObjectLockEnabled: Boolean
+  #     PublicAccessBlockConfiguration:
+  #       BlockPublicAcls: true
+  #       BlockPublicPolicy: true
+  #       IgnorePublicAcls: true
+  #       RestrictPublicBuckets: true
+  #     Tags:
+  #       - Key: ServiceName
+  #         Value: !Ref ServiceName
+  #       - Key: StackName
+  #         Value: !Ref AWS::StackName
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
   PubXMLDataPolicy:
@@ -272,9 +272,9 @@ Resources:
       #           -
       #             StorageClass: GLACIER
       #             TransitionInDays: 30
-      LoggingConfiguration:
-        DestinationBucketName: !Ref S3BucketLogs
-        LogFilePrefix: '/logs/psgalleryexplorer/'
+      # LoggingConfiguration:
+      #   DestinationBucketName: !Ref S3BucketLogs
+      #   LogFilePrefix: '/logs/psgalleryexplorer/'
       MetricsConfigurations:
         - Id: EntireBucket
       # NotificationConfiguration:
@@ -507,15 +507,6 @@ Outputs:
     Description: DomainName of the PSGalleryExplorer Amazon S3 bucket that holds raw github XML data
     Value: !GetAtt GitXMLData.DomainName
 
-  S3BucketLogsBucketName:
-    Value: !Ref S3BucketLogs
-    Description: Name of the PSGalleryExplorer Amazon S3 bucket that holds public S3 access logs
-    Export:
-      Name: S3BucketLogsBN
-  S3BucketLogsArn:
-    Description: Arn of the PSGalleryExplorer Amazon S3 bucket that holds public S3 access logs
-    Value: !GetAtt S3BucketLogs.Arn
-
   PubXMLDataBucketName:
     Value: !Ref PubXMLData
     Description: Name of the PSGalleryExplorer public S3 bucket
@@ -545,3 +536,13 @@ Outputs:
     Value: !GetAtt PSGECloudFrontDistribution.DomainName
     Export:
       Name: !Sub ${ServiceName}-PSGECloudFrontDistributionDomain
+
+  PSGECloudFrontLogBucketName:
+    Value: !Ref PSGECloudFrontLogBucket
+    Description: Name of the PSGECloudFrontLogBucket Amazon S3 bucket
+    Export:
+      Name: PSGECloudFrontLogBucketBN
+
+  PSGECloudFrontLogBucketArn:
+    Description: Arn of the PSGECloudFrontLogBucket Amazon S3 bucket
+    Value: !GetAtt PSGECloudFrontLogBucket.Arn

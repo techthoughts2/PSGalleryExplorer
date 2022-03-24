@@ -50,7 +50,7 @@ function Test-GitHubRateLimit {
         Uri         = $rateLimit
         Headers     = @{Authorization = "Bearer $Token" }
         # Method = $method
-        ContentType = "application/json"
+        ContentType = 'application/json'
         ErrorAction = 'Stop'
     }
 
@@ -95,7 +95,7 @@ function Get-GitHubProjectInfo {
         Uri         = $uri
         Headers     = @{Authorization = "Bearer $token" }
         # Method = $method
-        ContentType = "application/json"
+        ContentType = 'application/json'
         ErrorAction = 'Stop'
     }
     try {
@@ -122,7 +122,7 @@ function Get-GitHubProjectInfo {
     }
     catch {
         if ($_.exception.Response.StatusCode -eq 'NotFound') {
-            Write-Warning -Message "NOTFOUND: $URI"
+            Write-Warning -Message ('NOT FOUND: {0}' -f $URI)
             #####################################
             $gitHubData = New-Object -TypeName PSObject
             $gitHubData = @{
@@ -204,7 +204,7 @@ function Send-TelegramError {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
-            Write-Host "Secret retrieved."
+            Write-Host 'Secret retrieved.'
             $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
@@ -241,7 +241,7 @@ function Send-TelegramError {
 $bucketName = $env:S3_BUCKET_NAME
 $script:telegramToken = $null
 
-Write-Host "Bucket Name: $bucketName"
+Write-Host ('Bucket Name: {0}' -f $bucketName)
 
 Write-Host 'Retrieving GitHub Oauth token...'
 $s = Get-SECSecretValue -SecretId $env:GITHUB_SECRET -Region 'us-west-2' -ErrorAction Stop
@@ -250,27 +250,27 @@ if ($null -eq $s) {
     throw
 }
 else {
-    Write-Host "Secret retrieved."
+    Write-Host 'Secret retrieved.'
     $sObj = $s.SecretString | ConvertFrom-Json
     $token = $sObj.GitHub
 }
 
-Write-Host "Determing number of remaining GitHub API calls..."
+Write-Host 'Determining number of remaining GitHub API calls...'
 $remaining = Test-GitHubRateLimit -Token $token
-Write-Host "Remaining GitHub limit: $remaining"
+Write-Host ('Remaining GitHub limit: {0}' -f $remaining)
 
 $githubURI = $LambdaInput.GitHubURI
 $moduleName = $LambdaInput.ModuleName
 
-Write-Host "GitHub URI: $githubURI"
-Write-Host "Module Name: $moduleName"
+Write-Host ('GitHub URI: {0}' -f $githubURI)
+Write-Host ('Module Name: {0}' -f $moduleName)
 
 Write-Host 'Converting project URI to API URI...'
 $uAPI = Convert-GitHubProjectURI -URI $githubURI
 
 if ($null -ne $uAPI) {
     $uriEval = Confirm-ValidGitHubAPIURL -URI $uAPI
-    Write-Host "API URI: $uAPI"
+    Write-Host ('API URI: {0}' -f $uAPI)
 }
 else {
     Write-Warning -Message 'URI could not be converted'
@@ -282,7 +282,7 @@ if ($uriEval -eq $true) {
         return
     } #if_API_lt_300
     else {
-        Write-Host 'Quering GitHub API for project info...'
+        Write-Host 'Querying GitHub API for project info...'
         $xml = Get-GitHubProjectInfo -Token $token -ModuleName $moduleName -URI $uAPI
         if ($xml) {
             Write-Host 'Outputting XML file to S3 bucket...'
@@ -314,6 +314,5 @@ if ($uriEval -eq $true) {
 else {
     Write-Host 'GitHub URI was not use-able for GitHub data query'
 } #else_valid_uri
-
 
 #endregion

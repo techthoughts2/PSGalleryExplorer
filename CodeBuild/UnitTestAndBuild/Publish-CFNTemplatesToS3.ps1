@@ -22,7 +22,7 @@ else {
 }
 
 foreach ($path in $paths) {
-    Write-Host "Processing CloudFormation Templates in '$path':"
+    Write-Host ('Processing CloudFormation Templates in {0}' -f $path)
     # All CloudFormation Templates to publish are located in or below the "./CloudFormation" folder
     foreach ($file in (Get-ChildItem -Path $path -Recurse -File -Filter "*.yml")) {
 
@@ -49,9 +49,9 @@ foreach ($path in $paths) {
         $s3Key = '{0}/{1}' -f $s3KeyPrefix, $file.Name
         [string]$endPoint = "https://s3.$env:AWSRegion" + ".amazonaws.com"
 
-        Write-Host "ENDPOINT: $endPoint"
-        Write-Host "BUCKET: $artifactBucket"
-        Write-Host "KEY: $s3Key"
+        Write-Host ('ENDPOINT: {0}' -f $endPoint)
+        Write-Host ('BUCKET: {0}' -f $artifactBucket)
+        Write-Host ('KEY: {0}' -f $s3Key)
         $writeS3ObjectSplat = @{
             BucketName  = $artifactBucket
             Key         = $s3Key

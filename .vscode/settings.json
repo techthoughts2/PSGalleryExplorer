@@ -10,18 +10,26 @@
         "powershell"
     ],
     "cSpell.words": [
+        "allmodules",
+        "APIURL",
+        "buildspec",
         "Catesta",
         "Clixml",
         "datetime",
         "defaultparametersetname",
         "discoverability",
+        "fanout",
         "gldata",
         "jakemorrison",
+        "lambdafunctions",
         "notcontains",
         "notin",
+        "Populator",
         "psgalleryexplorer",
         "PSGE",
-        "pwsh"
+        "PSGES",
+        "pwsh",
+        "ratelimit"
     ]
 }
 
