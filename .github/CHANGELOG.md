@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ***Updated all lambdas from ```.NET 3.1``` to ```.NET 6```***
   - Bumped all PowerShell module versions to latest version
   - Added Pester 5 support
+  - XML file generation is now sent to cloudfront
+  - Added cloudfront logging
+  - Added additional monitoring and alarms
 - Minor updates to VSCode settings/tasks/extension files
 
 ## [0.8.7]

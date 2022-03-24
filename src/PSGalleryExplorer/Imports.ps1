@@ -90,13 +90,12 @@ $script:regulars = @(
     'psake'
 )
 
-$domain = 'amazonaws.com'
-$prefix = 'psge-pubxml'
-$target = 's3-accelerate'
+$domain = 'cloudfront.net'
+$target = 'd12hk4x1u6kp21'
 Get-DataLocation
 $script:dataFileZip = 'PSGalleryExplorer.zip'
 $script:dataFile = 'PSGalleryExplorer.xml'
-$script:dlURI = "$prefix.$target.$domain"
+$script:dlURI = '{0}.{1}' -f $target, $domain
 $script:glData = $null
 
 #endregion

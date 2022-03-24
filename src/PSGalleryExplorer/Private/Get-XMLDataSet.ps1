@@ -25,7 +25,7 @@ function Get-XMLDataSet {
     try {
         $invokeWebRequestSplat = @{
             OutFile     = '{0}/{1}' -f $script:dataPath, $script:dataFileZip
-            Uri         = '{0}/{1}' -f $script:dlURI, $script:dataFileZip
+            Uri         = 'https://{0}/{1}' -f $script:dlURI, $script:dataFileZip
             ErrorAction = 'Stop'
         }
         $oldProgressPreference = $progressPreference
