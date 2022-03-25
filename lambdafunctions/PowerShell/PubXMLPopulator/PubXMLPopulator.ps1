@@ -16,11 +16,11 @@
 # $env:S3_FINAL_BUCKET_KEY
 # $env:TELEGRAM_SECRET
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.6.0'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.0.0'}
 
 # Uncomment to send the input event to CloudWatch Logs
 Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
@@ -51,7 +51,7 @@ function Send-TelegramError {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
-            Write-Host "Secret retrieved."
+            Write-Host 'Secret retrieved.'
             $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
@@ -67,9 +67,10 @@ function Send-TelegramError {
 
 <#
 .SYNOPSIS
-    Lambda that combines previously created GitHub XML and PSGallery XML into a publicly accesible single XML file.
+    Lambda that combines previously created GitHub XML and PSGallery XML into a publicly accessible single XML file.
 .DESCRIPTION
-    Downloads previosly created GitHub XML and PSGallery XML files from S3 locations. Loops through and combines the two data sets into a singular XML file and then uploads to publicly accessible S3 bucket.
+    Downloads previously created GitHub XML and PSGallery XML files from S3 locations.
+    Loops through and combines the two data sets into a singular XML file and then uploads to publicly accessible S3 bucket.
 .OUTPUTS
     S3 x2 to Lambda temp to S3
 .COMPONENT
@@ -83,11 +84,11 @@ $s3FinalBucket = $env:S3_FINAL_BUCKET_NAME
 $s3FinalBucketKey = $env:S3_FINAL_BUCKET_KEY
 $script:telegramToken = $null
 
-Write-Host "Bucket Name: $s3Bucket"
-Write-Host "Bucket Gallery Key: $s3BucketGalleryKey"
-Write-Host "Bucket Git Key: $s3BucketGitKey"
-Write-Host "Final Bucket Name: $s3FinalBucket"
-Write-Host "Final Bucket Key: $s3FinalBucketKey"
+Write-Host ('Bucket Name: {0}' -f $s3Bucket)
+Write-Host ('Bucket Gallery Key: {0}' -f $s3BucketGalleryKey)
+Write-Host ('Bucket Git Key: {0}' -f $s3BucketGitKey)
+Write-Host ('Final Bucket Name: {0}' -f $s3FinalBucket)
+Write-Host ('Final Bucket Key: {0}' -f $s3FinalBucketKey)
 
 #_____________________________________________
 $readS3ObjectSplat = @{
@@ -96,17 +97,17 @@ $readS3ObjectSplat = @{
     File        = "$env:TEMP/$s3BucketGalleryKey"
     ErrorAction = 'Stop'
 }
-Write-Host "Downloading PSGallery XML file..."
+Write-Host 'Downloading PSGallery XML file...'
 try {
     $null = Read-S3Object @readS3ObjectSplat
-    Write-Host "PSGallery download completed."
+    Write-Host 'PSGallery download completed.'
 }
 catch {
     Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - PubXMLPopulator failed to DL Gallery file.'
     Write-Error $_
     throw
 }
-Write-Host "Downloading Git XML file..."
+Write-Host 'Downloading Git XML file...'
 $readS3ObjectSplat = @{
     BucketName  = $s3Bucket
     Key         = $s3BucketGitKey
@@ -115,7 +116,7 @@ $readS3ObjectSplat = @{
 }
 try {
     $null = Read-S3Object @readS3ObjectSplat
-    Write-Host "Git download completed."
+    Write-Host 'Git download completed.'
 }
 catch {
     Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - PubXMLPopulator failed to DL Git file.'
@@ -123,7 +124,7 @@ catch {
     throw
 }
 #_____________________________________________
-Write-Host "Processing XML conversions..."
+Write-Host 'Processing XML conversions...'
 $galleryXMLData = Get-Content -Path "$env:TEMP/$s3BucketGalleryKey" -Raw
 $galleryData = $galleryXMLData | ConvertFrom-Clixml
 
@@ -142,9 +143,9 @@ $gitData = $gitXMLData | ConvertFrom-Clixml
 # foreach ($item in $splitupGit) {
 #     $gitData += $item | ConvertFrom-Clixml
 # }
-Write-Host "Conversions completed."
+Write-Host 'Conversions completed.'
 #_____________________________________________
-Write-Host "Merging Git info into PSGallery..."
+Write-Host 'Merging Git info into PSGallery...'
 foreach ($item in $gitData) {
     $d = $null
     $d = $galleryData | Where-Object { $_.Name -eq $item.Values.ModuleName }
@@ -167,7 +168,7 @@ foreach ($item in $gitData) {
         $d | Add-Member -NotePropertyMembers $gitHubData -TypeName Asset
     }
 }
-Write-Host "Merging completed."
+Write-Host 'Merging completed.'
 #_____________________________________________
 Write-Host 'Creating output directory.'
 $path = "$env:TEMP/XML"

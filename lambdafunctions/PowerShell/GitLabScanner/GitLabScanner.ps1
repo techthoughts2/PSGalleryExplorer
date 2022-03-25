@@ -15,12 +15,12 @@
 # $env:TELEGRAM_SECRET
 # $env:GITHUB_SECRET
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.StepFunctions';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.StepFunctions';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.6.0'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.0.0'}
 
 # SQS -> Lambda -> S3
 #  -or-
@@ -65,7 +65,7 @@ function Send-TelegramError {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
-            Write-Host "Secret retrieved."
+            Write-Host 'Secret retrieved.'
             $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
@@ -75,7 +75,7 @@ function Send-TelegramError {
     catch {
         Write-Error $_
     }
-}#Send-TelegramError
+} #Send-TelegramError
 
 <#
 .SYNOPSIS
@@ -94,7 +94,7 @@ function Start-StateMExecution {
         [string]
         $StateMachineArn,
         [Parameter(Mandatory = $true,
-            HelpMessage = 'Name of target State Macine')]
+            HelpMessage = 'Name of target State Machine')]
         [string]
         $StateMachineName
     )
@@ -120,7 +120,7 @@ function Start-StateMExecution {
             StateMachineName = $StateMachineName
             ExecutionArn     = $sfnExecution.ExecutionArn
         })
-}#Start-StateMExecution
+} #Start-StateMExecution
 
 <#
 .SYNOPSIS
@@ -151,7 +151,7 @@ function Convert-GitLabProjectURI {
     }
 
     return $reconstruct
-}#Convert-GitLabProjectURI
+} #Convert-GitLabProjectURI
 
 <#
 .SYNOPSIS
@@ -203,7 +203,7 @@ function Get-GitLabProjectInfo {
         Uri                     = $uri
         Headers                 = @{'PRIVATE-TOKEN' = "$token" }
         Method                  = $method
-        ContentType             = "application/json"
+        ContentType             = 'application/json'
         ResponseHeadersVariable = 'headerCheck'
         ErrorAction             = 'Stop'
     }
@@ -231,13 +231,13 @@ function Get-GitLabProjectInfo {
         $xml = $gitLabData | ConvertTo-Clixml -Depth 100
         #####################################
         if ($headerCheck.'RateLimit-Remaining' -lt 20) {
-            Write-Host "RateLimit-Remaining below 20"
+            Write-Host 'RateLimit-Remaining below 20'
             $script:rateLimit = $true
         }
     }
     catch {
         if ($_.exception.Response.StatusCode -eq 'NotFound') {
-            Write-Warning -Message "NOTFOUND: $URI"
+            Write-Warning -Message ('NOT FOUND: {0}' -f $URI)
             #####################################
             $gitLabData = New-Object -TypeName PSObject
             $gitLabData = @{
@@ -257,7 +257,7 @@ function Get-GitLabProjectInfo {
         }
     }
     return $xml
-}#Get-GitLabProjectInfo
+} #Get-GitLabProjectInfo
 
 #endregion
 
@@ -298,9 +298,9 @@ $stateMachineNameArn = $env:STATE_MACHINE_ARN
 $bucketName = $env:S3_BUCKET_NAME
 $script:telegramToken = $null
 
-Write-Host "State Machine Name: $stateMachineName"
-Write-Host "State Machine Arn: $stateMachineNameArn"
-Write-Host "Bucket Name: $bucketName"
+Write-Host ('State Machine Name: {0}' -f $stateMachineName)
+Write-Host ('State Machine Arn: {0}' -f $stateMachineNameArn)
+Write-Host ('Bucket Name: {0}' -f $bucketName)
 
 Write-Host 'Retrieving GitLab token...'
 $s = Get-SECSecretValue -SecretId $env:GITHUB_SECRET -Region 'us-west-2' -ErrorAction Stop
@@ -309,7 +309,7 @@ if ($null -eq $s) {
     throw
 }
 else {
-    Write-Host "Secret retrieved."
+    Write-Host 'Secret retrieved.'
     $sObj = $s.SecretString | ConvertFrom-Json
     $token = $sObj.GitLab
 }
@@ -347,14 +347,14 @@ foreach ($message in $LambdaInput.Records) {
         Write-Host 'API calls low... triggering State Machine delay...'
         Start-StateMExecution @startStateMExecutionSplat
         Start-Sleep -Milliseconds (20)
-    }#if_rate_limit
+    } #if_rate_limit
     else {
         Write-Host 'Converting project URI to API URI...'
         $uAPI = Convert-GitLabProjectURI -URI $gitlabURI
 
         if ($null -ne $uAPI) {
             $uriEval = Confirm-ValidGitLabAPIURL -URI $uAPI
-            Write-Host "API URI: $uAPI"
+            Write-Host ('API URI: {0}' -f $uAPI)
         }
         else {
             Write-Warning -Message 'URI could not be converted'
@@ -362,7 +362,7 @@ foreach ($message in $LambdaInput.Records) {
 
         if ($uriEval -eq $true) {
 
-            Write-Host 'Quering GitLab API for project info...'
+            Write-Host 'Querying GitLab API for project info...'
             $xml = Get-GitLabProjectInfo -Token $token -ModuleName $moduleName -URI $uAPI
             if ($xml) {
                 Write-Host 'Outputting XML file to S3 bucket...'
@@ -388,7 +388,7 @@ foreach ($message in $LambdaInput.Records) {
             }
             elseif ($null -eq $xml -and $script:rateLimit -eq $true) {
                 # condition here is that most likely an exception was thrown in retrieval
-                # if an exception was thrown and evaled to ratelimit true, we will trigger the state machine
+                # if an exception was thrown and evaluated to ratelimit true, we will trigger the state machine
                 Write-Host 'API calls low... triggering State Machine delay...'
                 Start-StateMExecution @startStateMExecutionSplat
                 Start-Sleep -Milliseconds (20)
@@ -397,12 +397,12 @@ foreach ($message in $LambdaInput.Records) {
                 # reason has already been logged in child function
             }
 
-        }#if_valid_uri
+        } #if_valid_uri
         else {
             Write-Host 'GitLab URI was not use-able for GitLab data query'
-        }#else_valid_uri
+        } #else_valid_uri
 
-    }##else_rate_limit
-}#foreach_SQS
+    } ##else_rate_limit
+} #foreach_SQS
 
 #endregion

@@ -10,6 +10,7 @@
 .OUTPUTS
     System.Boolean
 .NOTES
+    Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
     Confirm-XMLDataSet
     Get-XMLDataSet
     Expand-XMLDataSet
@@ -39,7 +40,7 @@ function Invoke-XMLDataCheck {
         Write-Verbose -Message ('[{0}] Confirm={1} ConfirmPreference={2} WhatIf={3} WhatIfPreference={4}' -f $MyInvocation.MyCommand, $Confirm, $ConfirmPreference, $WhatIf, $WhatIfPreference)
 
         $results = $true #assume the best
-    }#begin
+    } #begin
     Process {
         # -Confirm --> $ConfirmPreference = 'Low'
         # ShouldProcess intercepts WhatIf* --> no need to pass it on
@@ -61,15 +62,15 @@ function Invoke-XMLDataCheck {
                     else {
                         $results = $false
                     }
-                }#if_Confirm
-            }#if_dataoutput
+                } #if_Confirm
+            } #if_data_output
             else {
                 $results = $false
-            }#else_dataoutput
+            } #else_data_output
 
-        }#if_Should
-    }#process
+        } #if_Should
+    } #process
     End {
         return $results
-    }#end
-}#Invoke-XMLDataCheck
+    } #end
+} #Invoke-XMLDataCheck

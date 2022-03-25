@@ -1,23 +1,17 @@
+$paths = @(
+    'CloudFormation'
+)
+$files = Get-ChildItem -Path $paths -File -Recurse -Filter '*.json'
 $ErrorActionPreference = 'Stop'
 
-# Paths are based from the root of the GIT repository
-$paths = @(
-    './CloudFormation'
-)
+Describe -Name 'JSON Configuration File Validation' {
 
-Describe -Name 'JSON Configuration File Validation' -Fixture {
-
-    foreach ($path in $paths) {
-
-        Context -Name $path -Fixture {
-            foreach ($file in (Get-ChildItem -Path $path -File -Recurse -Filter '*.json')) {
-                Context -Name $file.Name -Fixture {
-                    It -Name 'is valid' -Test {
-                        { $null = ConvertFrom-Json -InputObject (Get-Content -Path $file.FullName -Raw) } | Should Not Throw
-                    }
-                }
-            }
+    Context -Name 'JSON Parameter Files' {
+        Context -Name '<_.Name>' -Foreach $files {
+            It 'is valid JSON' {
+                { $null = ConvertFrom-Json -InputObject (Get-Content -Path $_.FullName -Raw) } | Should -Not -Throw
+            } #it
         }
+    } #context_json_parameter_files
 
-    }
-}
+} #describe_json_configuration_file_validation

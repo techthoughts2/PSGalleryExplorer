@@ -3,9 +3,18 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      dotnet: 3.1
+      dotnet: 5.0
       # python: 3.8
     commands:
+      # Check PowerShell Version
+      - pwsh -command '$PSVersionTable'
+
+      # Check available variables in the build
+      # - pwsh -command 'Get-Variable'
+
+      # Check available environment variables in the build
+      # - pwsh -command 'Get-ChildItem env:'
+
       # Configure AWS defaults using the configuration script added to the Docker Image.
       - pwsh -command './CodeBuild/configure_aws_credential.ps1'
 
@@ -18,15 +27,27 @@ phases:
 
   pre_build:
     commands:
-      - pwsh -command '$PSVersionTable'
-
-      - pwsh -command 'Get-ChildItem env:'
+      # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script
+      # - pwsh -command '& ./CodeBuild/UnitTestAndBuild/dotnet-install.ps1 -Channel LTS'
+      - ./CodeBuild/UnitTestAndBuild/dotnet-install.sh --channel LTS
 
       # Validate CloudFormation Templates
-      - pwsh -command '$WarningPreference = "SilentlyContinue"; Import-Module -Name "AWS.Tools.Common"; Invoke-Pester -Script ./CodeBuild/UnitTestAndBuild/Validate-CFNTemplates.Tests.ps1 -EnableExit'
+      - pwsh -command '
+          Import-Module Pester;
+          $pesterConfiguration = [PesterConfiguration]::new();
+          $pesterConfiguration.Run.Exit = $true;
+          $pesterConfiguration.Run.Path = "./CodeBuild/UnitTestAndBuild/Validate-CFNTemplates.Tests.ps1";
+          $pesterConfiguration.Output.Verbosity = "Detailed";
+          Invoke-Pester -Configuration $pesterConfiguration'
 
       # Validate Json files
-      - pwsh -command '$WarningPreference = "SilentlyContinue"; Import-Module -Name "AWS.Tools.Common"; Invoke-Pester -Script ./CodeBuild/UnitTestAndBuild/Validate-JSONConfigurations.Tests.ps1 -EnableExit'
+      - pwsh -command '
+          Import-Module Pester;
+          $pesterConfiguration = [PesterConfiguration]::new();
+          $pesterConfiguration.Run.Exit = $true;
+          $pesterConfiguration.Run.Path = "./CodeBuild/UnitTestAndBuild/Validate-JSONConfigurations.Tests.ps1";
+          $pesterConfiguration.Output.Verbosity = "Detailed";
+          Invoke-Pester -Configuration $pesterConfiguration'
 
   build:
     commands:

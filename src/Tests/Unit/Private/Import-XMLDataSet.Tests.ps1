@@ -1,30 +1,27 @@
-﻿#-------------------------------------------------------------------------
+#-------------------------------------------------------------------------
 Set-Location -Path $PSScriptRoot
 #-------------------------------------------------------------------------
 $ModuleName = 'PSGalleryExplorer'
-$PathToManifest = [System.IO.Path]::Combine('..', '..', $ModuleName, "$ModuleName.psd1")
+$PathToManifest = [System.IO.Path]::Combine('..', '..', '..', $ModuleName, "$ModuleName.psd1")
 #-------------------------------------------------------------------------
 if (Get-Module -Name $ModuleName -ErrorAction 'SilentlyContinue') {
-  #if the module is already in memory, remove it
-  Remove-Module -Name $ModuleName -Force
+    #if the module is already in memory, remove it
+    Remove-Module -Name $ModuleName -Force
 }
 Import-Module $PathToManifest -Force
 #-------------------------------------------------------------------------
-$WarningPreference = "SilentlyContinue"
-#-------------------------------------------------------------------------
-#Import-Module $moduleNamePath -Force
 
 InModuleScope 'PSGalleryExplorer' {
-  #-------------------------------------------------------------------------
-  function Write-Error {
-
-  }
-  function Write-Warning {
-
-  }
-  $WarningPreference = "SilentlyContinue"
-  #-------------------------------------------------------------------------
-  $xmlData = @'
+    #-------------------------------------------------------------------------
+    $WarningPreference = "SilentlyContinue"
+    #-------------------------------------------------------------------------
+    Describe 'Import-XMLDataSet' -Tag Unit {
+        BeforeAll {
+            $WarningPreference = 'SilentlyContinue'
+            $ErrorActionPreference = 'SilentlyContinue'
+        } #before_all
+        BeforeEach {
+            $xmlData = @'
 <Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
   <Obj RefId="0">
     <TN RefId="0">
@@ -46,7 +43,7 @@ InModuleScope 'PSGalleryExplorer' {
       <Nil N="UpdatedDate" />
       <Nil N="LicenseUri" />
       <URI N="ProjectUri">https://github.com/techthoughts2/PoshGram</URI>
-      <URI N="IconUri">https://github.com/techthoughts2/PoshGram/raw/master/media/PoshGram.png</URI>
+      <URI N="IconUri">https://github.com/techthoughts2/PoshGram/raw/main/media/PoshGram.png</URI>
       <Obj N="Tags" RefId="1">
         <TN RefId="1">
           <T>Deserialized.System.Object[]</T>
@@ -283,7 +280,7 @@ InModuleScope 'PSGalleryExplorer' {
       <Nil N="InstalledDate" />
       <Nil N="UpdatedDate" />
       <Nil N="LicenseUri" />
-      <URI N="ProjectUri">https://github.com/MathieuBuisson/Powershell-Administration/tree/master/cRegFile</URI>
+      <URI N="ProjectUri">https://github.com/MathieuBuisson/Powershell-Administration/tree/main/cRegFile</URI>
       <Nil N="IconUri" />
       <Obj N="Tags" RefId="1">
         <TN RefId="1">
@@ -437,115 +434,115 @@ InModuleScope 'PSGalleryExplorer' {
   </Obj>
 </Objs>
 '@
-  $objData = [PSCustomObject]@{
+            $objData = [PSCustomObject]@{
 
-    Name                       = 'PoshGram'
-    Version                    = [version]'1.10.1'
-    Type                       = 'Module'
-    Description                = 'PoshGram provides functionality to send various message types to a specified Telegram chat via the Telegram Bot API. Seperate PowerShell functions are used for each message type. Checks are included to ensure that file extensions, and file size restrictions are adhered to based on Telegram requirements.'
-    Author                     = 'Jake Morrison'
-    CompanyName                = 'jakewmorrison'
-    Copyright                  = '(c) 2019 Jake Morrison. All rights reserved.'
-    PublishedDate              = [datetime]'12/17/19 23:05:48'
-    InstalledDate              = ''
-    UpdatedDate                = ''
-    LicenseUri                 = ''
-    ProjectUri                 = 'https://github.com/techthoughts2/PoshGram'
-    IconUri                    = 'https://github.com/techthoughts2/PoshGram/raw/master/media/PoshGram.png'
-    Tags                       = @(
-      'Animations',
-      'Audio',
-      'Automation',
-      'bot',
-      'Contact',
-      'Contacts',
-      'Coordinates',
-      'Documents',
-      'Gif',
-      'Gifs',
-      'Location',
-      'Media',
-      'Message',
-      'Messaging',
-      'Messenger',
-      'Notification',
-      'Notifications',
-      'Notify',
-      'Photo',
-      'Photos',
-      'Pictures',
-      'Poll',
-      'powershell',
-      'powershell-module',
-      'PSModule',
-      'Send',
-      'SM',
-      'Sticker',
-      'Stickers',
-      'Sticker-Pack',
-      'telegram',
-      'telegram-bot-api',
-      'telegramx',
-      'Telegram-Sticker',
-      'Telegram-Bot',
-      'Venue',
-      'Video',
-      'Videos'
-    )
-    Includes                   = @{
-      Function       = @(
-        'Get-TelegramStickerPackInfo',
-        'Send-TelegramContact',
-        'Send-TelegramLocalAnimation',
-        'Send-TelegramLocalAudio',
-        'Send-TelegramLocalDocument',
-        'Send-TelegramLocalPhoto',
-        'Send-TelegramLocalSticker',
-        'Send-TelegramLocalVideo',
-        'Send-TelegramLocation',
-        'Send-TelegramMediaGroup',
-        'Send-TelegramPoll',
-        'Send-TelegramSticker',
-        'Send-TelegramTextMessage',
-        'Send-TelegramURLAnimation',
-        'Send-TelegramURLAudio',
-        'Send-TelegramURLDocument',
-        'Send-TelegramURLPhoto',
-        'Send-TelegramURLSticker',
-        'Send-TelegramURLVideo',
-        'Send-TelegramVenue',
-        'Test-BotToken'
-      )
-      Workflow       = '{}'
-      RoleCapability = '{}'
-      Cmdlet         = '{}'
-      DscResource    = '{}'
-      Command        = @(
-        'Get-TelegramStickerPackInfo',
-        'Send-TelegramContact',
-        'Send-TelegramLocalAnimation',
-        'Send-TelegramLocalAudio',
-        'Send-TelegramLocalDocument',
-        'Send-TelegramLocalPhoto',
-        'Send-TelegramLocalSticker',
-        'Send-TelegramLocalVideo',
-        'Send-TelegramLocation',
-        'Send-TelegramMediaGroup',
-        'Send-TelegramPoll',
-        'Send-TelegramSticker',
-        'Send-TelegramTextMessage',
-        'Send-TelegramURLAnimation',
-        'Send-TelegramURLAudio',
-        'Send-TelegramURLDocument',
-        'Send-TelegramURLPhoto',
-        'Send-TelegramURLSticker',
-        'Send-TelegramURLVideo',
-        'Send-TelegramVenue',
-        'Test-BotToken'
-      )
-    }
-    PowerShellGetFormatVersion = ''
-    ReleaseNotes               = '@ 1.10.1:
+                Name                       = 'PoshGram'
+                Version                    = [version]'1.10.1'
+                Type                       = 'Module'
+                Description                = 'PoshGram provides functionality to send various message types to a specified Telegram chat via the Telegram Bot API. Seperate PowerShell functions are used for each message type. Checks are included to ensure that file extensions, and file size restrictions are adhered to based on Telegram requirements.'
+                Author                     = 'Jake Morrison'
+                CompanyName                = 'jakewmorrison'
+                Copyright                  = '(c) 2019 Jake Morrison. All rights reserved.'
+                PublishedDate              = [datetime]'12/17/19 23:05:48'
+                InstalledDate              = ''
+                UpdatedDate                = ''
+                LicenseUri                 = ''
+                ProjectUri                 = 'https://github.com/techthoughts2/PoshGram'
+                IconUri                    = 'https://github.com/techthoughts2/PoshGram/raw/main/media/PoshGram.png'
+                Tags                       = @(
+                    'Animations',
+                    'Audio',
+                    'Automation',
+                    'bot',
+                    'Contact',
+                    'Contacts',
+                    'Coordinates',
+                    'Documents',
+                    'Gif',
+                    'Gifs',
+                    'Location',
+                    'Media',
+                    'Message',
+                    'Messaging',
+                    'Messenger',
+                    'Notification',
+                    'Notifications',
+                    'Notify',
+                    'Photo',
+                    'Photos',
+                    'Pictures',
+                    'Poll',
+                    'powershell',
+                    'powershell-module',
+                    'PSModule',
+                    'Send',
+                    'SM',
+                    'Sticker',
+                    'Stickers',
+                    'Sticker-Pack',
+                    'telegram',
+                    'telegram-bot-api',
+                    'telegramx',
+                    'Telegram-Sticker',
+                    'Telegram-Bot',
+                    'Venue',
+                    'Video',
+                    'Videos'
+                )
+                Includes                   = @{
+                    Function       = @(
+                        'Get-TelegramStickerPackInfo',
+                        'Send-TelegramContact',
+                        'Send-TelegramLocalAnimation',
+                        'Send-TelegramLocalAudio',
+                        'Send-TelegramLocalDocument',
+                        'Send-TelegramLocalPhoto',
+                        'Send-TelegramLocalSticker',
+                        'Send-TelegramLocalVideo',
+                        'Send-TelegramLocation',
+                        'Send-TelegramMediaGroup',
+                        'Send-TelegramPoll',
+                        'Send-TelegramSticker',
+                        'Send-TelegramTextMessage',
+                        'Send-TelegramURLAnimation',
+                        'Send-TelegramURLAudio',
+                        'Send-TelegramURLDocument',
+                        'Send-TelegramURLPhoto',
+                        'Send-TelegramURLSticker',
+                        'Send-TelegramURLVideo',
+                        'Send-TelegramVenue',
+                        'Test-BotToken'
+                    )
+                    Workflow       = '{}'
+                    RoleCapability = '{}'
+                    Cmdlet         = '{}'
+                    DscResource    = '{}'
+                    Command        = @(
+                        'Get-TelegramStickerPackInfo',
+                        'Send-TelegramContact',
+                        'Send-TelegramLocalAnimation',
+                        'Send-TelegramLocalAudio',
+                        'Send-TelegramLocalDocument',
+                        'Send-TelegramLocalPhoto',
+                        'Send-TelegramLocalSticker',
+                        'Send-TelegramLocalVideo',
+                        'Send-TelegramLocation',
+                        'Send-TelegramMediaGroup',
+                        'Send-TelegramPoll',
+                        'Send-TelegramSticker',
+                        'Send-TelegramTextMessage',
+                        'Send-TelegramURLAnimation',
+                        'Send-TelegramURLAudio',
+                        'Send-TelegramURLDocument',
+                        'Send-TelegramURLPhoto',
+                        'Send-TelegramURLSticker',
+                        'Send-TelegramURLVideo',
+                        'Send-TelegramVenue',
+                        'Test-BotToken'
+                    )
+                }
+                PowerShellGetFormatVersion = ''
+                ReleaseNotes               = '@ 1.10.1:
                             Fixed bug where DisableNotification had no effect when running Send-TelegramSticker
                         1.10.0:
                             Improved Help Formatting
@@ -580,23 +577,23 @@ InModuleScope 'PSGalleryExplorer' {
                         0.8.4 Added IconURI to manifest
                         0.8.3 Initial beta release.
 @'
-    Dependencies               = '{}'
-    RepositorySourceLocation   = 'https://www.powershellgallery.com/api/v2'
-    Repository                 = 'PSGallery'
-    PackageManagementProvider  = 'NuGet'
-    AdditionalMetadata         = @{
+                Dependencies               = '{}'
+                RepositorySourceLocation   = 'https://www.powershellgallery.com/api/v2'
+                Repository                 = 'PSGallery'
+                PackageManagementProvider  = 'NuGet'
+                AdditionalMetadata         = @{
 
-      summary                   = 'PoshGram provides functionality to send various message types to a specified Telegram chat via the Telegram Bot API. Seperate PowerShell functions are used for each message type. Checks are included to ensure that file extensions, and file size restrictions are adhered to based on Telegram requirements.'
-      ItemType                  = 'Module'
-      CompanyName               = 'Tech Thoughts'
-      updated                   = [datetime]'2020 - 01 - 05T19:10:07Z'
-      isLatestVersion           = 'True'
-      title                     = 'PoshGram'
-      FileList                  = 'PoshGram.nuspec | PoshGram.psd1 | PoshGram.psm1 | asset\emoji.json | en-US\PoshGram-help.xml'
-      IsPrerelease              = 'false'
-      copyright                 = '(c) 2019 Jake Morrison. All rights reserved.'
-      versionDownloadCount      = '1479'
-      releaseNotes              = '@ 1.10.1:
+                    summary                   = 'PoshGram provides functionality to send various message types to a specified Telegram chat via the Telegram Bot API. Seperate PowerShell functions are used for each message type. Checks are included to ensure that file extensions, and file size restrictions are adhered to based on Telegram requirements.'
+                    ItemType                  = 'Module'
+                    CompanyName               = 'Tech Thoughts'
+                    updated                   = [datetime]'2020 - 01 - 05T19:10:07Z'
+                    isLatestVersion           = 'True'
+                    title                     = 'PoshGram'
+                    FileList                  = 'PoshGram.nuspec | PoshGram.psd1 | PoshGram.psm1 | asset\emoji.json | en-US\PoshGram-help.xml'
+                    IsPrerelease              = 'false'
+                    copyright                 = '(c) 2019 Jake Morrison. All rights reserved.'
+                    versionDownloadCount      = '1479'
+                    releaseNotes              = '@ 1.10.1:
       Fixed bug where DisableNotification had no effect when running Send-TelegramSticker
       1.10.0:
       Improved Help Formatting
@@ -631,317 +628,63 @@ InModuleScope 'PSGalleryExplorer' {
       0.8.4 Added IconURI to manifest
       0.8.3 Initial beta release.
 @'
-      lastUpdated               = '1/5/20 7:10:07 PM + 00:00'
-      Authors                   = 'Jake Morrison'
-      PackageManagementProvider = 'NuGet'
-      tags                      = 'Animations Audio Automation bot Contact Contacts Coordinates Documents Gif Gifs Location Media Message Messaging Messenger Notification Notifications Notify Photo Photos Pictures Poll powershell powershell-module PSModule Send SM Sticker Stickers Sticker-Pack telegram telegram-bot-api telegramx Telegram-Sticker Telegram-Bot Venue Video Videos'
-      PowerShellVersion         = [version]'6.1.0'
-      developmentDependency     = 'False'
-      NormalizedVersion         = '1.10.1'
-      requireLicenseAcceptance  = 'False'
-      GUID                      = '277b92bc-0ea9-4659-8f6c-ed5a1dfdfda2'
-      created                   = '12/18/19 7:05:48 AM + 00:00'
-      description               = 'PoshGram provides functionality to send various message types to a specified Telegram chat via the Telegram Bot API. Seperate PowerShell functions are used for each message type. Checks are included to ensure that file extensions, and file size restrictions are adhered to based on Telegram requirements.'
-      published                 = '12/18/19 7:05:48 AM + 00:00'
-      isAbsoluteLatestVersion   = 'True'
-      downloadCount             = '2421'
-      SourceName                = 'PSGallery'
-      packageSize               = '87559'
-      Functions                 = 'Get-TelegramStickerPackInfo Send-TelegramContact Send-TelegramLocalAnimation Send-TelegramLocalAudio Send-TelegramLocalDocument Send-TelegramLocalPhoto Send-TelegramLocalSticker Send-TelegramLocalVideo Send-TelegramLocation Send-TelegramMediaGroup Send-TelegramPoll Send-TelegramSticker Send-TelegramTextMessage Send-TelegramURLAnimation Send-TelegramURLAudio Send-TelegramURLDocument Send-TelegramURLPhoto Send-TelegramURLSticker Send-TelegramURLVideo Send-TelegramVenue Test-BotToken'
-    }
-    GitHubInfo                 = @{
-      Subscribers = '5'
-      GitStatus   = 'True'
-      Forks       = '4'
-      Watchers    = '28'
-      StarCount   = '28'
-      License     = 'MIT License'
-      Created     = [datetime]'06/28/18 01:42:08'
-      Updated     = [datetime]'01/01/20 06:27:11'
-    }
-  }
-  Describe 'Confirm-DataLocation' -Tag Unit {
-    BeforeEach {
-      Mock -CommandName Test-Path -MockWith {
-        $true
-      }#endMock
-      Mock -CommandName New-Item -MockWith { }#endMock
-    }#before_each
-    Context 'Error' {
-      It 'should return false if an error is encountered with Test-Path' {
-        Mock -CommandName Test-Path -MockWith {
-          throw 'FakeError'
-        }#endMock
-        Confirm-DataLocation | Should -BeExactly $false
-      }#it
-      It 'should return false if an error is encountered with New-Item' {
-        Mock -CommandName Test-Path -MockWith {
-          $false
-        }#endMock
-        Mock -CommandName New-Item -MockWith {
-          throw 'FakeError'
-        }#endMock
-        Confirm-DataLocation | Should -BeExactly $false
-      }#it
-    }#context_FunctionName
-    Context 'Success' {
-      It 'should return true if the output dir already exists' {
-        Confirm-DataLocation | Should -BeExactly $true
-      }#it
-      It 'should return true if the output dir does not exists and is created' {
-        Mock -CommandName Test-Path -MockWith {
-          $false
-        }#endMock
-        Confirm-DataLocation | Should -BeExactly $true
-      }#it
-    }#context_Success
-  }#describe_Confirm-DataLocation
-  Describe 'Confirm-XMLDataSet' -Tag Unit {
-    BeforeEach {
-      Mock -CommandName Test-Path -MockWith {
-        $true
-      }#endMock
-      Mock -CommandName Get-ChildItem -MockWith {
-        [PSCustomObject]@{
-          Name            = 'PSGalleryExplorer.xml'
-          CreationTime    = [datetime]'01/06/20 21:17:21'
-          CreationTimeUtc = [datetime]'01/07/20 05:17:21'
-          LastAccessTime  = [datetime]'01/06/20 21:17:22'
-        }
-      }#endMock
-      Mock -CommandName Get-Date -MockWith {
-        [datetime]'01/06/20 21:17:22'
-      }#endMock
-    }#before_each
-    Context 'Error' {
-      It 'should return false if an error is encountered with Test-Path' {
-        Mock -CommandName Test-Path -MockWith {
-          throw 'FakeError'
-        }#endMock
-        Confirm-XMLDataSet | Should -BeExactly $false
-      }#it
-      It 'should return false if an error is encountered with Get-ChildItem' {
-        Mock -CommandName Get-ChildItem -MockWith {
-          throw 'FakeError'
-        }#endMock
-        Confirm-XMLDataSet | Should -BeExactly $false
-      }#it
-      It 'should return null false if no file information is returned from Get-ChildItem' {
-        Mock -CommandName Get-ChildItem -MockWith { }#endMock
-        Confirm-XMLDataSet | Should -BeExactly $false
-      }#it
-    }#context_FunctionName
-    Context 'Success' {
-      It 'should return false if the data file is not found' {
-        Mock -CommandName Test-Path -MockWith {
-          $false
-        }#endMock
-        Confirm-XMLDataSet | Should -BeExactly $false
-      }#it
-      It 'should return false if the data file is too old' {
-        Mock -CommandName Get-Date -MockWith {
-          [datetime]'1/16/20 21:17:22'
-        }#endMock
-        Confirm-XMLDataSet | Should -BeExactly $false
-      }#it
-      It 'should return true if the file is found and is less than 9 days old' {
-        Confirm-XMLDataSet | Should -BeExactly $true
-      }#it
-    }#context_Success
-  }#describe_Confirm-XMLDataSet
-  Describe 'Expand-XMLDataSet' -Tag Unit {
-    BeforeEach {
-      Mock -CommandName Test-Path -MockWith {
-        $false
-      }#endMock
-      Mock -CommandName Remove-Item -MockWith {
-
-      }#endMock
-      Mock -CommandName Expand-Archive -MockWith {
-        [PSCustomObject]@{
-          Name         = 'PSGalleryExplorer.xml'
-          Exists       = 'True'
-          CreationTime = [datetime]'01 / 06 / 20 23:02:16'
-        }
-      }#endMock
-    }#before_each
-    Context 'Error' {
-      It 'should return false if an error is encountered with Test-Path' {
-        Mock -CommandName Test-Path -MockWith {
-          throw 'FakeError'
-        }#endMock
-        Expand-XMLDataSet | Should -BeExactly $false
-      }#it
-      It 'should return false if an error is encountered with Remove-Item' {
-        Mock -CommandName Test-Path -MockWith {
-          $true
-        }#endMock
-        Mock -CommandName Remove-Item -MockWith {
-          throw 'FakeError'
-        }#endMock
-        Expand-XMLDataSet | Should -BeExactly $false
-      }#it
-      It 'should return false if an error is encountered with Expand-Archive' {
-        Mock -CommandName Expand-Archive -MockWith {
-          throw 'FakeError'
-        }#endMock
-        Expand-XMLDataSet | Should -BeExactly $false
-      }#it
-    }#context_Error
-    Context 'Success' {
-      It 'should return true if the data file is expanded' {
-        Expand-XMLDataSet | Should -BeExactly $true
-      }#it
-    }#context_Success
-  }#describe_Expand-XMLDataSet
-  Describe 'Get-XMLDataSet' -Tag Unit {
-    BeforeEach {
-      Mock -CommandName Invoke-WebRequest -MockWith {
-        [PSCustomObject]@{
-          StatusCode        = '200'
-          StatusDescription = 'OK'
-          Content           = '{80, 75, 3, 4…}'
-        }
-      }#endMock
-    }#before_each
-    Context 'Error' {
-      It 'should return false if an error is encountered downloading the data file' {
-        Mock -CommandName Invoke-WebRequest -MockWith {
-          throw 'FakeError'
-        }#endMock
-        Get-XMLDataSet | Should -BeExactly $false
-      }#it
-    }#context_FunctionName
-    Context 'Success' {
-      It 'should return true if the data file is downloaded' {
-        Get-XMLDataSet | Should -BeExactly $true
-      }#it
-    }#context_Success
-  }#describe_Get-XMLDataSet
-  Describe 'Import-XMLDataSet' -Tag Unit {
-    BeforeEach {
-      Mock -CommandName Invoke-XMLDataCheck -MockWith {
-        $true
-      }#endMock
-      Mock -CommandName Get-Content -MockWith {
-        $xmlData
-      }#endMock
-      Mock -CommandName ConvertFrom-Clixml -MockWith {
-        $objData
-      }#endMock
-    }#before_each
-    Context 'Error' {
-      It 'should return false if an error is encountered getting content from data file' {
-        Mock -CommandName Get-Content -MockWith {
-          throw 'FakeError'
-        }#endMock
-        Import-XMLDataSet | Should -BeExactly $false
-      }#it
-    }#context_FunctionName
-    Context 'Success' {
-      It 'should return false if Invoke-XMLDataCheck does not succeed' {
-        Mock -CommandName Invoke-XMLDataCheck -MockWith {
-          $false
-        }#endMock
-        Import-XMLDataSet | Should -BeExactly $false
-      }#it
-      It 'should return true if the data is successfully imported' {
-        Import-XMLDataSet | Should -BeExactly $true
-      }#it
-    }#context_Success
-  }#describe_Import-XMLDataSet
-  Describe 'Invoke-XMLDataCheck' -Tag Unit {
-    function Confirm-DataLocation {
-    }
-    function Confirm-XMLDataSet {
-    }
-    function Expand-XMLDataSet {
-    }
-    function Get-XMLDataSet {
-    }
-
-    Context 'ShouldProcess' {
-      Mock -CommandName Invoke-XMLDataCheck -MockWith { }#endMock
-      It 'Should process by default' {
-        Invoke-XMLDataCheck
-        Assert-MockCalled Invoke-XMLDataCheck -Scope It -Exactly -Times 1
-      }#it
-      It 'Should not process on explicit request for confirmation (-Confirm)' {
-        { Invoke-XMLDataCheck -Confirm }
-        Assert-MockCalled Invoke-XMLDataCheck -Scope It -Exactly -Times 0
-      }#it
-      It 'Should not process on implicit request for confirmation (ConfirmPreference)' {
-        {
-          $ConfirmPreference = 'Low'
-          Invoke-XMLDataCheck
-        }
-        Assert-MockCalled Invoke-XMLDataCheck -Scope It -Exactly -Times 0
-      }#it
-      It 'Should not process on explicit request for validation (-WhatIf)' {
-        { Invoke-XMLDataCheck -WhatIf }
-        Assert-MockCalled Invoke-XMLDataCheck -Scope It -Exactly -Times 0
-      }#it
-      It 'Should not process on implicit request for validation (WhatIfPreference)' {
-        {
-          $WhatIfPreference = $true
-          Invoke-XMLDataCheck
-        }
-        Assert-MockCalled Invoke-XMLDataCheck -Scope It -Exactly -Times 0
-      }#it
-      It 'Should process on force' {
-        $ConfirmPreference = 'Medium'
-        Invoke-XMLDataCheck -Force
-        Assert-MockCalled Invoke-XMLDataCheck -Scope It -Exactly -Times 1
-      }#it
-    }
-    BeforeEach {
-      Mock -CommandName Confirm-DataLocation -MockWith {
-        $true
-      }#endMock
-      Mock -CommandName Confirm-XMLDataSet -MockWith {
-        $true
-      }#endMock
-      Mock -CommandName Expand-XMLDataSet -MockWith {
-        $true
-      }#endMock
-      Mock -CommandName Get-XMLDataSet -MockWith {
-        $true
-      }#endMock
-    }#before_each
-    Context 'Success' {
-      It 'should return true if the data file is confirmed' {
-        Invoke-XMLDataCheck -Force | Should -BeExactly $true
-      }#it
-      It 'should return false if the data output dir cannot be confirmed' {
-        Mock -CommandName Confirm-DataLocation -MockWith {
-          $false
-        }#endMock
-        Invoke-XMLDataCheck -Force | Should -BeExactly $false
-      }
-      It 'should return false if the data file is not confirmed and the file can not be downloaded' {
-        Mock -CommandName Confirm-XMLDataSet -MockWith {
-          $false
-        }#endMock
-        Mock -CommandName Get-XMLDataSet -MockWith {
-          $false
-        }#endMock
-        Invoke-XMLDataCheck -Force | Should -BeExactly $false
-      }#it
-      It 'should return false if the data file is not confirmed and the file is downloaded, but can not be expanded' {
-        Mock -CommandName Confirm-XMLDataSet -MockWith {
-          $false
-        }#endMock
-        Mock -CommandName Expand-XMLDataSet -MockWith {
-          $false
-        }#endMock
-        Invoke-XMLDataCheck -Force | Should -BeExactly $false
-      }#it
-      It 'should return true if the data file is not confirmed and the file is downloaded and expanded' {
-        Mock -CommandName Confirm-XMLDataSet -MockWith {
-          $false
-        }#endMock
-        Invoke-XMLDataCheck -Force | Should -BeExactly $true
-      }#it
-    }#context_Success
-  }#describe_Invoke-XMLDataCheck
-}#inModule
+                    lastUpdated               = '1/5/20 7:10:07 PM + 00:00'
+                    Authors                   = 'Jake Morrison'
+                    PackageManagementProvider = 'NuGet'
+                    tags                      = 'Animations Audio Automation bot Contact Contacts Coordinates Documents Gif Gifs Location Media Message Messaging Messenger Notification Notifications Notify Photo Photos Pictures Poll powershell powershell-module PSModule Send SM Sticker Stickers Sticker-Pack telegram telegram-bot-api telegramx Telegram-Sticker Telegram-Bot Venue Video Videos'
+                    PowerShellVersion         = [version]'6.1.0'
+                    developmentDependency     = 'False'
+                    NormalizedVersion         = '1.10.1'
+                    requireLicenseAcceptance  = 'False'
+                    GUID                      = '277b92bc-0ea9-4659-8f6c-ed5a1dfdfda2'
+                    created                   = '12/18/19 7:05:48 AM + 00:00'
+                    description               = 'PoshGram provides functionality to send various message types to a specified Telegram chat via the Telegram Bot API. Seperate PowerShell functions are used for each message type. Checks are included to ensure that file extensions, and file size restrictions are adhered to based on Telegram requirements.'
+                    published                 = '12/18/19 7:05:48 AM + 00:00'
+                    isAbsoluteLatestVersion   = 'True'
+                    downloadCount             = '2421'
+                    SourceName                = 'PSGallery'
+                    packageSize               = '87559'
+                    Functions                 = 'Get-TelegramStickerPackInfo Send-TelegramContact Send-TelegramLocalAnimation Send-TelegramLocalAudio Send-TelegramLocalDocument Send-TelegramLocalPhoto Send-TelegramLocalSticker Send-TelegramLocalVideo Send-TelegramLocation Send-TelegramMediaGroup Send-TelegramPoll Send-TelegramSticker Send-TelegramTextMessage Send-TelegramURLAnimation Send-TelegramURLAudio Send-TelegramURLDocument Send-TelegramURLPhoto Send-TelegramURLSticker Send-TelegramURLVideo Send-TelegramVenue Test-BotToken'
+                }
+                GitHubInfo                 = @{
+                    Subscribers = '5'
+                    GitStatus   = 'True'
+                    Forks       = '4'
+                    Watchers    = '28'
+                    StarCount   = '28'
+                    License     = 'MIT License'
+                    Created     = [datetime]'06/28/18 01:42:08'
+                    Updated     = [datetime]'01/01/20 06:27:11'
+                }
+            }
+            Mock -CommandName Invoke-XMLDataCheck -MockWith {
+                $true
+            } #endMock
+            Mock -CommandName Get-Content -MockWith {
+                $xmlData
+            } #endMock
+            Mock -CommandName ConvertFrom-Clixml -MockWith {
+                $objData
+            } #endMock
+        } #before_each
+        Context 'Error' {
+            It 'should return false if an error is encountered getting content from data file' {
+                Mock -CommandName Get-Content -MockWith {
+                    throw 'FakeError'
+                } #endMock
+                Import-XMLDataSet | Should -BeExactly $false
+            } #it
+        } #context_FunctionName
+        Context 'Success' {
+            It 'should return false if Invoke-XMLDataCheck does not succeed' {
+                Mock -CommandName Invoke-XMLDataCheck -MockWith {
+                    $false
+                } #endMock
+                Import-XMLDataSet | Should -BeExactly $false
+            } #it
+            It 'should return true if the data is successfully imported' {
+                Import-XMLDataSet | Should -BeExactly $true
+            } #it
+        } #context_Success
+    } #describe_Import-XMLDataSet
+} #inModule

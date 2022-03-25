@@ -1,7 +1,7 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
 
-Description: 'PSGalleryExplorer: Serverless Deployment Logic'
+Description: 'AUTOMATED: PSGalleryExplorer - Serverless Deployment Logic'
 
 Transform: 'AWS::Serverless-2016-10-31'
 
@@ -99,23 +99,13 @@ Parameters:
     Description: PubXMLPopulator Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
 
 Resources:
-  #______________________________________________________________________________________________
+
   #PUBXML
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   UpdatePubXMLDataDlq:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
-      # RedrivePolicy: Json
       VisibilityTimeout: 160
       Tags:
         - Key: ServiceName
@@ -123,51 +113,10 @@ Resources:
         - Key: StackName
           Value: !Ref AWS::StackName
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
-  AlarmNumberOfMessagesVisibleUpdatePubXMLDataDlq:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: Alarms if the UpdatePubXMLDataDlq Dead Letter Queue has too many messages
-      AlarmName: UpdatePubXMLDataDlq_NumberOfMessagesVisible
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: QueueName
-          Value: !GetAtt UpdatePubXMLDataDlq.QueueName
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ApproximateNumberOfMessagesVisible
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/SQS
-      # OKActions:
-      #   - String
-      Period: 300
-      Statistic: Maximum
-      Threshold: 1
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
-
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   UpdatePubXMLDataQueue:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt UpdatePubXMLDataDlq.Arn
         maxReceiveCount: 3
@@ -219,68 +168,73 @@ Resources:
       # Region: String
       TopicArn: !ImportValue UpdateSNSTopicArn
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
-  # PubXMLPopulator:
-  #   Type: 'AWS::Serverless::Function'
-  #   DependsOn: UpdatePubXMLDataQueue
-  #   Properties:
-  #     CodeUri:
-  #       Bucket: !Ref LambdaS3BucketName
-  #       Key: !Ref LMFunctionS3KeyPubXMLPopulator
-  #     Description: 'Populates public PSGalleryExplorer bucket with final XML files.'
-  #     Environment:
-  #       Variables:
-  #         S3_BUCKET_NAME: !ImportValue StageTriggerBN
-  #         S3_BUCKET_GALLERY_KEY: !Ref PSGalleryXMLKey
-  #         S3_BUCKET_GIT_KEY: !Ref GitXMLKey
-  #         S3_FINAL_BUCKET_NAME: !ImportValue PubXMLDataBN
-  #         S3_FINAL_BUCKET_KEY: !Ref PSGalleryExplorerXMLKey
-  #         TELEGRAM_SECRET: !Ref TelegramSecret
-  #     Handler: !Ref LMFunctionHandlerPubXMLPopulator
-  #     MemorySize: 3008
-  #     Runtime: dotnetcore3.1
-  #     Timeout: 900
-  #     Events:
-  #       UpdatePBXQueue:
-  #         Type: SQS
-  #         Properties:
-  #           Queue: !GetAtt UpdatePubXMLDataQueue.Arn
-  #           BatchSize: 10
-  #     Policies:
-  #       - AWSLambdaBasicExecutionRole
-  #       - S3ReadPolicy:
-  #           BucketName: !ImportValue StageTriggerBN
-  #       - S3CrudPolicy:
-  #           BucketName: !ImportValue PubXMLDataBN
-  #       - Statement:
-  #           - Sid: SecretsOauthRetrieve
-  #             Effect: Allow
-  #             Action:
-  #               - secretsmanager:GetSecretValue
-  #             Resource:
-  #               - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
-  #           - Sid: UpdatePubXMLDataQueueAcc
-  #             Effect: Allow
-  #             Action:
-  #               - sqs:SendMessage
-  #               - sqs:ListQueues
-  #               - sqs:ListDeadLetterSourceQueues
-  #               - sqs:ReceiveMessage
-  #               - sqs:GetQueueAttributes
-  #               - sqs:ListQueueTags
-  #             Resource: !GetAtt UpdatePubXMLDataQueue.Arn
-  #     Tags:
-  #       ServiceName: !Ref ServiceName
-  #       StackName: !Ref AWS::StackName
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+  PubXMLPopulator:
+    Type: 'AWS::Serverless::Function'
+    DependsOn: UpdatePubXMLDataQueue
+    Properties:
+      CodeUri:
+        Bucket: !Ref LambdaS3BucketName
+        Key: !Ref LMFunctionS3KeyPubXMLPopulator
+      Description: 'Populates public PSGalleryExplorer bucket with final XML files.'
+      Environment:
+        Variables:
+          S3_BUCKET_NAME: !ImportValue StageTriggerBN
+          S3_BUCKET_GALLERY_KEY: !Ref PSGalleryXMLKey
+          S3_BUCKET_GIT_KEY: !Ref GitXMLKey
+          S3_FINAL_BUCKET_NAME: !ImportValue PubXMLDataBN
+          S3_FINAL_BUCKET_KEY: !Ref PSGalleryExplorerXMLKey
+          TELEGRAM_SECRET: !Ref TelegramSecret
+      Handler: !Ref LMFunctionHandlerPubXMLPopulator
+      MemorySize: 3008
+      Runtime: dotnet6
+      Timeout: 900
+      Events:
+        UpdatePBXQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt UpdatePubXMLDataQueue.Arn
+            BatchSize: 10
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - S3ReadPolicy:
+            BucketName: !ImportValue StageTriggerBN
+        - S3CrudPolicy:
+            BucketName: !ImportValue PubXMLDataBN
+        - Statement:
+            - Sid: SecretsOauthRetrieve
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
+            - Sid: UpdatePubXMLDataQueueAcc
+              Effect: Allow
+              Action:
+                - sqs:SendMessage
+                - sqs:ListQueues
+                - sqs:ListDeadLetterSourceQueues
+                - sqs:ReceiveMessage
+                - sqs:GetQueueAttributes
+                - sqs:ListQueueTags
+              Resource: !GetAtt UpdatePubXMLDataQueue.Arn
+      Tags:
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
 
-  # #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
-  # PubXMLPopulatorLogGroup:
-  #   Type: AWS::Logs::LogGroup
-  #   DependsOn: PubXMLPopulator
-  #   Properties:
-  #     LogGroupName: !Sub '/aws/lambda/${PubXMLPopulator}'
-  #     RetentionInDays: 7
-  #______________________________________________________________________________________________
+  #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  PubXMLPopulatorLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PubXMLPopulator
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${PubXMLPopulator}'
+      RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
   #GALLERY SCANNER
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html
@@ -321,8 +275,7 @@ Resources:
           - 'GSScheduledRule'
           - 'Arn'
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
-  # https://github.com/awslabs/serverless-application-model/blob/develop/examples/2016-10-31/policy_templates/all_policy_templates.yaml
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   GalleryScanner:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -339,7 +292,7 @@ Resources:
           TELEGRAM_SECRET: !Ref TelegramSecret
       Handler: !Ref LMFunctionHandlerGalleryScanner
       MemorySize: 3008
-      Runtime: dotnetcore3.1
+      Runtime: dotnet6
       Timeout: 900
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -370,23 +323,18 @@ Resources:
     Properties:
       LogGroupName: !Sub '/aws/lambda/${GalleryScanner}'
       RetentionInDays: 7
-  #______________________________________________________________________________________________
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
   #GITHUB SCANNER
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   GitHubDataDlq:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
-      # RedrivePolicy: Json
       VisibilityTimeout: 160
       Tags:
         - Key: ServiceName
@@ -394,51 +342,10 @@ Resources:
         - Key: StackName
           Value: !Ref AWS::StackName
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
-  AlarmNumberOfMessagesVisibleUpdateGitHubDataDlq:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: Alarms if the GitHubDataDlq Dead Letter Queue has too many messages
-      AlarmName: GitHubDataDlq_NumberOfMessagesVisible
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: QueueName
-          Value: !GetAtt GitHubDataDlq.QueueName
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ApproximateNumberOfMessagesVisible
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/SQS
-      # OKActions:
-      #   - String
-      Period: 300
-      Statistic: Maximum
-      Threshold: 1
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
-
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   GitHubDataQueue:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt GitHubDataDlq.Arn
         maxReceiveCount: 3
@@ -466,7 +373,7 @@ Resources:
             Resource:
               - !GetAtt GitHubDataQueue.Arn
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   GitHubScanner:
     Type: 'AWS::Serverless::Function'
     DependsOn: GitHubDataQueue
@@ -484,7 +391,7 @@ Resources:
           GITHUB_SECRET: !Ref GitHubOauthSecret
       Handler: !Ref LMFunctionHandlerGitHubScanner
       MemorySize: 1024
-      Runtime: dotnetcore3.1
+      Runtime: dotnet6
       Timeout: 900
       Events:
         GitHubScanQueue:
@@ -530,11 +437,15 @@ Resources:
     Properties:
       LogGroupName: !Sub '/aws/lambda/${GitHubScanner}'
       RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
 
-  #______________________________________________________________________________________________
   # STEP FUNCTION DELAY - GitHubSM
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   GitHubSMScanner:
     Type: 'AWS::Serverless::Function'
     DependsOn: GitHubDataQueue
@@ -550,7 +461,7 @@ Resources:
           GITHUB_SECRET: !Ref GitHubOauthSecret
       Handler: !Ref LMFunctionHandlerGitHubSMScanner
       MemorySize: 768
-      Runtime: dotnetcore3.1
+      Runtime: dotnet6
       Timeout: 900
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -575,6 +486,11 @@ Resources:
     Properties:
       LogGroupName: !Sub '/aws/lambda/${GitHubSMScanner}'
       RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
 
   #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
   StatesExecutionRole:
@@ -608,71 +524,60 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html
-  # https://states-language.net/spec.html
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html
   GitHubScannerSMDelay:
-    Type: AWS::StepFunctions::StateMachine
+    Type: AWS::Serverless::StateMachine
     Properties:
-      LoggingConfiguration:
-        Level: ALL
-        IncludeExecutionData: True
+      Definition:
+        StartAt: wait_using_seconds
+        States:
+          wait_using_seconds:
+              Type: Wait
+              Seconds: 3605
+              Next: Invoke GitLab Scanner Lambda
+          Invoke GitLab Scanner Lambda:
+              Type: Task
+              Resource: '${SMScannerLambdaArn}'
+              Retry:
+                  -
+                      ErrorEquals:
+                          - States.ALL
+                      IntervalSeconds: 5
+                      MaxAttempts: 15
+                      BackoffRate: 2.5
+              End: true
+      DefinitionSubstitutions:
+        SMScannerLambdaArn: !GetAtt GitHubSMScanner.Arn
+      # DefinitionUri: String | S3Location
+      Logging:
         Destinations:
           - CloudWatchLogsLogGroup:
               LogGroupArn: !GetAtt
                 - GitHubScannerSMDelayLogGroup
                 - Arn
-      RoleArn: !GetAtt [StatesExecutionRole, Arn]
-      # StateMachineName: String
-      StateMachineType: STANDARD
+        IncludeExecutionData: True
+        Level: ALL
+      # Name: String
+      # PermissionsBoundary: String
+      # Policies: String | List | Map
+      Role: !GetAtt StatesExecutionRole.Arn
       Tags:
-        - Key: Service
-          Value: !Ref ServiceName
-      DefinitionString: !Sub
-        - |-
-          {
-            "Comment": "Backs off API calls to GitHub to align with their API limits.",
-            "StartAt": "wait_using_seconds",
-            "States": {
-              "wait_using_seconds": {
-                "Type": "Wait",
-                "Seconds": 3605,
-                "Next": "Invoke GitHub Scanner Lambda"
-              },
-              "Invoke GitHub Scanner Lambda": {
-                "Type": "Task",
-                "Resource": "${SMScannerLambda}",
-                "Retry" : [
-                    {
-                      "ErrorEquals": [ "States.ALL" ],
-                      "IntervalSeconds": 5,
-                      "MaxAttempts": 15,
-                      "BackoffRate": 2.5
-                    }
-                ],
-                "End": true
-              }
-            }
-          }
-        - { SMScannerLambda: !GetAtt GitHubSMScanner.Arn }
-  #______________________________________________________________________________________________
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
+      # Tracing: TracingConfiguration
+      # Type: String
+
   #GITLAB SCANNER
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   GitLabDataDlq:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
-      # RedrivePolicy: Json
       VisibilityTimeout: 160
       Tags:
         - Key: ServiceName
@@ -680,51 +585,10 @@ Resources:
         - Key: StackName
           Value: !Ref AWS::StackName
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
-  AlarmNumberOfMessagesVisibleUpdateGitLabDataDlq:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: Alarms if the GitLabDataDlq Dead Letter Queue has too many messages
-      AlarmName: GitLabDataDlq_NumberOfMessagesVisible
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: QueueName
-          Value: !GetAtt GitLabDataDlq.QueueName
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ApproximateNumberOfMessagesVisible
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/SQS
-      # OKActions:
-      #   - String
-      Period: 300
-      Statistic: Maximum
-      Threshold: 1
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
-
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
   GitLabDataQueue:
     Type: AWS::SQS::Queue
     Properties:
-      # ContentBasedDeduplication: Boolean
-      # DelaySeconds: Integer
-      # FifoQueue: Boolean
-      # KmsDataKeyReusePeriodSeconds: Integer
-      # KmsMasterKeyId: String
-      # MaximumMessageSize: Integer
-      # MessageRetentionPeriod: Integer
-      # QueueName: String
-      # ReceiveMessageWaitTimeSeconds: Integer
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt GitLabDataDlq.Arn
         maxReceiveCount: 3
@@ -752,7 +616,7 @@ Resources:
             Resource:
               - !GetAtt GitLabDataQueue.Arn
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   GitLabScanner:
     Type: 'AWS::Serverless::Function'
     DependsOn: GitLabDataQueue
@@ -770,7 +634,7 @@ Resources:
           GITHUB_SECRET: !Ref GitHubOauthSecret
       Handler: !Ref LMFunctionHandlerGitLabScanner
       MemorySize: 1024
-      Runtime: dotnetcore3.1
+      Runtime: dotnet6
       Timeout: 900
       Events:
         GitLabScanQueue:
@@ -816,11 +680,15 @@ Resources:
     Properties:
       LogGroupName: !Sub '/aws/lambda/${GitLabScanner}'
       RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
 
-  #______________________________________________________________________________________________
   # STEP FUNCTION DELAY - GitLabSM
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   GitLabSMScanner:
     Type: 'AWS::Serverless::Function'
     DependsOn: GitLabDataQueue
@@ -836,7 +704,7 @@ Resources:
           GITHUB_SECRET: !Ref GitHubOauthSecret
       Handler: !Ref LMFunctionHandlerGitLabSMScanner
       MemorySize: 768
-      Runtime: dotnetcore3.1
+      Runtime: dotnet6
       Timeout: 900
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -861,6 +729,11 @@ Resources:
     Properties:
       LogGroupName: !Sub '/aws/lambda/${GitLabSMScanner}'
       RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
 
   #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
   GitLabStatesExecutionRole:
@@ -894,55 +767,62 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html
-  # https://states-language.net/spec.html
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+  # https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/building-stepfunctions.html#starting-stepfunctions
+  # https://docs.aws.amazon.com/step-functions/latest/dg/step-functions-dg.pdf
+  # https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultpath.html
+  # https://docs.aws.amazon.com/step-functions/latest/dg/development-options.html#development-options-format
+  # https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-create-iterate-pattern-section.html
+  # https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultpath.html
+  # https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
   GitLabScannerSMDelay:
-    Type: AWS::StepFunctions::StateMachine
+    Type: AWS::Serverless::StateMachine
     Properties:
-      LoggingConfiguration:
-        Level: ALL
-        IncludeExecutionData: True
+      Definition:
+        StartAt: wait_using_seconds
+        States:
+          wait_using_seconds:
+              Type: Wait
+              Seconds: 3605
+              Next: Invoke GitLab Scanner Lambda
+          Invoke GitLab Scanner Lambda:
+              Type: Task
+              Resource: '${SMScannerLambdaArn}'
+              Retry:
+                  -
+                      ErrorEquals:
+                          - States.ALL
+                      IntervalSeconds: 5
+                      MaxAttempts: 15
+                      BackoffRate: 2.5
+              End: true
+      DefinitionSubstitutions:
+        SMScannerLambdaArn: !GetAtt GitLabSMScanner.Arn
+      # DefinitionUri: String | S3Location
+      Logging:
         Destinations:
           - CloudWatchLogsLogGroup:
               LogGroupArn: !GetAtt
                 - GitLabScannerSMDelayLogGroup
                 - Arn
-      RoleArn: !GetAtt [GitLabStatesExecutionRole, Arn]
-      # StateMachineName: String
-      StateMachineType: STANDARD
+        IncludeExecutionData: True
+        Level: ALL
+      # Name: String
+      # PermissionsBoundary: String
+      # Policies: String | List | Map
+      Role: !GetAtt GitLabStatesExecutionRole.Arn
       Tags:
-        - Key: Service
-          Value: !Ref ServiceName
-      DefinitionString: !Sub
-        - |-
-          {
-            "Comment": "Backs off API calls to GitLab to align with their API limits.",
-            "StartAt": "wait_using_seconds",
-            "States": {
-              "wait_using_seconds": {
-                "Type": "Wait",
-                "Seconds": 3605,
-                "Next": "Invoke GitLab Scanner Lambda"
-              },
-              "Invoke GitLab Scanner Lambda": {
-                "Type": "Task",
-                "Resource": "${SMScannerLambda}",
-                "Retry" : [
-                    {
-                      "ErrorEquals": [ "States.ALL" ],
-                      "IntervalSeconds": 5,
-                      "MaxAttempts": 15,
-                      "BackoffRate": 2.5
-                    }
-                ],
-                "End": true
-              }
-            }
-          }
-        - { SMScannerLambda: !GetAtt GitLabSMScanner.Arn }
-  #______________________________________________________________________________________________
+        ServiceName: !Ref ServiceName
+        StackName: !Ref AWS::StackName
+      # Tracing: TracingConfiguration
+      # Type: String
+
   # GitXMLCombiner
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html
@@ -983,7 +863,7 @@ Resources:
           - 'GCombineScheduledRule'
           - 'Arn'
 
-  # https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md#awsserverlessfunction
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   # https://github.com/awslabs/serverless-application-model/blob/develop/examples/2016-10-31/policy_templates/all_policy_templates.yaml
   GCombine:
     Type: 'AWS::Serverless::Function'
@@ -1000,7 +880,7 @@ Resources:
           TELEGRAM_SECRET: !Ref TelegramSecret
       Handler: !Ref LMFunctionHandlerGCombine
       MemorySize: 3008
-      Runtime: dotnetcore3.1
+      Runtime: dotnet6
       Timeout: 900
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -1026,11 +906,188 @@ Resources:
     Properties:
       LogGroupName: !Sub '/aws/lambda/${GCombine}'
       RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+
+  # State Machine CloudWatch Dashboard
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-dashboard.html
+  PSGESMMachineDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardBody: !Sub |-
+        {
+            "widgets": [
+                {
+                    "height": 6,
+                    "width": 8,
+                    "y": 0,
+                    "x": 16,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "${GitLabScannerSMDelay}", { "label": "Started" } ],
+                            [ "AWS/States", "ExecutionsSucceeded", "StateMachineArn", "${GitLabScannerSMDelay}", { "color": "#2ca02c", "label": "Succeeded" } ],
+                            [ "AWS/States", "ExecutionsAborted", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Aborted" } ],
+                            [ "AWS/States", "ExecutionsTimedOut", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Timed Out" } ],
+                            [ "AWS/States", "ExecutionThrottled", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Throttled" } ],
+                            [ "AWS/States", "ExecutionsFailed", "StateMachineArn", "${GitLabScannerSMDelay}", { "color": "#d62728", "yAxis": "right", "label": "Failed" } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 900,
+                        "title": "Gitlab-SM-Graph"
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 9,
+                    "y": 0,
+                    "x": 0,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "${GitLabScannerSMDelay}", { "label": "Started" } ],
+                            [ "AWS/States", "ExecutionsSucceeded", "StateMachineArn", "${GitLabScannerSMDelay}", { "color": "#2ca02c", "label": "Succeeded" } ],
+                            [ "AWS/States", "ExecutionsFailed", "StateMachineArn", "${GitLabScannerSMDelay}", { "color": "#d62728", "yAxis": "right", "label": "Failed" } ],
+                            [ "AWS/States", "ExecutionsTimedOut", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#17becf", "label": "Timed Out" } ],
+                            [ "AWS/States", "ExecutionThrottled", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Throttled" } ],
+                            [ "AWS/States", "ExecutionsAborted", "StateMachineArn", "${GitLabScannerSMDelay}", { "yAxis": "right", "color": "#ff7f0e", "label": "Aborted" } ]
+                        ],
+                        "view": "singleValue",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 900,
+                        "title": "Gitlab-SM-Executions",
+                        "setPeriodToTimeRange": true,
+                        "singleValueFullPrecision": false
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 7,
+                    "y": 0,
+                    "x": 9,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ { "expression": "m1/1000/60", "label": "p50 Duration (minutes)", "id": "e1", "region": "${AWS::Region}" } ],
+                            [ { "expression": "m2/1000/60", "label": "p90 Duration (minutes)", "id": "e2", "region": "${AWS::Region}"  } ],
+                            [ "AWS/States", "ExecutionTime", "StateMachineArn", "${GitLabScannerSMDelay}", { "id": "m1", "visible": false } ],
+                            [ "AWS/States", "ExecutionTime", "StateMachineArn", "${GitLabScannerSMDelay}", { "id": "m2", "visible": false, "stat": "p90" } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "period": 300,
+                        "stat": "p50",
+                        "title": "Gitlab-SM-Execution-Time",
+                        "yAxis": {
+                            "left": {
+                                "showUnits": false,
+                                "min": 0
+                            },
+                            "right": {
+                                "showUnits": false,
+                                "min": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 7,
+                    "y": 6,
+                    "x": 9,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ { "expression": "m1/1000/60", "label": "p50 Duration (minutes)", "id": "e1", "region": "${AWS::Region}" } ],
+                            [ { "expression": "m2/1000/60", "label": "p90 Duration (minutes)", "id": "e2", "region": "${AWS::Region}" } ],
+                            [ "AWS/States", "ExecutionTime", "StateMachineArn", "${GitHubScannerSMDelay}", { "id": "m1", "visible": false } ],
+                            [ "AWS/States", "ExecutionTime", "StateMachineArn", "${GitHubScannerSMDelay}", { "id": "m2", "visible": false, "stat": "p90" } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "period": 300,
+                        "stat": "p50",
+                        "title": "GitHub-SM-Execution-Time",
+                        "yAxis": {
+                            "left": {
+                                "showUnits": false,
+                                "min": 0
+                            },
+                            "right": {
+                                "showUnits": false,
+                                "min": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 8,
+                    "y": 6,
+                    "x": 16,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "${GitHubScannerSMDelay}", { "label": "Started" } ],
+                            [ "AWS/States", "ExecutionsSucceeded", "StateMachineArn", "${GitHubScannerSMDelay}", { "color": "#2ca02c", "label": "Succeeded" } ],
+                            [ "AWS/States", "ExecutionsAborted", "StateMachineArn", "${GitHubScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Aborted" } ],
+                            [ "AWS/States", "ExecutionsTimedOut", "StateMachineArn", "${GitHubScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Timed Out" } ],
+                            [ "AWS/States", "ExecutionThrottled", "StateMachineArn", "${GitHubScannerSMDelay}", { "yAxis": "right", "color": "#ff9896", "label": "Throttled" } ],
+                            [ "AWS/States", "ExecutionsFailed", "StateMachineArn", "${GitHubScannerSMDelay}", { "color": "#d62728", "yAxis": "right", "label": "Failed" } ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 900,
+                        "title": "GitHub-SM-Graph"
+                    }
+                },
+                {
+                    "height": 6,
+                    "width": 9,
+                    "y": 6,
+                    "x": 0,
+                    "type": "metric",
+                    "properties": {
+                        "metrics": [
+                            [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "${GitHubScannerSMDelay}", { "label": "Started" } ],
+                            [ ".", "ExecutionsSucceeded", ".", ".", { "color": "#2ca02c", "label": "Succeeded" } ],
+                            [ ".", "ExecutionsFailed", ".", ".", { "color": "#d62728", "yAxis": "right", "label": "Failed" } ],
+                            [ ".", "ExecutionsTimedOut", ".", ".", { "yAxis": "right", "color": "#17becf", "label": "Timed Out" } ],
+                            [ ".", "ExecutionThrottled", ".", ".", { "yAxis": "right", "color": "#ff9896", "label": "Throttled" } ],
+                            [ ".", "ExecutionsAborted", ".", ".", { "yAxis": "right", "color": "#ff7f0e", "label": "Aborted" } ]
+                        ],
+                        "view": "singleValue",
+                        "stacked": false,
+                        "region": "${AWS::Region}",
+                        "stat": "Sum",
+                        "period": 900,
+                        "title": "GitHub-SM-Executions",
+                        "setPeriodToTimeRange": true,
+                        "singleValueFullPrecision": false
+                    }
+                }
+            ]
+        }
+      DashboardName: !Sub ${ServiceName}-StateMachine-${AWS::Region}
 
 Outputs:
   UpdatePubXMLDataDlqName:
     Description: DLQ Name for Public XML processing
     Value: !GetAtt UpdatePubXMLDataDlq.QueueName
+    Export:
+      Name: !Sub ${ServiceName}-UpdatePubXMLDataDlqName
   UpdatePubXMLDataDlqUrl:
     Description: DLQ URL for Public XML processing
     Value: !Ref UpdatePubXMLDataDlq
@@ -1038,10 +1095,7 @@ Outputs:
     Value: !GetAtt UpdatePubXMLDataDlq.Arn
     Description: DLQ Arn for Public XML processing
     Export:
-      Name: UpdatePubXMLDataDlqArn
-
-  PubXMLDataDlqAlarmName:
-    Value: !Ref AlarmNumberOfMessagesVisibleUpdatePubXMLDataDlq
+      Name: !Sub ${ServiceName}-UpdatePubXMLDataDlqARN
 
   UpdatePubXMLDataQueueName:
     Description: Queue Name for Public XML processing
@@ -1053,11 +1107,13 @@ Outputs:
     Value: !GetAtt UpdatePubXMLDataQueue.Arn
     Description: Queue Arn for Public XML processing
     Export:
-      Name: UpdatePubXMLDataQueueArn
+      Name: !Sub ${ServiceName}-UpdatePubXMLDataQueueARN
 
-  # PubXMLPopulator:
-  #   Description: Arn for Public XML processing Lambda
-  #   Value: !GetAtt PubXMLPopulator.Arn
+  PubXMLPopulator:
+    Description: Arn for Public XML processing Lambda
+    Value: !GetAtt PubXMLPopulator.Arn
+    Export:
+      Name: !Sub ${ServiceName}-PubXMLPopulatorARN
 
   GSScheduledRuleID:
     Description: Event rule ID for Public XML lambda trigger
@@ -1065,14 +1121,20 @@ Outputs:
   GSScheduledRuleArn:
     Description: Arn for Public XML lambda trigger
     Value: !GetAtt GSScheduledRule.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GSScheduledRuleARN
 
   GalleryScanner:
     Description: Arn for Gallery scanning Lambda
     Value: !GetAtt GalleryScanner.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GalleryScannerARN
 
   GitHubDataDlqName:
     Description: DLQ Name for GitHub XML processing
     Value: !GetAtt GitHubDataDlq.QueueName
+    Export:
+      Name: !Sub ${ServiceName}-GitHubDataDlqName
   GitHubDataDlqUrl:
     Description: DLQ URL for GitHub XML processing
     Value: !Ref GitHubDataDlq
@@ -1080,9 +1142,7 @@ Outputs:
     Value: !GetAtt GitHubDataDlq.Arn
     Description: DLQ Arn for GitHub XML processing
     Export:
-      Name: GitHubDataDlqArn
-  GitHubDataDlqAlarmName:
-    Value: !Ref AlarmNumberOfMessagesVisibleUpdateGitHubDataDlq
+      Name: !Sub ${ServiceName}-GitHubDataDlqARN
   GitHubDataQueueName:
     Description: Queue Name for GitHub XML processing
     Value: !GetAtt GitHubDataQueue.QueueName
@@ -1093,29 +1153,35 @@ Outputs:
     Value: !GetAtt GitHubDataQueue.Arn
     Description: Queue Arn for GitHub XML processing
     Export:
-      Name: GitHubDataQueue
+      Name: !Sub ${ServiceName}-GitHubDataQueueARN
 
   GitHubScanner:
     Description: Arn for GitHub scanning Lambda
     Value: !GetAtt GitHubScanner.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GitHubScannerARN
 
   GitHubSMScanner:
     Description: Arn for GitHub scanning Lambda in state machine
     Value: !GetAtt GitHubSMScanner.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GitHubSMScannerARN
   GitHubScannerSMDelayStateMachineName:
     Value: !GetAtt GitHubScannerSMDelay.Name
     Description: The name of the GitHubScannerSMDelay State Machine
     Export:
-      Name: GitHubScannerSMDelayStateMachineName
+      Name: !Sub ${ServiceName}-GitHubScannerSMDelayStateMachineName
   GitHubScannerSMDelayStateMachineArn:
     Value: !Ref GitHubScannerSMDelay
     Description: The Arn of the GitHubScannerSMDelay State Machine
     Export:
-      Name: GitHubScannerSMDelayStateMachineArn
+      Name: !Sub ${ServiceName}-GitHubScannerSMDelayStateMachineARN
 
   GitLabDataDlqName:
     Description: DLQ Name for GitLab XML processing
     Value: !GetAtt GitLabDataDlq.QueueName
+    Export:
+      Name: !Sub ${ServiceName}-GitLabDataDlqName
   GitLabDataDlqUrl:
     Description: DLQ URL for GitLab XML processing
     Value: !Ref GitLabDataDlq
@@ -1123,9 +1189,7 @@ Outputs:
     Value: !GetAtt GitLabDataDlq.Arn
     Description: DLQ Arn for GitLab XML processing
     Export:
-      Name: GitLabDataDlqArn
-  GitLabDataDlqAlarmName:
-    Value: !Ref AlarmNumberOfMessagesVisibleUpdateGitLabDataDlq
+      Name: !Sub ${ServiceName}-GitLabDataDlqARN
   GitLabDataQueueName:
     Description: Queue Name for GitLab XML processing
     Value: !GetAtt GitLabDataQueue.QueueName
@@ -1136,26 +1200,32 @@ Outputs:
     Value: !GetAtt GitLabDataQueue.Arn
     Description: Queue Arn for GitLab XML processing
     Export:
-      Name: GitLabDataQueue
+      Name: !Sub ${ServiceName}-GitLabDataQueueARN
 
   GitLabScanner:
     Description: Arn for GitLab scanning Lambda
     Value: !GetAtt GitLabScanner.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GitLabScannerARN
 
   GitLabSMScanner:
     Description: Arn for GitLab scanning Lambda in state machine
     Value: !GetAtt GitLabSMScanner.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GitLabSMScannerARN
   GitLabScannerSMDelayStateMachineName:
     Value: !GetAtt GitLabScannerSMDelay.Name
     Description: The name of the GitLabScannerSMDelay State Machine
     Export:
-      Name: GitLabScannerSMDelayStateMachineName
+      Name: !Sub ${ServiceName}-GitLabScannerSMDelayStateMachineName
   GitLabScannerSMDelayStateMachineArn:
     Value: !Ref GitLabScannerSMDelay
     Description: The Arn of the GitLabScannerSMDelay State Machine
     Export:
-      Name: GitLabScannerSMDelayStateMachineArn
+      Name: !Sub ${ServiceName}-GitLabScannerSMDelayStateMachineArn
 
   GCombine:
     Description: Arn for GCombine scanning Lambda
     Value: !GetAtt GCombine.Arn
+    Export:
+      Name: !Sub ${ServiceName}-GCombineArn

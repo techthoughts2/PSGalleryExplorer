@@ -10,6 +10,7 @@
 .OUTPUTS
     System.Boolean
 .NOTES
+    Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
     Overwrites existing zip file.
 .COMPONENT
     PSGalleryExplorer
@@ -19,11 +20,12 @@ function Get-XMLDataSet {
     param (
     )
     $result = $true #assume the best
+
     Write-Verbose -Message 'Downloading XML data set...'
     try {
         $invokeWebRequestSplat = @{
-            OutFile     = "$script:dataPath\$script:dataFileZip"
-            Uri         = "$script:dlURI/$script:dataFileZip"
+            OutFile     = '{0}/{1}' -f $script:dataPath, $script:dataFileZip
+            Uri         = 'https://{0}/{1}' -f $script:dlURI, $script:dataFileZip
             ErrorAction = 'Stop'
         }
         $oldProgressPreference = $progressPreference
@@ -34,13 +36,13 @@ function Get-XMLDataSet {
         else {
             $null = Invoke-WebRequest @invokeWebRequestSplat -PassThru
         }
-    }#try
+    } #try
     catch {
         $result = $false
         Write-Error $_
-    }#catch
+    } #catch
     finally {
         $progressPreference = $oldProgressPreference
-    }#finally
+    } #finally
     return $result
-}#Get-XMLDataSet
+} #Get-XMLDataSet

@@ -12,7 +12,7 @@
     RootModule        = 'PSGalleryExplorer.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.8.7'
+    ModuleVersion     = '1.0.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -54,7 +54,7 @@
     RequiredModules   = @(
         @{
             ModuleName    = 'Convert'
-            ModuleVersion = '0.4.1'
+            ModuleVersion = '0.6.0'
         }
     )
 
@@ -105,14 +105,16 @@
 
             # Tags applied to this module. These help with module discovery in online galleries.
             Tags                     = @(
-                'powershell',
+                'discover',
+                'find',
                 'gallery',
+                'github',
+                'gitlab',
                 'module',
                 'modules',
+                'powershell',
+                'powershellmodule',
                 'psgallery',
-                'github',
-                'find',
-                'discover',
                 'search'
             )
 
@@ -123,10 +125,10 @@
             ProjectUri               = 'https://github.com/techthoughts2/PSGalleryExplorer'
 
             # A URL to an icon representing this module.
-            IconUri                  = 'https://github.com/techthoughts2/PSGalleryExplorer/raw/master/media/PSGalleryExplorerIcon.png'
+            IconUri                  = 'https://github.com/techthoughts2/PSGalleryExplorer/raw/main/media/PSGalleryExplorerIcon.png'
 
             # ReleaseNotes of this module
-            ReleaseNotes             = 'https://github.com/techthoughts2/PSGalleryExplorer/blob/master/.github/CHANGELOG.md'
+            ReleaseNotes             = 'https://github.com/techthoughts2/PSGalleryExplorer/blob/main/.github/CHANGELOG.md'
 
             # Prerelease string of this module
             # Prerelease = ''

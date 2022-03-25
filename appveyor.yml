@@ -17,7 +17,17 @@ build: off
 
 init:
   - pwsh: $PSVersionTable
+  # uncomment the line below to explore what modules/variables/env variables are available in the build image
+  # - pwsh: Get-Module -ListAvailable; (Get-Variable).GetEnumerator() | Sort-Object Name | Out-String; (Get-ChildItem env:*).GetEnumerator() | Sort-Object Name | Out-String
 install:
   - pwsh: . .\actions_bootstrap.ps1
 build_script:
   - pwsh: Invoke-Build -File .\src\PSGalleryExplorer.build.ps1
+
+artifacts:
+  - path: src/Artifacts/testOutput/PesterTests.xml
+    name: PesterTestResults
+  - path: src/Artifacts/ccReport/CodeCoverage.xml
+    name: CodeCoverageResults
+  - path: src/Archive/*.zip
+    name: BuildArtifact

@@ -10,7 +10,7 @@
 .OUTPUTS
     System.Boolean
 .NOTES
-    None
+    Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
 .COMPONENT
     PSGalleryExplorer
 #>
@@ -22,12 +22,12 @@ function Confirm-DataLocation {
     Write-Verbose -Message 'Verifying data set output location...'
     try {
         $pathEval = Test-Path -Path $script:dataPath -ErrorAction Stop
-    }#try
+    }
     catch {
         $result = $false
         Write-Error $_
         return $result
-    }#catch
+    }
 
     if (-not ($pathEval)) {
         Write-Verbose -Message 'Creating output directory...'
@@ -45,10 +45,10 @@ function Confirm-DataLocation {
             Write-Error $_
             return $result
         }
-    }#if_TestPath
+    } #if_TestPath
     else {
         Write-Verbose 'Data path confirmed.'
-    }
+    } #else_TestPath
 
     return $result
-}#Confirm-DataLocation
+} #Confirm-DataLocation

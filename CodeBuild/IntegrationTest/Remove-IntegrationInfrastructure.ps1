@@ -1,7 +1,7 @@
 <#
-  This removes any required infrastructure after the Pester integration tests run.
-  It is invoked whether the build succeeeds or fails, and is invoked in the
-  "post_build" phase of CodeBuild.
+    This removes any required infrastructure after the Pester integration tests run.
+    It is invoked whether the build succeeds or fails, and is invoked in the
+    "post_build" phase of CodeBuild.
 #>
 
 # $env:AWSAccountId = the AWS Account hosting the MOF Maker stack we're testing

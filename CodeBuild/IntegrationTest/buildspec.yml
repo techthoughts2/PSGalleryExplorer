@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      dotnet: 3.1
+      dotnet: 5.0
     commands:
       - echo Configure AWS defaults using the configuration script added to the Docker Image.
       - pwsh -command './CodeBuild/configure_aws_credential.ps1'
@@ -17,6 +17,12 @@ phases:
       - pwsh -command '& ./CodeBuild/IntegrationTest/New-IntegrationInfrastructure.ps1'
   build:
     commands:
-      - pwsh -command "Set-Location -Path ./CodeBuild/IntegrationTest/Tests; Invoke-Pester -EnableExit"
+      - pwsh -command '
+          Import-Module Pester;
+          $pesterConfiguration = [PesterConfiguration]::new();
+          $pesterConfiguration.Run.Exit = $true;
+          $pesterConfiguration.Run.Path = "./CodeBuild/IntegrationTest/Tests";
+          $pesterConfiguration.Output.Verbosity = "Detailed";
+          Invoke-Pester -Configuration $pesterConfiguration'
     finally:
       - pwsh -command '& ./CodeBuild/IntegrationTest/Remove-IntegrationInfrastructure.ps1'

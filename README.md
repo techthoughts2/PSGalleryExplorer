@@ -1,12 +1,11 @@
 # PSGalleryExplorer
 
-[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1+-blue.svg)](https://github.com/PowerShell/PowerShell)
-[![PowerShell Gallery][psgallery-img]][psgallery-site]
-![Cross Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-lightgrey)
+[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1+-blue.svg)](https://github.com/PowerShell/PowerShell) [![PowerShell Gallery][psgallery-img]][psgallery-site] ![Cross Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-lightgrey) [![License][license-badge]](LICENSE)
 
-[psgallery-img]:   https://img.shields.io/powershellgallery/dt/PSGalleryExplorer.svg
+[psgallery-img]:   https://img.shields.io/powershellgallery/dt/PSGalleryExplorer?label=Powershell%20Gallery&logo=powershell
 [psgallery-site]:  https://www.powershellgallery.com/packages/PSGalleryExplorer
 [psgallery-v1]:    https://www.powershellgallery.com/packages/PSGalleryExplorer/0.8.0
+[license-badge]:   https://img.shields.io/github/license/techthoughts2/PSGalleryExplorer
 
 <p align="center">
     <img src="/media/PSGalleryExplorer.png" alt="PSGalleryExplorer Logo" >
@@ -14,14 +13,14 @@
 
 Branch | Windows | Windows pwsh | MacOS | Linux
 --- | --- | --- | --- | --- |
-master | ![M-W-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiOTJOZzFQaFk2RTNMa1U4bTRiaER4RmpNYXAwcE8zZ3B1c2VXZGsxRDdyZnJqZXJhL2pLRW5VYU0yclIrOFUyMmQ3Qnk2SDFmSlFzeHJkK3Y4ZFBnV3lzPSIsIml2UGFyYW1ldGVyU3BlYyI6Ik1GcC9UZUdSamliL1J2aC8iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master) | ![M-W-pwsh-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiQkw3ZlhRdzVNdW9CTWdsUHYzVDRSdm1sbXgrR2RxanQwUWU2V3ZHSGNGbVdpMTdXbkJjVzhRRWNZRUZMSHQ1RUxPV01pdXkwbWMxdWhxVFNJQkNSK1pZPSIsIml2UGFyYW1ldGVyU3BlYyI6IkhEK0NTdDd0RFhhbUNwUjgiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master) | [![M-Mac-Build status](https://ci.appveyor.com/api/projects/status/s28ivs5pavul6usq/branch/master?svg=true)](https://ci.appveyor.com/project/techthoughts2/psgalleryexplorer/branch/master) | ![M-L-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiQmxlOUwwZmw0eHVKL3lxL1N6TmV2MitET29iemM1a21JSnVZRGlEMTVFemFTN1FoQlpRTi9jOTEzb25pM2NBQnhNbEJqcFlyUVZHckx6d051ZzF4WHVzPSIsIml2UGFyYW1ldGVyU3BlYyI6Im1QS205UzNtWlBtL1NWSFciLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master) |
-Enhancements | ![E-W-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiRG02SDVSOWRKVUphU3ZzOHB4Z3ZFUEtvTUxFZm9DQWV0MEUvTGpxMW9nZWVDNm5HblFDYndRdlI1UzlZTlhlcFhyb2FaSUhJUnZIZUIxRDViMWJXazdnPSIsIml2UGFyYW1ldGVyU3BlYyI6IldLVm1oWkdINnR3ZnB2MEsiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=Enhancements) | ![E-W-pwsh-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiRFBaODZ1M2dsTlpTREJUQW4zdktmQjhIQmpoaTRBdmJFWU5UQkNCWGgrNFAzOTR2bjRXdkpXdzB3dy9JSlZlSVZkTW9uWTkxNDFzUEwxd0t1WnRKRTlrPSIsIml2UGFyYW1ldGVyU3BlYyI6InJ2TFRxOTNuWElmaEtwbzUiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=Enhancements) | [![E-Mac-Build status](https://ci.appveyor.com/api/projects/status/s28ivs5pavul6usq/branch/Enhancements?svg=true)](https://ci.appveyor.com/project/techthoughts2/psgalleryexplorer/branch/Enhancements)| ![E-L-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoidmgxTi9IWlhzVllKc0V0dnJMa1hXWUwxdjBKeWZUMFZvdGt2NGFmbmZRMjlYRnVzcWhTRVpncUZkNmttWHA3bUM5VFRIN0ZXSWRyczNqQWtneGt2czZBPSIsIml2UGFyYW1ldGVyU3BlYyI6InQveXR1aWV1VFVOcVlZQXciLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=Enhancements) |
+main | ![M-W-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiYURpTUhFRkQ0aXZMMWRnTEl3U2x3Q0VaYWtNWHFEVTBuOTNhaXZLV1ZNczNWc0tHUEJkdzhDajR0Q2pERXl0c3huM01DdVliU3YzU3NwT0hnNHM5Rm5VPSIsIml2UGFyYW1ldGVyU3BlYyI6Ikk4Z1hDdENXZ0RZSDdoaXUiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main) | ![M-W-pwsh-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoicGN3NzBiY1dPRlRPSXpsQmF5dEJ6aTVVWWx4a3h6M2R6dTA1dmF2UmxEWUppOWpwR0hMU3lINUdxMElCUlJIc0RWRTZFSzRlNXM2S2RMY3UzdlZaRnFRPSIsIml2UGFyYW1ldGVyU3BlYyI6InZUbVhaMjBlc09KQWVlckMiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main) | [![M-Mac-Build status](https://ci.appveyor.com/api/projects/status/s28ivs5pavul6usq/branch/main?svg=true)](https://ci.appveyor.com/project/techthoughts2/psgalleryexplorer/branch/main) | ![M-L-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiRDBjRkVOTVhHTmJybmRFZ216QlM1ekNEMjBMR3paN3VNMUlHMW9QNXIwaUxIQU5oUm9pbVZtZndWSEl3Mzh6YVQ3NitCREk2YnRoVjJMYUtBcno4WlRVPSIsIml2UGFyYW1ldGVyU3BlYyI6IjRaWFJ6dXMzOFdFaWVWM0giLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main) |
+Enhancements | ![E-W-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoidFV4dnZKQmd4cHZMSE0zdFRmQml0NDMvZzh4cGJzMVEwbGFTQVBaMmpya2tRcTJXbXZmV00xeGF0WUpST0lJczFoRTROUitlZXAvWGNpN3ErV0s1VWVnPSIsIml2UGFyYW1ldGVyU3BlYyI6IlA2aUQyYm9OSWswS2Q5ZEciLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=Enhancements) | ![E-W-pwsh-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiWlAyKzRLYVFybDdLdjJFcHdkeHNpcTdxZnRFMytJeVVYRWRCTUN6SFZVRENrZW51dHlnOFVydS9CMkp0YnhiQlY4WDV0YmlmdFBUUy96S1ZLT1BVdnVrPSIsIml2UGFyYW1ldGVyU3BlYyI6InRaUDIvS3Vnb2dMbkEyQVciLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=Enhancements) | [![E-Mac-Build status](https://ci.appveyor.com/api/projects/status/s28ivs5pavul6usq/branch/Enhancements?svg=true)](https://ci.appveyor.com/project/techthoughts2/psgalleryexplorer/branch/Enhancements)| ![E-L-Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiQmRrOU9HOUppVHAxRVNhZlpTT3BNU2phSzRSSVQ3aysyemRDSjJiU3NDZEU1QzRDNlBMM0Jnai9qb2RNektUWktudUp3OWN6UTJQZEFnZlNZRG1GZ3ZZPSIsIml2UGFyYW1ldGVyU3BlYyI6IlVudjNoc3JaMnZQU2ljV1UiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=Enhancements) |
 
 ## Synopsis
 
 PSGalleryExplorer is a PowerShell module that lets you search, explore, and discover PowerShell Gallery modules based on various criteria.
 
-![PSGalleryExplorer Gif Demo](media/psgalleryexplorer.gif "PSGalleryExplorer in action")
+![PSGalleryExplorer Gif Demo](media/psgalleryexplorer.gif)
 
 ## Description
 
@@ -99,7 +98,7 @@ Find-PSGModule -ByTag Telegram
 
 ## Author
 
-[Jake Morrison](https://twitter.com/JakeMorrison) - [https://techthoughts.info/](https://techthoughts.info/)
+[Jake Morrison](https://twitter.com/JakeMorrison) - [https://www.techthoughts.info/](https://www.techthoughts.info/)
 
 ## Notes
 

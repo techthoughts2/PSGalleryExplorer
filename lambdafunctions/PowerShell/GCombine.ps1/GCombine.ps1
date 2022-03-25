@@ -14,11 +14,11 @@
 # $env:S3_KEY_NAME
 # $env:TELEGRAM_SECRET
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.6.0'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.0.0'}
 
 # Uncomment to send the input event to CloudWatch Logs
 Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
@@ -33,7 +33,7 @@ Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
 .COMPONENT
     PSGalleryExplorer
 #>
-function Test-HashValues {
+function Test-HashValue {
     param (
         [Parameter(Mandatory = $true,
             HelpMessage = 'Original File Path')]
@@ -51,7 +51,7 @@ function Test-HashValues {
         $match = $true
     }
     return $match
-}
+} #Test-HashValue
 
 <#
 .SYNOPSIS
@@ -74,7 +74,7 @@ function Send-TelegramError {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
-            Write-Host "Secret retrieved."
+            Write-Host 'Secret retrieved.'
             $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
@@ -104,15 +104,15 @@ $destXMLBucket = $env:S3_BUCKET_NAME
 $fKey = $env:S3_KEY_NAME
 $script:telegramToken = $null
 
-Write-Host "Git XML Bucket Name: $gitXMLBucket"
-Write-Host "Bucket Name: $destXMLBucket"
-Write-Host "Key: $fKey"
+Write-Host ('Git XML Bucket Name: {0}' -f $gitXMLBucket)
+Write-Host ('Bucket Name: {0}' -f $destXMLBucket)
+Write-Host ('Key: {0}' -f $fKey)
 
-Write-Host "Retrieving all raw XML GitHub files..."
+Write-Host 'Retrieving all raw XML GitHub files...'
 
 try {
     $gitXMLFileInfo = Get-S3Object -BucketName $gitXMLBucket -ErrorAction Stop
-    Write-Host "List of files retrieved."
+    Write-Host 'List of files retrieved.'
 }
 catch {
     Write-Error $_
@@ -122,7 +122,7 @@ catch {
 if ($gitXMLFileInfo) {
     #_____________________________________________
     Write-Host 'Creating output directory.'
-    $path = "$env:TEMP/XMLs"
+    $path = '{0}/XMLs' -f $env:TEMP
     try {
         New-Item -ItemType Directory -Path $path -Force -ErrorAction Stop
     }
@@ -132,7 +132,7 @@ if ($gitXMLFileInfo) {
         throw
     }
     #_____________________________________________
-    Write-Host "Downloading all files..."
+    Write-Host 'Downloading all files...'
     foreach ($file in $gitXMLFileInfo) {
         $readS3ObjectSplat = @{
             BucketName  = $gitXMLBucket
@@ -149,9 +149,9 @@ if ($gitXMLFileInfo) {
             throw
         }
     }
-    Write-Host "Download completed."
+    Write-Host 'Download completed.'
     #_____________________________________________
-    Write-Host "Combining all file contents into memory..."
+    Write-Host 'Combining all file contents into memory...'
     try {
         $allXMLFiles = Get-ChildItem -Path $path -ErrorAction Stop
     }
@@ -166,14 +166,14 @@ if ($gitXMLFileInfo) {
         $temp = Get-Content -Path $file.FullName -Raw
         $xmlData += $temp | ConvertFrom-Clixml
     }
-    Write-Host "Combining process completed."
+    Write-Host 'Combining process completed.'
     #_____________________________________________
-    Write-Host "Output final XML file to disk..."
+    Write-Host 'Output final XML file to disk...'
     $finalXML = $xmlData | ConvertTo-Clixml
     $finalXML | Out-File -FilePath "$env:TEMP/$fKey"
-    Write-Host "Disk output completed."
+    Write-Host 'Disk output completed.'
     #_____________________________________________
-    Write-Host "Downloading original file..."
+    Write-Host 'Downloading original file...'
     $readS3ObjectSplat = @{
         BucketName  = $destXMLBucket
         Key         = $fKey
@@ -187,18 +187,18 @@ if ($gitXMLFileInfo) {
         Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - GCombine failed to DL original S3 XML file.'
         Write-Error $_
     }
-    Write-Host "Downloading completed."
+    Write-Host 'Downloading completed.'
     #_____________________________________________
     $dlEval = Test-Path "$env:TEMP/original.xml"
     #_____________________________________________
-    Write-Host "Comparing hash of two files..."
+    Write-Host 'Comparing hash of two files...'
     if ($dlEval -eq $true) {
-        $hashComparison = Test-HashValues -orgPath "$env:TEMP/$fKey" -newPath "$env:TEMP/original.xml"
+        $hashComparison = Test-HashValue -orgPath "$env:TEMP/$fKey" -newPath "$env:TEMP/original.xml"
     }
     else {
         $hashComparison = $false
     }
-    Write-Host "Hash Comparison: $hashComparison"
+    Write-Host ('Hash Comparison: {0}' -f $hashComparison)
     #_____________________________________________
     if ($hashComparison -eq $false) {
         Write-Host 'Outputting XML file to S3 bucket...'
@@ -215,9 +215,9 @@ if ($gitXMLFileInfo) {
     else {
         Write-Host 'Hash match. No further action taken.'
     }
-}#if_gitXMLFileInfo
+} #if_gitXMLFileInfo
 else {
     Write-Warning -Message 'No XML files were discovered in the bucket.'
     Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - GCombine did not find any XML files in the GitXML bucket.'
     throw
-}#gitXMLFileInfo
+} #gitXMLFileInfo

@@ -13,11 +13,11 @@
 # $env:TELEGRAM_SECRET
 # $env:GITHUB_SECRET
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.0.0'}
-#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.4.1'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='1.14.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.30.0'}
+#Requires -Modules @{ModuleName='Convert';ModuleVersion='0.6.0'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.0.0'}
 
 # State Machine Execution -> Lambda -> S3
 
@@ -47,7 +47,7 @@ function Send-TelegramError {
             Write-Warning -Message 'Nothing was returned from secrets query'
         }
         else {
-            Write-Host "Secret retrieved."
+            Write-Host 'Secret retrieved.'
             $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
             $token = $sObj.TTBotToken
             $channel = $sObj.TTChannel
@@ -57,7 +57,7 @@ function Send-TelegramError {
     catch {
         Write-Error $_
     }
-}#Send-TelegramError
+} #Send-TelegramError
 
 <#
 .SYNOPSIS
@@ -88,7 +88,7 @@ function Convert-GitLabProjectURI {
     }
 
     return $reconstruct
-}#Convert-GitLabProjectURI
+} #Convert-GitLabProjectURI
 
 <#
 .SYNOPSIS
@@ -140,7 +140,7 @@ function Get-GitLabProjectInfo {
         Uri                     = $uri
         Headers                 = @{'PRIVATE-TOKEN' = "$token" }
         Method                  = $method
-        ContentType             = "application/json"
+        ContentType             = 'application/json'
         ResponseHeadersVariable = 'headerCheck'
         ErrorAction             = 'Stop'
     }
@@ -168,13 +168,13 @@ function Get-GitLabProjectInfo {
         $xml = $gitLabData | ConvertTo-Clixml -Depth 100
         #####################################
         if ($headerCheck.'RateLimit-Remaining' -lt 20) {
-            Write-Host "RateLimit-Remaining below 20"
+            Write-Host 'RateLimit-Remaining below 20'
             $script:rateLimit = $true
         }
     }
     catch {
         if ($_.exception.Response.StatusCode -eq 'NotFound') {
-            Write-Warning -Message "NOTFOUND: $URI"
+            Write-Warning -Message ('NOT FOUND: {0}' -f $URI)
             #####################################
             $gitLabData = New-Object -TypeName PSObject
             $gitLabData = @{
@@ -194,7 +194,7 @@ function Get-GitLabProjectInfo {
         }
     }
     return $xml
-}#Get-GitLabProjectInfo
+} #Get-GitLabProjectInfo
 
 #endregion
 
@@ -221,7 +221,7 @@ function Get-GitLabProjectInfo {
 $bucketName = $env:S3_BUCKET_NAME
 $script:telegramToken = $null
 
-Write-Host "Bucket Name: $bucketName"
+Write-Host ('Bucket Name: {0}' -f $bucketName)
 
 Write-Host 'Retrieving GitLab token...'
 $s = Get-SECSecretValue -SecretId $env:GITHUB_SECRET -Region 'us-west-2' -ErrorAction Stop
@@ -230,7 +230,7 @@ if ($null -eq $s) {
     throw
 }
 else {
-    Write-Host "Secret retrieved."
+    Write-Host 'Secret retrieved.'
     $sObj = $s.SecretString | ConvertFrom-Json
     $token = $sObj.GitLab
 }
@@ -238,26 +238,26 @@ else {
 $gitlabURI = $LambdaInput.GitLabURI
 $moduleName = $LambdaInput.ModuleName
 
-Write-Host "GitLab URI: $gitlabURI"
-Write-Host "Module Name: $moduleName"
+Write-Host ('GitLab URI: {0}' -f $gitlabURI)
+Write-Host ('Module Name: {0}' -f $moduleName)
 
 Write-Host 'Converting project URI to API URI...'
 $uAPI = Convert-GitLabProjectURI -URI $gitlabURI
-Write-Host "API URI: $uAPI"
+Write-Host ('API URI: {0}' -f $uAPI)
 
 $uriEval = Confirm-ValidGitLabAPIURL -URI $uAPI
 
 if ($script:rateLimit -eq $true) {
     Write-Host 'API calls still too low after delay...'
     return
-}#if_rate_limit
+} #if_rate_limit
 else {
     Write-Host 'Converting project URI to API URI...'
     $uAPI = Convert-GitLabProjectURI -URI $gitlabURI
 
     if ($null -ne $uAPI) {
         $uriEval = Confirm-ValidGitLabAPIURL -URI $uAPI
-        Write-Host "API URI: $uAPI"
+        Write-Host ('API URI: {0}' -f $uAPI)
     }
     else {
         Write-Warning -Message 'URI could not be converted'
@@ -265,7 +265,7 @@ else {
 
     if ($uriEval -eq $true) {
 
-        Write-Host 'Quering GitLab API for project info...'
+        Write-Host 'Querying GitLab API for project info...'
         $xml = Get-GitLabProjectInfo -Token $token -ModuleName $moduleName -URI $uAPI
         if ($xml) {
             Write-Host 'Outputting XML file to S3 bucket...'
@@ -297,11 +297,11 @@ else {
             # reason has already been logged in child function
         }
 
-    }#if_valid_uri
+    } #if_valid_uri
     else {
         Write-Host 'GitLab URI was not use-able for GitLab data query'
-    }#else_valid_uri
+    } #else_valid_uri
 
-}##else_rate_limit
+} ##else_rate_limit
 
 #endregion

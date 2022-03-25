@@ -93,7 +93,7 @@
 .OUTPUTS
     PSGEFormat
 .NOTES
-    Author: Jake Morrison - @jakemorrison - https://techthoughts.info/
+    Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
 .COMPONENT
     PSGalleryExplorer
 #>
@@ -104,6 +104,7 @@ function Find-PSGModule {
             HelpMessage = 'Find by PowerShell Gallery Downloads')]
         [switch]
         $ByDownloads,
+
         [Parameter(ParameterSetName = 'Repo',
             HelpMessage = 'Find by Repository metrics')]
         [ValidateSet(
@@ -114,6 +115,7 @@ function Find-PSGModule {
         )]
         [string]
         $ByRepoInfo,
+
         [Parameter(ParameterSetName = 'Update',
             HelpMessage = 'Find by recently updated')]
         [string]
@@ -122,25 +124,31 @@ function Find-PSGModule {
             'RepoUpdate'
         )]
         $ByRecentUpdate,
+
         [Parameter(ParameterSetName = 'GalleryDownloads',
             HelpMessage = 'Find random PowerShell Gallery modules')]
         [switch]
         $ByRandom,
+
         [Parameter(ParameterSetName = 'Names',
             HelpMessage = 'Find by name')]
         [string]
         $ByName,
+
         [Parameter(ParameterSetName = 'Tags',
             HelpMessage = 'Find by tag')]
         [string]
         [ValidatePattern('^[A-Za-z]+')]
         $ByTag,
+
         [Parameter(HelpMessage = 'Include corporation results')]
         [switch]
         $IncludeCorps,
+
         [Parameter(HelpMessage = 'Include more popular results')]
         [switch]
         $IncludeRegulars,
+
         [Parameter(Mandatory = $false,
             HelpMessage = 'Max number of modules to return')]
         [int]
@@ -184,11 +192,11 @@ function Find-PSGModule {
             Write-Verbose -Message 'ByRepoInfo'
             $gitModules = $dataSet | Where-Object { $_.GitHubInfo.GitStatus -eq $true }
             $find = $gitModules | Sort-Object -Property { [int]$_.GitHubInfo.$ByRepoInfo } -Descending | Select-Object -First $NumberToReturn
-        }#if_ByRepoInfo
+        } #if_ByRepoInfo
         elseif ($ByDownloads) {
             Write-Verbose -Message 'ByDownloads'
             $find = $dataSet | Sort-Object -Property { [int]$_.AdditionalMetadata.downloadCount } -Descending | Select-Object -First $NumberToReturn
-        }#elseif_ByDownloads
+        } #elseif_ByDownloads
         elseif ($ByRecentUpdate) {
             Write-Verbose -Message 'ByRecentUpdate'
             switch ($ByRecentUpdate) {
@@ -200,7 +208,7 @@ function Find-PSGModule {
                     $find = $gitModules | Sort-Object -Property { [datetime]$_.GitHubInfo.Updated } -Descending | Select-Object -First $NumberToReturn
                 }
             }
-        }#elseif_ByRecentUpdate
+        } #elseif_ByRecentUpdate
         elseif ($ByRandom) {
             Write-Verbose -Message 'ByRandom'
             $captured = @()
@@ -212,7 +220,7 @@ function Find-PSGModule {
                 $randoms += $thisRound
             }
             $find = $randoms | Sort-Object -Property { [int]$_.AdditionalMetadata.downloadCount } -Descending
-        }#elseif_ByRandom
+        } #elseif_ByRandom
         elseif ($ByName) {
             Write-Verbose -Message 'ByName'
             if ($ByName -like '*`**') {
@@ -221,22 +229,22 @@ function Find-PSGModule {
             else {
                 $find = $dataSet | Where-Object { $_.Name -eq $ByName }
             }
-        }#ByName
+        } #ByName
         elseif ($ByTag) {
             Write-Verbose -Message 'ByTag'
             $tagModules = $dataSet | Where-Object { $ByTag -in $_.Tags }
             $find = $tagModules | Sort-Object -Property { [int]$_.AdditionalMetadata.downloadCount } -Descending | Select-Object -First $NumberToReturn
-        }#ByTag
+        } #ByTag
         else {
             $find = $dataSet | Sort-Object -Property { [int]$_.AdditionalMetadata.downloadCount } -Descending
-        }#everything
+        } #everything
         #__________________________________________________________
-    }#if_Import-XMLDataSet
+    } #if_Import-XMLDataSet
     else {
         Write-Warning -Message 'PSGalleryExplorer was unable to source the required data set file.'
         Write-Warning -Message 'Ensure you have an active internet connection'
         return
-    }#else_Import-XMLDataSet
+    } #else_Import-XMLDataSet
 
     Write-Verbose -Message 'Adding output properties to objects...'
     foreach ($item in $find) {
@@ -253,8 +261,8 @@ function Find-PSGModule {
         }
         $item | Add-Member -NotePropertyMembers $metrics -TypeName Asset -Force
         $item.PSObject.TypeNames.Insert(0, 'PSGEFormat')
-    }#foreach_find
+    } #foreach_find
     Write-Verbose -Message 'Properties addition completed.'
 
     return $find
-}#Find-PSGModule
+} #Find-PSGModule

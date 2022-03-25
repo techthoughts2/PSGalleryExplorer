@@ -7,7 +7,7 @@
     need to specify each module and version that is required for installation. You also need to specify
     which version of that module should be installed. Additionally, you will need to specify the S3 bucket
     location where that module currently resides, so that it can be downloaded and installed into the build
-    container at runtime. This neccessitates that you download and upload your required modules to S3 prior to
+    container at runtime. This necessitates that you download and upload your required modules to S3 prior to
     the build being executed.
 .EXAMPLE
     Save-Module -Name Pester -RequiredVersion 4.4.5 -Path C:\RequiredModules
@@ -33,19 +33,19 @@ $VerbosePreference = 'SilentlyContinue'
 $modulesToInstall = [System.Collections.ArrayList]::new()
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Pester'
-            ModuleVersion = '4.10.1'
+            ModuleVersion = '5.3.1'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
-            ModuleVersion = '5.6.1'
+            ModuleVersion = '5.9.7'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PSScriptAnalyzer'
-            ModuleVersion = '1.19.1'
+            ModuleVersion = '1.20.0'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
@@ -57,7 +57,7 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Convert'
-            ModuleVersion = '0.4.1'
+            ModuleVersion = '0.6.0'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
@@ -113,7 +113,7 @@ if ($galleryDownload -eq $false) {
         # Expand downloaded file
         Expand-Archive -Path $localFile -DestinationPath $moduleVersionPath -Force
     }
-}#if_GalleryDownload
+} #if_GalleryDownload
 else {
     Get-PackageProvider -Name Nuget -ForceBootstrap | Out-Null
     'Installing PowerShell Modules'

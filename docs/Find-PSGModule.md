@@ -326,6 +326,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ### PSGEFormat
 ## NOTES
-Author: Jake Morrison - @jakemorrison - https://techthoughts.info/
+Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
 
 ## RELATED LINKS
