@@ -43,7 +43,7 @@ InModuleScope 'PSGalleryExplorer' {
       <Nil N="UpdatedDate" />
       <Nil N="LicenseUri" />
       <URI N="ProjectUri">https://github.com/techthoughts2/PoshGram</URI>
-      <URI N="IconUri">https://github.com/techthoughts2/PoshGram/raw/master/media/PoshGram.png</URI>
+      <URI N="IconUri">https://github.com/techthoughts2/PoshGram/raw/main/media/PoshGram.png</URI>
       <Obj N="Tags" RefId="1">
         <TN RefId="1">
           <T>Deserialized.System.Object[]</T>
@@ -280,7 +280,7 @@ InModuleScope 'PSGalleryExplorer' {
       <Nil N="InstalledDate" />
       <Nil N="UpdatedDate" />
       <Nil N="LicenseUri" />
-      <URI N="ProjectUri">https://github.com/MathieuBuisson/Powershell-Administration/tree/master/cRegFile</URI>
+      <URI N="ProjectUri">https://github.com/MathieuBuisson/Powershell-Administration/tree/main/cRegFile</URI>
       <Nil N="IconUri" />
       <Obj N="Tags" RefId="1">
         <TN RefId="1">
@@ -448,7 +448,7 @@ InModuleScope 'PSGalleryExplorer' {
                 UpdatedDate                = ''
                 LicenseUri                 = ''
                 ProjectUri                 = 'https://github.com/techthoughts2/PoshGram'
-                IconUri                    = 'https://github.com/techthoughts2/PoshGram/raw/master/media/PoshGram.png'
+                IconUri                    = 'https://github.com/techthoughts2/PoshGram/raw/main/media/PoshGram.png'
                 Tags                       = @(
                     'Animations',
                     'Audio',

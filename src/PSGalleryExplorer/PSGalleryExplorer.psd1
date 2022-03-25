@@ -125,10 +125,10 @@
             ProjectUri               = 'https://github.com/techthoughts2/PSGalleryExplorer'
 
             # A URL to an icon representing this module.
-            IconUri                  = 'https://github.com/techthoughts2/PSGalleryExplorer/raw/master/media/PSGalleryExplorerIcon.png'
+            IconUri                  = 'https://github.com/techthoughts2/PSGalleryExplorer/raw/main/media/PSGalleryExplorerIcon.png'
 
             # ReleaseNotes of this module
-            ReleaseNotes             = 'https://github.com/techthoughts2/PSGalleryExplorer/blob/master/.github/CHANGELOG.md'
+            ReleaseNotes             = 'https://github.com/techthoughts2/PSGalleryExplorer/blob/main/.github/CHANGELOG.md'
 
             # Prerelease string of this module
             # Prerelease = ''

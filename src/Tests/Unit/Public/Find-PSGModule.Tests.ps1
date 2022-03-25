@@ -27,7 +27,7 @@ InModuleScope 'PSGalleryExplorer' {
             UpdatedDate                = ''
             LicenseUri                 = ''
             ProjectUri                 = 'https://github.com/techthoughts2/PoshGram'
-            IconUri                    = 'https://github.com/techthoughts2/PoshGram/raw/master/media/PoshGram.png'
+            IconUri                    = 'https://github.com/techthoughts2/PoshGram/raw/main/media/PoshGram.png'
             Tags                       = @(
                 'Animations',
                 'Audio',
@@ -252,7 +252,7 @@ InModuleScope 'PSGalleryExplorer' {
             UpdatedDate                = ''
             LicenseUri                 = ''
             ProjectUri                 = 'https://github.com/techthoughts2/Catesta'
-            IconUri                    = 'https://github.com/techthoughts2/Catesta/raw/master/media/CatestaIcon.png'
+            IconUri                    = 'https://github.com/techthoughts2/Catesta/raw/main/media/CatestaIcon.png'
             Tags                       = @(
                 'Module'
                 'Modules'
@@ -293,7 +293,7 @@ InModuleScope 'PSGalleryExplorer' {
                 )
             }
             PowerShellGetFormatVersion = ''
-            ReleaseNotes               = 'https://github.com/techthoughts2/Catesta/blob/master/.github/CHANGELOG.md'
+            ReleaseNotes               = 'https://github.com/techthoughts2/Catesta/blob/main/.github/CHANGELOG.md'
             Dependencies               = '{}'
             RepositorySourceLocation   = 'https://www.powershellgallery.com/api/v2/'
             Repository                 = 'PSGallery'
@@ -310,7 +310,7 @@ InModuleScope 'PSGalleryExplorer' {
                 updated                   = [datetime]'2020-01-09T06:06:14Z'
                 tags                      = 'Module Modules Plaster Template Project Scaffold Cross-Platform CrossPlatform MultiCloud PowerShell pwsh CICD Windows Linux MacOS Azure Azure-DevOps AWS CodeBuild AWS-CodeBuild AppVeyor GitHub Actions GitHub-Actions PSModule'
                 requireLicenseAcceptance  = 'False'
-                releaseNotes              = 'https://github.com/techthoughts2/Catesta/blob/master/.github/CHANGELOG.md'
+                releaseNotes              = 'https://github.com/techthoughts2/Catesta/blob/main/.github/CHANGELOG.md'
                 Functions                 = 'New-PowerShellProject'
                 ItemType                  = 'Module'
                 isLatestVersion           = 'True'
@@ -510,7 +510,7 @@ InModuleScope 'PSGalleryExplorer' {
                 )
             }
             PowerShellGetFormatVersion = ''
-            ReleaseNotes               = 'https://github.com/aws/aws-tools-for-powershell/blob/master/CHANGELOG.md'
+            ReleaseNotes               = 'https://github.com/aws/aws-tools-for-powershell/blob/main/CHANGELOG.md'
             Dependencies               = '{}'
             RepositorySourceLocation   = 'https://www.powershellgallery.com/api/v2/'
             Repository                 = 'PSGallery'
@@ -537,7 +537,7 @@ InModuleScope 'PSGalleryExplorer' {
                 NormalizedVersion         = '4.0.2'
                 versionDownloadCount      = '14233'
                 published                 = '12/13/19 16:44:41 -08:00'
-                releaseNotes              = 'https://github.com/aws/aws-tools-for-powershell/blob/master/CHANGELOG.md'
+                releaseNotes              = 'https://github.com/aws/aws-tools-for-powershell/blob/main/CHANGELOG.md'
                 CompanyName               = 'Amazon.com, Inc'
                 PowerShellVersion         = '5.1'
                 requireLicenseAcceptance  = 'False'
