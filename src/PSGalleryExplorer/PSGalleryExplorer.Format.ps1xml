@@ -9,7 +9,7 @@
             <TableControl>
                 <TableHeaders>
                     <TableColumnHeader>
-                        <Width>15</Width>
+                        <Width>20</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Width>9</Width>
