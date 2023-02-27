@@ -10,10 +10,6 @@ Parameters:
     Type: String
     Description: The name of the service being deployed. Used for Developer AWS Account Resource Names.
 
-  TelegramSecret:
-    Type: String
-    Description: Name of the secret to be retrieved that contains the GitHub Oauth token
-
   LambdaS3BucketName:
     Type: String
     Description: The S3 Bucket holding the Lambda code
@@ -376,7 +372,6 @@ Resources:
       Environment:
         Variables:
           S3_BUCKET_NAME: !ImportValue PubXMLDataBN
-          TELEGRAM_SECRET: !Ref TelegramSecret
           SERVICE_NAME: !Ref ServiceName
       # EphemeralStorage: EphemeralStorage
       # EventInvokeConfig: EventInvokeConfiguration
@@ -398,13 +393,10 @@ Resources:
         - CloudWatchPutMetricPolicy: {}
         - S3CrudPolicy:
             BucketName: !ImportValue PubXMLDataBN
-        - Statement:
-            - Sid: SecretsOauthRetrieve
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource:
-                - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
+        - SSMParameterReadPolicy:
+            ParameterName: telegramtoken
+        - SSMParameterReadPolicy:
+            ParameterName: telegramchannel
       # ProvisionedConcurrencyConfig: ProvisionedConcurrencyConfig
       # ReservedConcurrentExecutions: Integer
       # Role: String

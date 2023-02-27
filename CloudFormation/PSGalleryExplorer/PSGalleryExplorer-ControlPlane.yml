@@ -180,10 +180,10 @@ Resources:
       TimeoutInMinutes: 5 #make sure it can actually complete in this time period
       Parameters: #much match the parameters of nested template
         ServiceName: !Ref ServiceName
-        TelegramSecret: !Ref TelegramSecret
         LambdaS3BucketName: !Ref ArtifactS3Bucket
         LMFunctionS3KeyPubXMLMonitor: !Ref LMFunctionS3KeyPubXMLMonitor
         LMFunctionHandlerPubXMLMonitor: !Ref LMFunctionHandlerPubXMLMonitor
+        ResourceType: prod
       Tags:
         - Key: ServiceName
           Value: !Ref ServiceName
