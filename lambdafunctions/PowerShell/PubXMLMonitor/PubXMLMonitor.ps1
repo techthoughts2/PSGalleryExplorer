@@ -14,11 +14,11 @@
 # $env:TELEGRAM_SECRET
 # $env:SERVICE_NAME
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.30.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.30.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.SecretsManager';ModuleVersion='4.1.30.0'}
-#Requires -Modules @{ModuleName='AWS.Tools.CloudWatch';ModuleVersion='4.1.30.0'}
-#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.0.0'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.275'}
+#Requires -Modules @{ModuleName='AWS.Tools.CloudWatch';ModuleVersion='4.1.275'}
+#Requires -Modules @{ModuleName='AWS.Tools.SimpleSystemsManagement';ModuleVersion='4.1.275'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.275'}
+#Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.3.0'}
 
 # Uncomment to send the input event to CloudWatch Logs
 Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
@@ -27,38 +27,49 @@ Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
 
 #region supportingFunctions
 
-<#
-.SYNOPSIS
-    Sends error message to Telegram for notification.
-.COMPONENT
-    pwshCloudCommands
-#>
-function Send-TelegramError {
+function Send-TelegramMessage {
+    <#
+    .SYNOPSIS
+        Sends message to Telegram for notification.
+    #>
     param (
         [Parameter(Mandatory = $true,
-            HelpMessage = 'Original File Path')]
+            HelpMessage = 'Message to send to telegram')]
         [string]
-        $ErrorMessage
+        $Message
     )
-    if ($null -eq $script:telegramToken ) {
-        $script:telegramToken = Get-SECSecretValue -SecretId $env:TELEGRAM_SECRET -Region 'us-west-2' -ErrorAction Stop
-    }
-    try {
-        if ($null -eq $script:telegramToken ) {
-            Write-Warning -Message 'Nothing was returned from secrets query'
+
+    if ($null -eq $script:telegramToken -or $null -eq $script:telegramChannel) {
+        try {
+            $getSSMParameterValueSplatToken = @{
+                Name           = 'telegramtoken'
+                WithDecryption = $true
+                ErrorAction    = 'Stop'
+            }
+            $getSSMParameterValueSplatChannel = @{
+                Name           = 'telegramchannel'
+                WithDecryption = $true
+                ErrorAction    = 'Stop'
+            }
+            $script:telegramToken = Get-SSMParameterValue @getSSMParameterValueSplatToken
+            $script:telegramChannel = Get-SSMParameterValue @getSSMParameterValueSplatChannel
         }
-        else {
-            Write-Host 'Secret retrieved.'
-            $sObj = $script:telegramToken.SecretString | ConvertFrom-Json
-            $token = $sObj.TTBotToken
-            $channel = $sObj.TTChannel
-            Send-TelegramTextMessage -BotToken $token -ChatID $channel -Message $ErrorMessage
+        catch {
+            throw $_
         }
+    } #if_token_channel_null
+
+    if ([string]::IsNullOrWhiteSpace($script:telegramToken) -or [string]::IsNullOrWhiteSpace($script:telegramChannel)) {
+        throw 'Parameters not successfully retrieved'
     }
-    catch {
-        Write-Error $_
+    else {
+        Write-Host 'Parameters retrieved.'
+        $token = $script:telegramToken.Parameters.Value
+        $channel = $script:telegramChannel.Parameters.Value
+        $out = Send-TelegramTextMessage -BotToken $token -ChatID $channel -Message $Message
+        Write-Host ($out | Out-String)
     }
-} #Send-TelegramError
+} #Send-TelegramMessage
 
 #endregion
 
@@ -75,13 +86,13 @@ try {
 catch {
     Write-Warning -Message 'Error retrieving object from S3'
     Write-Error $_
-    Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - PubXMLMonitor Error retrieving object from S3'
+    Send-TelegramMessage -Message '\\\ Project PSGalleryExplorer - PubXMLMonitor Error retrieving object from S3'
     return
 }
 
 if ($null -eq $objInfo) {
     Write-Warning -Message 'No object returned from S3'
-    Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - PubXMLMonitor The S3 object was not found'
+    Send-TelegramMessage -Message '\\\ Project PSGalleryExplorer - PubXMLMonitor The S3 object was not found'
 }
 
 Write-Host 'Getting current date'
@@ -120,7 +131,7 @@ try {
 catch {
     $errorMessage = $_.Exception.Message
     Write-Error -Message ('Something went wrong: {0}' -f $errorMessage)
-    Send-TelegramError -ErrorMessage '\\\ Project PSGalleryExplorer - PubXMLMonitor Error sending metric data to CloudWatch'
+    Send-TelegramMessage -Message '\\\ Project PSGalleryExplorer - PubXMLMonitor Error sending metric data to CloudWatch'
 }
 
 return $true

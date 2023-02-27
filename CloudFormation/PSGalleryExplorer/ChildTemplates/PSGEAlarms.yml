@@ -26,325 +26,334 @@ Parameters:
     Type: String
     Description: PubXMLMonitor Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
 
+  ResourceType:
+    Type: String
+    Description: Determine the type of resource that will be deployed
+    AllowedValues:
+      - core
+      - dev
+      - test
+      - prod
+
 Resources:
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
-  AlarmNumberOfMessagesVisibleUpdatePubXMLDataDlq:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: Alarms if the UpdatePubXMLDataDlq Dead Letter Queue has too many messages
-      AlarmName: UpdatePubXMLDataDlq_NumberOfMessagesVisible
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: QueueName
-          Value:
-            Fn::ImportValue: !Sub ${ServiceName}-UpdatePubXMLDataDlqName
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ApproximateNumberOfMessagesVisible
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/SQS
-      # OKActions:
-      #   - String
-      Period: 300
-      Statistic: Maximum
-      Threshold: 1
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
+  # AlarmNumberOfMessagesVisibleUpdatePubXMLDataDlq:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     ActionsEnabled: true
+  #     AlarmActions:
+  #       - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+  #     AlarmDescription: Alarms if the UpdatePubXMLDataDlq Dead Letter Queue has too many messages
+  #     AlarmName: UpdatePubXMLDataDlq_NumberOfMessagesVisible
+  #     ComparisonOperator: GreaterThanOrEqualToThreshold
+  #     # DatapointsToAlarm: Integer
+  #     # EvaluateLowSampleCountPercentile: String
+  #     Dimensions:
+  #       - Name: QueueName
+  #         Value:
+  #           Fn::ImportValue: !Sub ${ServiceName}-UpdatePubXMLDataDlqName
+  #     EvaluationPeriods: 1
+  #     # ExtendedStatistic: String
+  #     # InsufficientDataActions:
+  #     #   - String
+  #     MetricName: ApproximateNumberOfMessagesVisible
+  #     # Metrics:
+  #     #   - MetricDataQuery
+  #     Namespace: AWS/SQS
+  #     # OKActions:
+  #     #   - String
+  #     Period: 300
+  #     Statistic: Maximum
+  #     Threshold: 1
+  #     # ThresholdMetricId: String
+  #     TreatMissingData: notBreaching
+  #     # Unit: String
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
-  AlarmNumberOfMessagesVisibleUpdateGitHubDataDlq:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: Alarms if the GitHubDataDlq Dead Letter Queue has too many messages
-      AlarmName: GitHubDataDlq_NumberOfMessagesVisible
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: QueueName
-          Value:
-            Fn::ImportValue: !Sub ${ServiceName}-GitHubDataDlqName
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ApproximateNumberOfMessagesVisible
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/SQS
-      # OKActions:
-      #   - String
-      Period: 300
-      Statistic: Maximum
-      Threshold: 1
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
+  # # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
+  # AlarmNumberOfMessagesVisibleUpdateGitHubDataDlq:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     ActionsEnabled: true
+  #     AlarmActions:
+  #       - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+  #     AlarmDescription: Alarms if the GitHubDataDlq Dead Letter Queue has too many messages
+  #     AlarmName: GitHubDataDlq_NumberOfMessagesVisible
+  #     ComparisonOperator: GreaterThanOrEqualToThreshold
+  #     # DatapointsToAlarm: Integer
+  #     # EvaluateLowSampleCountPercentile: String
+  #     Dimensions:
+  #       - Name: QueueName
+  #         Value:
+  #           Fn::ImportValue: !Sub ${ServiceName}-GitHubDataDlqName
+  #     EvaluationPeriods: 1
+  #     # ExtendedStatistic: String
+  #     # InsufficientDataActions:
+  #     #   - String
+  #     MetricName: ApproximateNumberOfMessagesVisible
+  #     # Metrics:
+  #     #   - MetricDataQuery
+  #     Namespace: AWS/SQS
+  #     # OKActions:
+  #     #   - String
+  #     Period: 300
+  #     Statistic: Maximum
+  #     Threshold: 1
+  #     # ThresholdMetricId: String
+  #     TreatMissingData: notBreaching
+  #     # Unit: String
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
-  AlarmNumberOfMessagesVisibleUpdateGitLabDataDlq:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: Alarms if the GitLabDataDlq Dead Letter Queue has too many messages
-      AlarmName: GitLabDataDlq_NumberOfMessagesVisible
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: QueueName
-          Value:
-            Fn::ImportValue: !Sub ${ServiceName}-GitLabDataDlqName
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ApproximateNumberOfMessagesVisible
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/SQS
-      # OKActions:
-      #   - String
-      Period: 300
-      Statistic: Maximum
-      Threshold: 1
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
+  # # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
+  # AlarmNumberOfMessagesVisibleUpdateGitLabDataDlq:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     ActionsEnabled: true
+  #     AlarmActions:
+  #       - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+  #     AlarmDescription: Alarms if the GitLabDataDlq Dead Letter Queue has too many messages
+  #     AlarmName: GitLabDataDlq_NumberOfMessagesVisible
+  #     ComparisonOperator: GreaterThanOrEqualToThreshold
+  #     # DatapointsToAlarm: Integer
+  #     # EvaluateLowSampleCountPercentile: String
+  #     Dimensions:
+  #       - Name: QueueName
+  #         Value:
+  #           Fn::ImportValue: !Sub ${ServiceName}-GitLabDataDlqName
+  #     EvaluationPeriods: 1
+  #     # ExtendedStatistic: String
+  #     # InsufficientDataActions:
+  #     #   - String
+  #     MetricName: ApproximateNumberOfMessagesVisible
+  #     # Metrics:
+  #     #   - MetricDataQuery
+  #     Namespace: AWS/SQS
+  #     # OKActions:
+  #     #   - String
+  #     Period: 300
+  #     Statistic: Maximum
+  #     Threshold: 1
+  #     # ThresholdMetricId: String
+  #     TreatMissingData: notBreaching
+  #     # Unit: String
   #######################################################################
   #######################################################################
 
-  GitHubSMTimedOutAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: !Sub >-
-        ${ServiceName} State Machine has had an execution time out.
-        This could be for any reason, investigation is required.
-      AlarmName: !Sub ${ServiceName}-GitHub State Machine EXECUTION TIMED OUT (${AWS::StackName})
-      ComparisonOperator: GreaterThanThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: StateMachineArn
-          Value:
-            Fn::ImportValue: !Sub ${ServiceName}-GitHubScannerSMDelayStateMachineARN
-      # EvaluateLowSampleCountPercentile: String
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ExecutionsTimedOut
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/States
-      # OKActions:
-      #   - String
-      Period: 60
-      Statistic: Sum
-      Threshold: 0
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
+  # GitHubSMTimedOutAlarm:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     ActionsEnabled: true
+  #     AlarmActions:
+  #       - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+  #     AlarmDescription: !Sub >-
+  #       ${ServiceName} State Machine has had an execution time out.
+  #       This could be for any reason, investigation is required.
+  #     AlarmName: !Sub ${ServiceName}-GitHub State Machine EXECUTION TIMED OUT (${AWS::StackName})
+  #     ComparisonOperator: GreaterThanThreshold
+  #     # DatapointsToAlarm: Integer
+  #     # EvaluateLowSampleCountPercentile: String
+  #     Dimensions:
+  #       - Name: StateMachineArn
+  #         Value:
+  #           Fn::ImportValue: !Sub ${ServiceName}-GitHubScannerSMDelayStateMachineARN
+  #     # EvaluateLowSampleCountPercentile: String
+  #     EvaluationPeriods: 1
+  #     # ExtendedStatistic: String
+  #     # InsufficientDataActions:
+  #     #   - String
+  #     MetricName: ExecutionsTimedOut
+  #     # Metrics:
+  #     #   - MetricDataQuery
+  #     Namespace: AWS/States
+  #     # OKActions:
+  #     #   - String
+  #     Period: 60
+  #     Statistic: Sum
+  #     Threshold: 0
+  #     # ThresholdMetricId: String
+  #     TreatMissingData: notBreaching
+  #     # Unit: String
 
-  GitHubSMThrottleAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: !Sub >-
-        ${ServiceName} State Machine has had state transitions
-        throttled. This is a limit imposed by AWS Step Functions itself within
-        the state machine, not related to throttling of services used as state
-        resources, such as AWS Lambda or Fargate.
-      AlarmName: !Sub ${ServiceName}-GitHub State Machine STATE TRANSITION THROTTLE (${AWS::StackName})
-      ComparisonOperator: GreaterThanThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: StateMachineArn
-          Value:
-            Fn::ImportValue: !Sub ${ServiceName}-GitHubScannerSMDelayStateMachineARN
-      # EvaluateLowSampleCountPercentile: String
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ExecutionThrottled
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/States
-      # OKActions:
-      #   - String
-      Period: 60
-      Statistic: Sum
-      Threshold: 0
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
+  # GitHubSMThrottleAlarm:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     ActionsEnabled: true
+  #     AlarmActions:
+  #       - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+  #     AlarmDescription: !Sub >-
+  #       ${ServiceName} State Machine has had state transitions
+  #       throttled. This is a limit imposed by AWS Step Functions itself within
+  #       the state machine, not related to throttling of services used as state
+  #       resources, such as AWS Lambda or Fargate.
+  #     AlarmName: !Sub ${ServiceName}-GitHub State Machine STATE TRANSITION THROTTLE (${AWS::StackName})
+  #     ComparisonOperator: GreaterThanThreshold
+  #     # DatapointsToAlarm: Integer
+  #     # EvaluateLowSampleCountPercentile: String
+  #     Dimensions:
+  #       - Name: StateMachineArn
+  #         Value:
+  #           Fn::ImportValue: !Sub ${ServiceName}-GitHubScannerSMDelayStateMachineARN
+  #     # EvaluateLowSampleCountPercentile: String
+  #     EvaluationPeriods: 1
+  #     # ExtendedStatistic: String
+  #     # InsufficientDataActions:
+  #     #   - String
+  #     MetricName: ExecutionThrottled
+  #     # Metrics:
+  #     #   - MetricDataQuery
+  #     Namespace: AWS/States
+  #     # OKActions:
+  #     #   - String
+  #     Period: 60
+  #     Statistic: Sum
+  #     Threshold: 0
+  #     # ThresholdMetricId: String
+  #     TreatMissingData: notBreaching
+  #     # Unit: String
 
-  GitHubSMFailureAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: !Sub >-
-        ${ServiceName} State Machine has had an execution failure.
-        A state machine execution failure indicates that an error occurred and
-        was unable to be caught and handled gracefully. This likely means the
-        job failed in some way and that some or all callbacks were unsuccessful.
-      AlarmName: !Sub ${ServiceName}-GitHub State Machine EXECUTION FAILED(${AWS::StackName})
-      ComparisonOperator: GreaterThanThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: StateMachineArn
-          Value:
-            Fn::ImportValue: !Sub ${ServiceName}-GitHubScannerSMDelayStateMachineARN
-      # EvaluateLowSampleCountPercentile: String
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ExecutionsFailed
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/States
-      # OKActions:
-      #   - String
-      Period: 60
-      Statistic: Sum
-      Threshold: 0
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
+  # GitHubSMFailureAlarm:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     ActionsEnabled: true
+  #     AlarmActions:
+  #       - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+  #     AlarmDescription: !Sub >-
+  #       ${ServiceName} State Machine has had an execution failure.
+  #       A state machine execution failure indicates that an error occurred and
+  #       was unable to be caught and handled gracefully. This likely means the
+  #       job failed in some way and that some or all callbacks were unsuccessful.
+  #     AlarmName: !Sub ${ServiceName}-GitHub State Machine EXECUTION FAILED(${AWS::StackName})
+  #     ComparisonOperator: GreaterThanThreshold
+  #     # DatapointsToAlarm: Integer
+  #     # EvaluateLowSampleCountPercentile: String
+  #     Dimensions:
+  #       - Name: StateMachineArn
+  #         Value:
+  #           Fn::ImportValue: !Sub ${ServiceName}-GitHubScannerSMDelayStateMachineARN
+  #     # EvaluateLowSampleCountPercentile: String
+  #     EvaluationPeriods: 1
+  #     # ExtendedStatistic: String
+  #     # InsufficientDataActions:
+  #     #   - String
+  #     MetricName: ExecutionsFailed
+  #     # Metrics:
+  #     #   - MetricDataQuery
+  #     Namespace: AWS/States
+  #     # OKActions:
+  #     #   - String
+  #     Period: 60
+  #     Statistic: Sum
+  #     Threshold: 0
+  #     # ThresholdMetricId: String
+  #     TreatMissingData: notBreaching
+  #     # Unit: String
 
-  GitLabSMTimedOutAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: !Sub >-
-        ${ServiceName} State Machine has had an execution time out.
-        This could be for any reason, investigation is required.
-      AlarmName: !Sub ${ServiceName}-GitLab State Machine EXECUTION TIMED OUT (${AWS::StackName})
-      ComparisonOperator: GreaterThanThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: StateMachineArn
-          Value:
-            Fn::ImportValue: !Sub ${ServiceName}-GitLabScannerSMDelayStateMachineArn
-      # EvaluateLowSampleCountPercentile: String
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ExecutionsTimedOut
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/States
-      # OKActions:
-      #   - String
-      Period: 60
-      Statistic: Sum
-      Threshold: 0
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
+  # GitLabSMTimedOutAlarm:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     ActionsEnabled: true
+  #     AlarmActions:
+  #       - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+  #     AlarmDescription: !Sub >-
+  #       ${ServiceName} State Machine has had an execution time out.
+  #       This could be for any reason, investigation is required.
+  #     AlarmName: !Sub ${ServiceName}-GitLab State Machine EXECUTION TIMED OUT (${AWS::StackName})
+  #     ComparisonOperator: GreaterThanThreshold
+  #     # DatapointsToAlarm: Integer
+  #     # EvaluateLowSampleCountPercentile: String
+  #     Dimensions:
+  #       - Name: StateMachineArn
+  #         Value:
+  #           Fn::ImportValue: !Sub ${ServiceName}-GitLabScannerSMDelayStateMachineArn
+  #     # EvaluateLowSampleCountPercentile: String
+  #     EvaluationPeriods: 1
+  #     # ExtendedStatistic: String
+  #     # InsufficientDataActions:
+  #     #   - String
+  #     MetricName: ExecutionsTimedOut
+  #     # Metrics:
+  #     #   - MetricDataQuery
+  #     Namespace: AWS/States
+  #     # OKActions:
+  #     #   - String
+  #     Period: 60
+  #     Statistic: Sum
+  #     Threshold: 0
+  #     # ThresholdMetricId: String
+  #     TreatMissingData: notBreaching
+  #     # Unit: String
 
-  GitLabSMThrottleAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: !Sub >-
-        ${ServiceName} State Machine has had state transitions
-        throttled. This is a limit imposed by AWS Step Functions itself within
-        the state machine, not related to throttling of services used as state
-        resources, such as AWS Lambda or Fargate.
-      AlarmName: !Sub ${ServiceName}-GitLab State Machine STATE TRANSITION THROTTLE (${AWS::StackName})
-      ComparisonOperator: GreaterThanThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: StateMachineArn
-          Value:
-            Fn::ImportValue: !Sub ${ServiceName}-GitLabScannerSMDelayStateMachineArn
-      # EvaluateLowSampleCountPercentile: String
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ExecutionThrottled
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/States
-      # OKActions:
-      #   - String
-      Period: 60
-      Statistic: Sum
-      Threshold: 0
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
+  # GitLabSMThrottleAlarm:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     ActionsEnabled: true
+  #     AlarmActions:
+  #       - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+  #     AlarmDescription: !Sub >-
+  #       ${ServiceName} State Machine has had state transitions
+  #       throttled. This is a limit imposed by AWS Step Functions itself within
+  #       the state machine, not related to throttling of services used as state
+  #       resources, such as AWS Lambda or Fargate.
+  #     AlarmName: !Sub ${ServiceName}-GitLab State Machine STATE TRANSITION THROTTLE (${AWS::StackName})
+  #     ComparisonOperator: GreaterThanThreshold
+  #     # DatapointsToAlarm: Integer
+  #     # EvaluateLowSampleCountPercentile: String
+  #     Dimensions:
+  #       - Name: StateMachineArn
+  #         Value:
+  #           Fn::ImportValue: !Sub ${ServiceName}-GitLabScannerSMDelayStateMachineArn
+  #     # EvaluateLowSampleCountPercentile: String
+  #     EvaluationPeriods: 1
+  #     # ExtendedStatistic: String
+  #     # InsufficientDataActions:
+  #     #   - String
+  #     MetricName: ExecutionThrottled
+  #     # Metrics:
+  #     #   - MetricDataQuery
+  #     Namespace: AWS/States
+  #     # OKActions:
+  #     #   - String
+  #     Period: 60
+  #     Statistic: Sum
+  #     Threshold: 0
+  #     # ThresholdMetricId: String
+  #     TreatMissingData: notBreaching
+  #     # Unit: String
 
-  GitLabSMFailureAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: true
-      AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
-      AlarmDescription: !Sub >-
-        ${ServiceName} State Machine has had an execution failure.
-        A state machine execution failure indicates that an error occurred and
-        was unable to be caught and handled gracefully. This likely means the
-        job failed in some way and that some or all callbacks were unsuccessful.
-      AlarmName: !Sub ${ServiceName}-GitLab State Machine EXECUTION FAILED(${AWS::StackName})
-      ComparisonOperator: GreaterThanThreshold
-      # DatapointsToAlarm: Integer
-      # EvaluateLowSampleCountPercentile: String
-      Dimensions:
-        - Name: StateMachineArn
-          Value:
-            Fn::ImportValue: !Sub ${ServiceName}-GitLabScannerSMDelayStateMachineArn
-      # EvaluateLowSampleCountPercentile: String
-      EvaluationPeriods: 1
-      # ExtendedStatistic: String
-      # InsufficientDataActions:
-      #   - String
-      MetricName: ExecutionsFailed
-      # Metrics:
-      #   - MetricDataQuery
-      Namespace: AWS/States
-      # OKActions:
-      #   - String
-      Period: 60
-      Statistic: Sum
-      Threshold: 0
-      # ThresholdMetricId: String
-      TreatMissingData: notBreaching
-      # Unit: String
+  # GitLabSMFailureAlarm:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     ActionsEnabled: true
+  #     AlarmActions:
+  #       - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+  #     AlarmDescription: !Sub >-
+  #       ${ServiceName} State Machine has had an execution failure.
+  #       A state machine execution failure indicates that an error occurred and
+  #       was unable to be caught and handled gracefully. This likely means the
+  #       job failed in some way and that some or all callbacks were unsuccessful.
+  #     AlarmName: !Sub ${ServiceName}-GitLab State Machine EXECUTION FAILED(${AWS::StackName})
+  #     ComparisonOperator: GreaterThanThreshold
+  #     # DatapointsToAlarm: Integer
+  #     # EvaluateLowSampleCountPercentile: String
+  #     Dimensions:
+  #       - Name: StateMachineArn
+  #         Value:
+  #           Fn::ImportValue: !Sub ${ServiceName}-GitLabScannerSMDelayStateMachineArn
+  #     # EvaluateLowSampleCountPercentile: String
+  #     EvaluationPeriods: 1
+  #     # ExtendedStatistic: String
+  #     # InsufficientDataActions:
+  #     #   - String
+  #     MetricName: ExecutionsFailed
+  #     # Metrics:
+  #     #   - MetricDataQuery
+  #     Namespace: AWS/States
+  #     # OKActions:
+  #     #   - String
+  #     Period: 60
+  #     Statistic: Sum
+  #     Threshold: 0
+  #     # ThresholdMetricId: String
+  #     TreatMissingData: notBreaching
+  #     # Unit: String
 
   # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
   # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-eventsource.html
@@ -353,25 +362,37 @@ Resources:
   PubXMLMonitor:
     Type: 'AWS::Serverless::Function'
     Properties:
+      # Architectures: x86_64
+      # AssumeRolePolicyDocument: JSON
+      # AutoPublishAlias: String
+      # AutoPublishCodeSha256: String
+      # CodeSigningConfigArn: String
       CodeUri:
         Bucket: !Ref LambdaS3BucketName
         Key: !Ref LMFunctionS3KeyPubXMLMonitor
+      # DeadLetterQueue: Map | DeadLetterQueue
+      # DeploymentPreference: DeploymentPreference
       Description: 'Determines age of PubXML and sends to CloudWatch Metric'
       Environment:
         Variables:
           S3_BUCKET_NAME: !ImportValue PubXMLDataBN
           TELEGRAM_SECRET: !Ref TelegramSecret
           SERVICE_NAME: !Ref ServiceName
+      # EphemeralStorage: EphemeralStorage
+      # EventInvokeConfig: EventInvokeConfiguration
+      # Events: EventSource
+      # FileSystemConfigs: List
+      # FunctionName:
+      # FunctionUrlConfig: FunctionUrlConfig
       Handler: !Ref LMFunctionHandlerPubXMLMonitor
+      # ImageConfig: ImageConfig
+      # ImageUri: String
+      # InlineCode: String
+      # KmsKeyArn: String
+      # Layers: List
       MemorySize: 768
-      Runtime: dotnet6
-      Timeout: 60
-      Events:
-        RateSchedule:
-          Type: Schedule
-          Properties:
-            Enabled: true
-            Schedule: 'rate(1 day)'
+      # PackageType: String
+      # PermissionsBoundary: String
       Policies:
         - AWSLambdaBasicExecutionRole
         - CloudWatchPutMetricPolicy: {}
@@ -384,14 +405,31 @@ Resources:
                 - secretsmanager:GetSecretValue
               Resource:
                 - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${TelegramSecret}-6udjnM'
+      # ProvisionedConcurrencyConfig: ProvisionedConcurrencyConfig
+      # ReservedConcurrentExecutions: Integer
+      # Role: String
+      # RolePath: String
+      Runtime: dotnet6
+      # RuntimeManagementConfig: RuntimeManagementConfig
+      # SnapStart: SnapStart
       Tags:
         ServiceName: !Ref ServiceName
         StackName: !Ref AWS::StackName
+        ResourceType: !Ref ResourceType
+      Events:
+        RateSchedule:
+          Type: Schedule
+          Properties:
+            Enabled: true
+            Schedule: 'rate(1 day)'
+      Timeout: 60
 
   #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
   PubXMLMonitorLogGroup:
     Type: AWS::Logs::LogGroup
     DependsOn: PubXMLMonitor
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
     Properties:
       # KmsKeyId: String
       LogGroupName: !Sub '/aws/lambda/${PubXMLMonitor}'
@@ -401,6 +439,8 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html
   PubXMLMonitorAlarm:
@@ -435,74 +475,74 @@ Resources:
       # Unit: String
 
 Outputs:
-  PubXMLDataDlqAlarmName:
-    Value: !Ref AlarmNumberOfMessagesVisibleUpdatePubXMLDataDlq
+  # PubXMLDataDlqAlarmName:
+  #   Value: !Ref AlarmNumberOfMessagesVisibleUpdatePubXMLDataDlq
 
-  GitHubDataDlqAlarmName:
-    Value: !Ref AlarmNumberOfMessagesVisibleUpdateGitHubDataDlq
+  # GitHubDataDlqAlarmName:
+  #   Value: !Ref AlarmNumberOfMessagesVisibleUpdateGitHubDataDlq
 
-  GitLabDataDlqAlarmName:
-    Value: !Ref AlarmNumberOfMessagesVisibleUpdateGitLabDataDlq
+  # GitLabDataDlqAlarmName:
+  #   Value: !Ref AlarmNumberOfMessagesVisibleUpdateGitLabDataDlq
 
-  GitHubSMTimedOutAlarmName:
-    Description: GitHubSMTimedOutAlarm Alarm Name
-    Value: !Ref GitHubSMTimedOutAlarm
+  # GitHubSMTimedOutAlarmName:
+  #   Description: GitHubSMTimedOutAlarm Alarm Name
+  #   Value: !Ref GitHubSMTimedOutAlarm
 
-  GitHubSMTimedOutAlarmARN:
-    Description: GitHubSMTimedOutAlarm Alarm ARN
-    Value: !GetAtt  GitHubSMTimedOutAlarm.Arn
-    Export:
-      Name: !Sub ${ServiceName}-GitHubSMTimedOutAlarmARN
+  # GitHubSMTimedOutAlarmARN:
+  #   Description: GitHubSMTimedOutAlarm Alarm ARN
+  #   Value: !GetAtt  GitHubSMTimedOutAlarm.Arn
+  #   Export:
+  #     Name: !Sub ${ServiceName}-GitHubSMTimedOutAlarmARN
 
-  GitHubSMThrottleAlarmName:
-    Description: GitHubSMThrottleAlarm Alarm Name
-    Value: !Ref GitHubSMThrottleAlarm
+  # GitHubSMThrottleAlarmName:
+  #   Description: GitHubSMThrottleAlarm Alarm Name
+  #   Value: !Ref GitHubSMThrottleAlarm
 
-  GitHubSMThrottleAlarmARN:
-    Description: GitHubSMThrottleAlarm Alarm ARN
-    Value: !GetAtt  GitHubSMThrottleAlarm.Arn
-    Export:
-      Name: !Sub ${ServiceName}-GitHubSMThrottleAlarmARN
+  # GitHubSMThrottleAlarmARN:
+  #   Description: GitHubSMThrottleAlarm Alarm ARN
+  #   Value: !GetAtt  GitHubSMThrottleAlarm.Arn
+  #   Export:
+  #     Name: !Sub ${ServiceName}-GitHubSMThrottleAlarmARN
 
-  GitHubSMFailureAlarmName:
-    Description: GitHubSMFailureAlarm Alarm Name
-    Value: !Ref GitHubSMFailureAlarm
+  # GitHubSMFailureAlarmName:
+  #   Description: GitHubSMFailureAlarm Alarm Name
+  #   Value: !Ref GitHubSMFailureAlarm
 
-  GitHubSMFailureAlarmARN:
-    Description: GitHubSMFailureAlarm Alarm ARN
-    Value: !GetAtt  GitHubSMFailureAlarm.Arn
-    Export:
-      Name: !Sub ${ServiceName}-GitHubSMFailureAlarmARN
+  # GitHubSMFailureAlarmARN:
+  #   Description: GitHubSMFailureAlarm Alarm ARN
+  #   Value: !GetAtt  GitHubSMFailureAlarm.Arn
+  #   Export:
+  #     Name: !Sub ${ServiceName}-GitHubSMFailureAlarmARN
 
-  GitLabSMTimedOutAlarmName:
-    Description: GitLabSMTimedOutAlarm Alarm Name
-    Value: !Ref GitLabSMTimedOutAlarm
+  # GitLabSMTimedOutAlarmName:
+  #   Description: GitLabSMTimedOutAlarm Alarm Name
+  #   Value: !Ref GitLabSMTimedOutAlarm
 
-  GitLabSMTimedOutAlarmARN:
-    Description: GitLabSMTimedOutAlarm Alarm ARN
-    Value: !GetAtt  GitLabSMTimedOutAlarm.Arn
-    Export:
-      Name: !Sub ${ServiceName}-GitLabSMTimedOutAlarmARN
+  # GitLabSMTimedOutAlarmARN:
+  #   Description: GitLabSMTimedOutAlarm Alarm ARN
+  #   Value: !GetAtt  GitLabSMTimedOutAlarm.Arn
+  #   Export:
+  #     Name: !Sub ${ServiceName}-GitLabSMTimedOutAlarmARN
 
-  GitLabSMThrottleAlarmName:
-    Description: GitLabSMThrottleAlarm Alarm Name
-    Value: !Ref GitLabSMThrottleAlarm
+  # GitLabSMThrottleAlarmName:
+  #   Description: GitLabSMThrottleAlarm Alarm Name
+  #   Value: !Ref GitLabSMThrottleAlarm
 
-  GitLabSMThrottleAlarmARN:
-    Description: GitLabSMThrottleAlarm Alarm ARN
-    Value: !GetAtt  GitLabSMThrottleAlarm.Arn
-    Export:
-      Name: !Sub ${ServiceName}-GitLabSMThrottleAlarmARN
+  # GitLabSMThrottleAlarmARN:
+  #   Description: GitLabSMThrottleAlarm Alarm ARN
+  #   Value: !GetAtt  GitLabSMThrottleAlarm.Arn
+  #   Export:
+  #     Name: !Sub ${ServiceName}-GitLabSMThrottleAlarmARN
 
-  GitLabSMFailureAlarmName:
-    Description: GitLabSMFailureAlarm Alarm Name
-    Value: !Ref GitLabSMFailureAlarm
+  # GitLabSMFailureAlarmName:
+  #   Description: GitLabSMFailureAlarm Alarm Name
+  #   Value: !Ref GitLabSMFailureAlarm
 
-  GitLabSMFailureAlarmARN:
-    Description: GitLabSMFailureAlarm Alarm ARN
-    Value: !GetAtt  GitLabSMFailureAlarm.Arn
-    Export:
-      Name: !Sub ${ServiceName}-GitLabSMFailureAlarmARN
+  # GitLabSMFailureAlarmARN:
+    # Description: GitLabSMFailureAlarm Alarm ARN
+    # Value: !GetAtt  GitLabSMFailureAlarm.Arn
+    # Export:
+    #   Name: !Sub ${ServiceName}-GitLabSMFailureAlarmARN
 
   PubXMLMonitorARN:
     Description: Arn for PubXMLMonitor Lambda

@@ -61,12 +61,12 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
-# $null = $modulesToInstall.Add(([PSCustomObject]@{
-#             ModuleName    = 'AWSLambdaPSCore'
-#             ModuleVersion = '3.0.0.0'
-#             BucketName    = 'PSGallery'
-#             KeyPrefix     = ''
-#         }))
+$null = $modulesToInstall.Add(([PSCustomObject]@{
+            ModuleName    = 'AWSLambdaPSCore'
+            ModuleVersion = '3.0.1.0'
+            BucketName    = 'PSGallery'
+            KeyPrefix     = ''
+        }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.Common'
             ModuleVersion = '4.1.275'
@@ -81,6 +81,12 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.S3'
+            ModuleVersion = '4.1.275'
+            BucketName    = 'PSGallery'
+            KeyPrefix     = ''
+        }))
+$null = $modulesToInstall.Add(([PSCustomObject]@{
+            ModuleName    = 'AWS.Tools.SimpleSystemsManagement'
             ModuleVersion = '4.1.275'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
