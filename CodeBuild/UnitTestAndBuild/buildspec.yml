@@ -53,7 +53,7 @@ phases:
     commands:
 
       # Running Invoke-Build against each PowerShell AWS Lambda Function
-      - pwsh -command 'Get-ChildItem -Path './lambdafunctions/PowerShell' -Filter '*.build.ps1' -File -Recurse | ForEach-Object {Invoke-Build -File $_.FullName}'
+      # - pwsh -command 'Get-ChildItem -Path './lambdafunctions/PowerShell' -Filter '*.build.ps1' -File -Recurse | ForEach-Object {Invoke-Build -File $_.FullName}'
 
       # Publish CloudFormation templates to S3
       - pwsh -command 'Import-Module -Name "AWS.Tools.Common";Import-Module -Name "AWS.Tools.S3"; & ./CodeBuild/UnitTestAndBuild/Publish-CFNTemplatesToS3.ps1'

@@ -22,7 +22,7 @@
 #>
 
 
-$galleryDownload = $false
+$galleryDownload = $true
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -33,19 +33,19 @@ $VerbosePreference = 'SilentlyContinue'
 $modulesToInstall = [System.Collections.ArrayList]::new()
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Pester'
-            ModuleVersion = '5.3.1'
+            ModuleVersion = '5.4.0'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
-            ModuleVersion = '5.9.7'
+            ModuleVersion = '5.10.2'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PSScriptAnalyzer'
-            ModuleVersion = '1.20.0'
+            ModuleVersion = '1.21.0'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
@@ -56,65 +56,65 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'AWSLambdaPSCore'
-            ModuleVersion = '3.0.0.0'
+            ModuleName    = 'PoshGram'
+            ModuleVersion = '2.3.0'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
+# $null = $modulesToInstall.Add(([PSCustomObject]@{
+#             ModuleName    = 'AWSLambdaPSCore'
+#             ModuleVersion = '3.0.0.0'
+#             BucketName    = 'ps-invoke-modules'
+#             KeyPrefix     = ''
+#         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.Common'
-            ModuleVersion = '4.1.30.0'
+            ModuleVersion = '4.1.275'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.CloudFormation'
-            ModuleVersion = '4.1.30.0'
+            ModuleVersion = '4.1.275'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.S3'
-            ModuleVersion = '4.1.30.0'
+            ModuleVersion = '4.1.275'
             BucketName    = 'ps-invoke-modules'
             KeyPrefix     = ''
         }))
-$null = $modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'AWS.Tools.SecretsManager'
-            ModuleVersion = '4.1.30.0'
-            BucketName    = 'ps-invoke-modules'
-            KeyPrefix     = ''
-        }))
-$null = $modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'AWS.Tools.SQS'
-            ModuleVersion = '4.1.30.0'
-            BucketName    = 'ps-invoke-modules'
-            KeyPrefix     = ''
-        }))
-$null = $modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'AWS.Tools.StepFunctions'
-            ModuleVersion = '4.1.30.0'
-            BucketName    = 'ps-invoke-modules'
-            KeyPrefix     = ''
-        }))
-$null = $modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'AWS.Tools.CloudWatch'
-            ModuleVersion = '4.1.30.0'
-            BucketName    = 'ps-invoke-modules'
-            KeyPrefix     = ''
-        }))
-$null = $modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'Convert'
-            ModuleVersion = '0.6.0'
-            BucketName    = 'ps-invoke-modules'
-            KeyPrefix     = ''
-        }))
-$null = $modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'PoshGram'
-            ModuleVersion = '2.0.0'
-            BucketName    = 'ps-invoke-modules'
-            KeyPrefix     = ''
-        }))
+# $null = $modulesToInstall.Add(([PSCustomObject]@{
+#             ModuleName    = 'AWS.Tools.SecretsManager'
+#             ModuleVersion = '4.1.30.0'
+#             BucketName    = 'ps-invoke-modules'
+#             KeyPrefix     = ''
+#         }))
+# $null = $modulesToInstall.Add(([PSCustomObject]@{
+#             ModuleName    = 'AWS.Tools.SQS'
+#             ModuleVersion = '4.1.30.0'
+#             BucketName    = 'ps-invoke-modules'
+#             KeyPrefix     = ''
+#         }))
+# $null = $modulesToInstall.Add(([PSCustomObject]@{
+#             ModuleName    = 'AWS.Tools.StepFunctions'
+#             ModuleVersion = '4.1.30.0'
+#             BucketName    = 'ps-invoke-modules'
+#             KeyPrefix     = ''
+#         }))
+# $null = $modulesToInstall.Add(([PSCustomObject]@{
+#             ModuleName    = 'AWS.Tools.CloudWatch'
+#             ModuleVersion = '4.1.30.0'
+#             BucketName    = 'ps-invoke-modules'
+#             KeyPrefix     = ''
+#         }))
+# $null = $modulesToInstall.Add(([PSCustomObject]@{
+#             ModuleName    = 'Convert'
+#             ModuleVersion = '0.6.0'
+#             BucketName    = 'ps-invoke-modules'
+#             KeyPrefix     = ''
+#         }))
 
 if ($galleryDownload -eq $false) {
 
