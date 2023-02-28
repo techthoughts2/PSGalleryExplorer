@@ -20,7 +20,7 @@ Resources:
   CloudFrontS3BucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
-      Bucket: Ref PubXMLData
+      Bucket: !Ref PubXMLData
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
