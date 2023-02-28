@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       - *What does this mean?*
         - Older versions of PSGalleryExplorer (prior to `v2.0.0`) will no longer be able to fetch module project information due to the new CDN endpoint. If you're using an older version, please upgrade to v2.0.0 or later to continue using PSGalleryExplorer.
   - Convert `1.2.0` or higher now required
+  - Added additional corps to list
+  - Added additional regulars to list
 - Build Updates:
   - Moved `CHANGELOG.md` from `.github` directory to `docs` directory
   - Updated VSCode `tasks.json`
