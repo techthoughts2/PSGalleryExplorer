@@ -268,7 +268,7 @@ Resources:
   CodeBuildRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub '${ServiceName}-CodeBuildRoleRole'
+      RoleName: !Sub '${ServiceName}-CodeBuildRole'
       Tags:
         - Key: ServiceName
           Value: !Ref ServiceName

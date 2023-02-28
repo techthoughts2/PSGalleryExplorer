@@ -1,10 +1,9 @@
 ---
-AWSTemplateFormatVersion: "2010-09-09"
-Description: "MANUAL DEPLOYMENT: PS CodeBuild Stack - PSGalleryExplorer"
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'MANUAL DEPLOYMENT: PS CodeBuild Stack - PSGalleryExplorer'
 
 Parameters:
-
-  ProjectName:
+  ServiceName:
     Description: name of PS Module. Used as project tag value for all resources.
     Type: String
     Default: PSGalleryExplorer
@@ -25,11 +24,11 @@ Parameters:
 
   CodeBuildBadgeEnabled:
     Type: String
-    Default: "true"
+    Default: 'true'
     Description: Selects whether to enable CodeBuild Build Badges.
     AllowedValues:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
 
   CodeBuildTimeoutInMinutes:
     Type: Number
@@ -75,11 +74,11 @@ Parameters:
 
   DeployEmailNotifications:
     Type: String
-    Default: "no"
-    Description: "CodeBuild will send email notifications of state changes."
+    Default: 'no'
+    Description: 'CodeBuild will send email notifications of state changes.'
     AllowedValues:
-      - "yes"
-      - "no"
+      - 'yes'
+      - 'no'
 
   EmailForNotifications:
     Type: String
@@ -91,13 +90,23 @@ Parameters:
     Type: String
     Description: Policy ARN for for S3 modules bucket access
 
+  ResourceType:
+    Type: String
+    Default: prod
+    Description: Determine the type of resource that will be deployed
+    AllowedValues:
+      - core
+      - dev
+      - test
+      - prod
+
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
           default: Project and Tagging
         Parameters:
-          - ProjectName
+          - ServiceName
           - ProjectDescription
       - Label:
           default: Specify GitHub Repository and Branch
@@ -118,7 +127,7 @@ Metadata:
           - DeployEmailNotifications
           - EmailForNotifications
     ParameterLabels:
-      ProjectName:
+      ServiceName:
         default: Module Name
       ProjectDescription:
         default: Module Description
@@ -144,9 +153,8 @@ Metadata:
 #Mappings:
 
 Conditions:
-
   DeployEmailNotificationsCondition:
-    !Equals [!Ref DeployEmailNotifications, "yes"]
+    !Equals [!Ref DeployEmailNotifications, 'yes']
   # PSWindows: !Equals [!Ref BuildSpecFile, "buildspec_powershell_windows.yml"]
   # PWSHWindows: !Equals [!Ref BuildSpecFile, "buildspec_pwsh_windows.yml"]
   # WindowsImage:
@@ -157,14 +165,21 @@ Conditions:
   #WindowsImage: !Equals [!Ref CodeBuildEnvironment, "WINDOWS_CONTAINER"]
 
 Resources:
-
   # The IAM Role CodeBuild will run the container as
   # # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
-  CodeBuildServiceRole:
+  CodeBuildRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Sub '${ServiceName}-CodeBuildRole'
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
@@ -182,7 +197,7 @@ Resources:
       Policies:
         - PolicyName: CBCloudWatchPublishing
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
@@ -190,10 +205,16 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource:
-                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/PSGalleryExplorer*"
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/PSGalleryExplorer*'
+                  - !GetAtt ECBLpwshLogGroup.Arn
+                  - !GetAtt MCBLpwshLogGroup.Arn
+                  - !GetAtt ECBWpwshLogGroup.Arn
+                  - !GetAtt MCBWpwshLogGroup.Arn
+                  - !GetAtt ECBWPowerShellLogGroup.Arn
+                  - !GetAtt MCBWPowerShellLogGroup.Arn
         - PolicyName: CBS3ArtifactAccess
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
@@ -201,7 +222,7 @@ Resources:
                   - s3:GetObject
                   - s3:GetObjectVersion
                 Resource:
-                  - !Sub arn:aws:s3:::codepipeline-${AWS::Region}-*
+                  - !Sub arn:${AWS::Partition}:s3:::codepipeline-${AWS::Region}-*
         - PolicyName: CBReportAccess
           PolicyDocument:
             Version: '2012-10-17'
@@ -217,7 +238,25 @@ Resources:
                   - codebuild:BatchPutCodeCoverages
                   - codebuild:BatchPutTestCases
                 Resource:
-                  - !Sub 'arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:report-group/PSGalleryExplorer*'
+                  - !Sub 'arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:report-group/PSGalleryExplorer*'
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  MCBWPowerShellLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Properties:
+      # DataProtectionPolicy: Json
+      # KmsKeyId: String
+      LogGroupName: !Sub ${ServiceName}-MCBWPowerShellLogGroup
+      RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
@@ -243,12 +282,12 @@ Resources:
         # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
         Type: WINDOWS_SERVER_2019_CONTAINER
-        Image: aws/codebuild/windows-base:2019-1.0
+        Image: aws/codebuild/windows-base:2019-2.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something
       # LogsConfig:
-      Name: !Sub '${ProjectName}-main-windows-powershell'
+      Name: !Sub '${ServiceName}-main-windows-powershell'
       # QueuedTimeoutInMinutes: Integer
       # SecondaryArtifacts:
       #   - Artifacts
@@ -256,7 +295,12 @@ Resources:
       #   - Source
       # SecondarySourceVersions:
       #   - ProjectSourceVersion
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      LogsConfig:
+        CloudWatchLogs:
+          GroupName: !Ref MCBWPowerShellLogGroup
+          Status: ENABLED
+          # StreamName: String
+      ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
         Auth:
           Type: OAUTH
@@ -283,21 +327,41 @@ Resources:
             - Type: HEAD_REF
               Pattern: ^refs/heads/main$
             - Type: FILE_PATH
-              Pattern: "^README.*"
+              Pattern: '^README.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^CloudFormation.*"
+              Pattern: '^CloudFormation.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^lambdafunctions.*"
+              Pattern: '^lambdafunctions.*'
               ExcludeMatchedPattern: true
       # Visibility: String
       # VpcConfig:
       Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        - Key: ServiceName
+          Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  ECBWPowerShellLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Properties:
+      # DataProtectionPolicy: Json
+      # KmsKeyId: String
+      LogGroupName: !Sub ${ServiceName}-ECBWPowerShellLogGroup
+      RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
@@ -323,12 +387,12 @@ Resources:
         # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
         Type: WINDOWS_SERVER_2019_CONTAINER
-        Image: aws/codebuild/windows-base:2019-1.0
+        Image: aws/codebuild/windows-base:2019-2.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something
       # LogsConfig:
-      Name: !Sub '${ProjectName}-Enhancements-windows-powershell'
+      Name: !Sub '${ServiceName}-Enhancements-windows-powershell'
       # QueuedTimeoutInMinutes: Integer
       # SecondaryArtifacts:
       #   - Artifacts
@@ -336,7 +400,12 @@ Resources:
       #   - Source
       # SecondarySourceVersions:
       #   - ProjectSourceVersion
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      LogsConfig:
+        CloudWatchLogs:
+          GroupName: !Ref ECBWPowerShellLogGroup
+          Status: ENABLED
+          # StreamName: String
+      ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
         Auth:
           Type: OAUTH
@@ -363,22 +432,41 @@ Resources:
             - Type: HEAD_REF
               Pattern: ^refs/heads/Enhancements$
             - Type: FILE_PATH
-              Pattern: "^README.*"
+              Pattern: '^README.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^CloudFormation.*"
+              Pattern: '^CloudFormation.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^lambdafunctions.*"
+              Pattern: '^lambdafunctions.*'
               ExcludeMatchedPattern: true
       # Visibility: String
       # VpcConfig:
       Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        - Key: ServiceName
+          Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  MCBWpwshLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Properties:
+      # DataProtectionPolicy: Json
+      # KmsKeyId: String
+      LogGroupName: !Sub ${ServiceName}-MCBWpwshLogGroup
+      RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
@@ -404,12 +492,12 @@ Resources:
         # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
         Type: WINDOWS_SERVER_2019_CONTAINER
-        Image: aws/codebuild/windows-base:2019-1.0
+        Image: aws/codebuild/windows-base:2019-2.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something
       # LogsConfig:
-      Name: !Sub '${ProjectName}-main-windows-pwsh'
+      Name: !Sub '${ServiceName}-main-windows-pwsh'
       # QueuedTimeoutInMinutes: Integer
       # SecondaryArtifacts:
       #   - Artifacts
@@ -417,7 +505,12 @@ Resources:
       #   - Source
       # SecondarySourceVersions:
       #   - ProjectSourceVersion
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      LogsConfig:
+        CloudWatchLogs:
+          GroupName: !Ref MCBWpwshLogGroup
+          Status: ENABLED
+          # StreamName: String
+      ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
         Auth:
           Type: OAUTH
@@ -444,22 +537,41 @@ Resources:
             - Type: HEAD_REF
               Pattern: ^refs/heads/main$
             - Type: FILE_PATH
-              Pattern: "^README.*"
+              Pattern: '^README.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^CloudFormation.*"
+              Pattern: '^CloudFormation.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^lambdafunctions.*"
+              Pattern: '^lambdafunctions.*'
               ExcludeMatchedPattern: true
       # Visibility: String
       # VpcConfig:
       Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        - Key: ServiceName
+          Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  ECBWpwshLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Properties:
+      # DataProtectionPolicy: Json
+      # KmsKeyId: String
+      LogGroupName: !Sub ${ServiceName}-ECBWpwshLogGroup
+      RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
@@ -485,12 +597,12 @@ Resources:
         # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
         Type: WINDOWS_SERVER_2019_CONTAINER
-        Image: aws/codebuild/windows-base:2019-1.0
+        Image: aws/codebuild/windows-base:2019-2.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something
       # LogsConfig:
-      Name: !Sub '${ProjectName}-Enhancements-windows-pwsh'
+      Name: !Sub '${ServiceName}-Enhancements-windows-pwsh'
       # QueuedTimeoutInMinutes: Integer
       # SecondaryArtifacts:
       #   - Artifacts
@@ -498,7 +610,12 @@ Resources:
       #   - Source
       # SecondarySourceVersions:
       #   - ProjectSourceVersion
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      LogsConfig:
+        CloudWatchLogs:
+          GroupName: !Ref ECBWpwshLogGroup
+          Status: ENABLED
+          # StreamName: String
+      ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
         Auth:
           Type: OAUTH
@@ -525,22 +642,41 @@ Resources:
             - Type: HEAD_REF
               Pattern: ^refs/heads/Enhancements$
             - Type: FILE_PATH
-              Pattern: "^README.*"
+              Pattern: '^README.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^CloudFormation.*"
+              Pattern: '^CloudFormation.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^lambdafunctions.*"
+              Pattern: '^lambdafunctions.*'
               ExcludeMatchedPattern: true
       # Visibility: String
       # VpcConfig:
       Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        - Key: ServiceName
+          Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  MCBLpwshLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Properties:
+      # DataProtectionPolicy: Json
+      # KmsKeyId: String
+      LogGroupName: !Sub ${ServiceName}-MCBLpwshLogGroup
+      RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
@@ -566,12 +702,12 @@ Resources:
         #ComputeType: !Ref CodeBuildComputeType
         ComputeType: BUILD_GENERAL1_SMALL
         Type: LINUX_CONTAINER
-        Image: aws/codebuild/standard:5.0
+        Image: aws/codebuild/standard:6.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something
       # LogsConfig:
-      Name: !Sub '${ProjectName}-main-linux-pwsh'
+      Name: !Sub '${ServiceName}-main-linux-pwsh'
       # QueuedTimeoutInMinutes: Integer
       # SecondaryArtifacts:
       #   - Artifacts
@@ -579,7 +715,12 @@ Resources:
       #   - Source
       # SecondarySourceVersions:
       #   - ProjectSourceVersion
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      LogsConfig:
+        CloudWatchLogs:
+          GroupName: !Ref MCBLpwshLogGroup
+          Status: ENABLED
+          # StreamName: String
+      ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
         Auth:
           Type: OAUTH
@@ -606,22 +747,41 @@ Resources:
             - Type: HEAD_REF
               Pattern: ^refs/heads/main$
             - Type: FILE_PATH
-              Pattern: "^README.*"
+              Pattern: '^README.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^CloudFormation.*"
+              Pattern: '^CloudFormation.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^lambdafunctions.*"
+              Pattern: '^lambdafunctions.*'
               ExcludeMatchedPattern: true
       # Visibility: String
       # VpcConfig:
       Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        - Key: ServiceName
+          Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  ECBLpwshLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Properties:
+      # DataProtectionPolicy: Json
+      # KmsKeyId: String
+      LogGroupName: !Sub ${ServiceName}-ECBLpwshLogGroup
+      RetentionInDays: 7
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
   # The CodeBuild Project configuration
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
@@ -647,12 +807,12 @@ Resources:
         #ComputeType: !Ref CodeBuildComputeType
         ComputeType: BUILD_GENERAL1_SMALL
         Type: LINUX_CONTAINER
-        Image: aws/codebuild/standard:5.0
+        Image: aws/codebuild/standard:6.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something
       # LogsConfig:
-      Name: !Sub '${ProjectName}-Enhancements-linux-pwsh'
+      Name: !Sub '${ServiceName}-Enhancements-linux-pwsh'
       # QueuedTimeoutInMinutes: Integer
       # SecondaryArtifacts:
       #   - Artifacts
@@ -660,7 +820,12 @@ Resources:
       #   - Source
       # SecondarySourceVersions:
       #   - ProjectSourceVersion
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      LogsConfig:
+        CloudWatchLogs:
+          GroupName: !Ref ECBLpwshLogGroup
+          Status: ENABLED
+          # StreamName: String
+      ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
         Auth:
           Type: OAUTH
@@ -687,37 +852,40 @@ Resources:
             - Type: HEAD_REF
               Pattern: ^refs/heads/Enhancements$
             - Type: FILE_PATH
-              Pattern: "^README.*"
+              Pattern: '^README.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^CloudFormation.*"
+              Pattern: '^CloudFormation.*'
               ExcludeMatchedPattern: true
             - Type: FILE_PATH
-              Pattern: "^lambdafunctions.*"
+              Pattern: '^lambdafunctions.*'
               ExcludeMatchedPattern: true
       Tags:
-        - Key: Service
-          Value: !Ref ProjectName
+        - Key: ServiceName
+          Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
-
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
   # An SNS Topic used for CodeBuild status updates
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html
   SNSTopicForCodeBuildUpdates:
     Type: AWS::SNS::Topic
     Properties:
-    #   ContentBasedDeduplication: Boolean
-    #   DisplayName: String
-    #   FifoTopic: Boolean
-    #   KmsMasterKeyId: String
-    #   Subscription:
-    #     - Subscription
+      #   ContentBasedDeduplication: Boolean
+      #   DisplayName: String
+      #   FifoTopic: Boolean
+      #   KmsMasterKeyId: String
+      #   Subscription:
+      #     - Subscription
       Tags:
-          - Key: Service
-            Value: !Ref ProjectName
-          - Key: StackName
-            Value: !Ref AWS::StackName
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
   # The SNS Topic Policy
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html
@@ -726,7 +894,7 @@ Resources:
     Properties:
       PolicyDocument:
         Id: SNSTopicPolicy
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
           - Sid: AllowEvents
             Effect: Allow
@@ -750,45 +918,44 @@ Resources:
 
   # The CodeBuild event for status updates
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html
-  CodeBuildEventsRule:
-    Type: AWS::Events::Rule
-    Properties:
-      Description: Trigger notifications based on CodeBuild state changes
-      EventPattern:
-        source:
-          - aws.codebuild
-        detail-type:
-          - CodeBuild Build State Change
-        detail:
-          build-status:
-            - IN_PROGRESS
-            - SUCCEEDED
-            - FAILED
-            - STOPPED
-          project-name:
-            - !Ref MCBWPowerShell
-            - !Ref MCBWpwsh
-            - !Ref MCBLpwsh
-            - !Ref ECBWPowerShell
-            - !Ref ECBWpwsh
-            - !Ref ECBLpwsh
-      State: ENABLED
-      Targets:
-        - Arn: !Ref SNSTopicForCodeBuildUpdates
-          Id: !Sub "${AWS::StackName}"
-          InputTransformer:
-            InputTemplate: '"The PowerShell solution build for <projectname> is in state <status> at <at>."'
-            InputPathsMap:
-              projectname: "$.detail.project-name"
-              status: "$.detail.build-status"
-              at: "$.time"
-              account: "$.account"
+  # CodeBuildEventsRule:
+  #   Type: AWS::Events::Rule
+  #   Properties:
+  #     Description: Trigger notifications based on CodeBuild state changes
+  #     EventPattern:
+  #       source:
+  #         - aws.codebuild
+  #       detail-type:
+  #         - CodeBuild Build State Change
+  #       detail:
+  #         build-status:
+  #           - IN_PROGRESS
+  #           - SUCCEEDED
+  #           - FAILED
+  #           - STOPPED
+  #         project-name:
+  #           - !Ref MCBWPowerShell
+  #           - !Ref MCBWpwsh
+  #           - !Ref MCBLpwsh
+  #           - !Ref ECBWPowerShell
+  #           - !Ref ECBWpwsh
+  #           - !Ref ECBLpwsh
+  #     State: ENABLED
+  #     Targets:
+  #       - Arn: !Ref SNSTopicForCodeBuildUpdates
+  #         Id: !Sub '${AWS::StackName}'
+  #         InputTransformer:
+  #           InputTemplate: '"The PowerShell solution build for <ServiceName> is in state <status> at <at>."'
+  #           InputPathsMap:
+  #             projectname: '$.detail.project-name'
+  #             status: '$.detail.build-status'
+  #             at: '$.time'
+  #             account: '$.account'
 
 Outputs:
-
   CodeBuildRoleArn:
     Description: Arn of the CodeBuild IAM Role
-    Value: !GetAtt CodeBuildServiceRole.Arn
+    Value: !GetAtt CodeBuildRole.Arn
 
   SNSTopic:
     Description: The SNS Topic used for CodeBuild status updates
@@ -802,14 +969,7 @@ Outputs:
 
   MCBWPowerShellURL:
     Description: main Windows - Windows PowerShell CodeBuild URL
-    Value:
-      Fn::Join:
-        - ""
-        - - https://console.aws.amazon.com/codebuild/home?region=
-          - Ref: AWS::Region
-          - "#/projects/"
-          - Ref: MCBWPowerShell
-          - "/view"
+    Value: !Sub 'https://console.aws.amazon.com/codebuild/home?region=${AWS::Region}#/projects/${MCBWPowerShell}/view'
 
   MCBWpwshName:
     Description: The name of the main Windows - PowerShell CodeBuild Project.
@@ -817,14 +977,7 @@ Outputs:
 
   MCBWpwshURL:
     Description: main Windows - PowerShell CodeBuild URL
-    Value:
-      Fn::Join:
-        - ""
-        - - https://console.aws.amazon.com/codebuild/home?region=
-          - Ref: AWS::Region
-          - "#/projects/"
-          - Ref: MCBWpwsh
-          - "/view"
+    Value: !Sub 'https://console.aws.amazon.com/codebuild/home?region=${AWS::Region}#/projects/${MCBWpwsh}/view'
 
   MCBLpwshName:
     Description: The name of the main Linux - PowerShell CodeBuild Project.
@@ -832,14 +985,7 @@ Outputs:
 
   MCBLpwshURL:
     Description: main Linux - PowerShell CodeBuild URL
-    Value:
-      Fn::Join:
-        - ""
-        - - https://console.aws.amazon.com/codebuild/home?region=
-          - Ref: AWS::Region
-          - "#/projects/"
-          - Ref: MCBLpwsh
-          - "/view"
+    Value: !Sub 'https://console.aws.amazon.com/codebuild/home?region=${AWS::Region}#/projects/${MCBLpwsh}/view'
 
   # -------------------------------------------------------------
   # ENHANCEMENTS
@@ -849,14 +995,7 @@ Outputs:
 
   ECBWPowerShellURL:
     Description: Enhancements Windows - Windows PowerShell CodeBuild URL
-    Value:
-      Fn::Join:
-        - ""
-        - - https://console.aws.amazon.com/codebuild/home?region=
-          - Ref: AWS::Region
-          - "#/projects/"
-          - Ref: ECBWPowerShell
-          - "/view"
+    Value: !Sub 'https://console.aws.amazon.com/codebuild/home?region=${AWS::Region}#/projects/${ECBWPowerShell}/view'
 
   ECBWpwshName:
     Description: The name of the Enhancements Windows - PowerShell CodeBuild Project.
@@ -864,14 +1003,7 @@ Outputs:
 
   ECBWpwshURL:
     Description: Enhancements Windows - PowerShell CodeBuild URL
-    Value:
-      Fn::Join:
-        - ""
-        - - https://console.aws.amazon.com/codebuild/home?region=
-          - Ref: AWS::Region
-          - "#/projects/"
-          - Ref: ECBWpwsh
-          - "/view"
+    Value: !Sub 'https://console.aws.amazon.com/codebuild/home?region=${AWS::Region}#/projects/${ECBWpwsh}/view'
 
   ECBLpwshName:
     Description: The name of the Enhancements Linux - PowerShell CodeBuild Project.
@@ -879,12 +1011,6 @@ Outputs:
 
   ECBLpwshURL:
     Description: Enhancements Linux - PowerShell CodeBuild URL
-    Value:
-      Fn::Join:
-        - ""
-        - - https://console.aws.amazon.com/codebuild/home?region=
-          - Ref: AWS::Region
-          - "#/projects/"
-          - Ref: ECBLpwsh
-          - "/view"
+    Value: !Sub 'https://console.aws.amazon.com/codebuild/home?region=${AWS::Region}#/projects/${ECBLpwsh}/view'
+
   # -------------------------------------------------------------

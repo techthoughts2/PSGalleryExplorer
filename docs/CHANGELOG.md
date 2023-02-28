@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - PSScriptAnalyzer bumped from `1.20.0` to `1.21.0`
     - Convert bumped from `0.6.0` to `1.2.0`
     - Switched AWS module intall to use PSGallery
+    - Updated CodeBuild Linux image from `aws/codebuild/standard:5.0` to `aws/codebuild/standard:6.0`
+    - Updated CodeBuild Windows image from `aws/codebuild/windows-base:2019-1.0` to `aws/codebuild/windows-base:2019-2.0`
+    - Added log retention groups to all CodeBuild projects
 
 ## [1.0.2]
 
