@@ -96,7 +96,7 @@ $script:regulars = @(
 )
 
 $domain = 'cloudfront.net'
-$target = 'd12hk4x1u6kp21'
+$target = 'dfuu1myynofuh'
 Get-DataLocation
 $script:dataFileZip = 'PSGalleryExplorer.zip'
 $script:dataFile = 'PSGalleryExplorer.xml'

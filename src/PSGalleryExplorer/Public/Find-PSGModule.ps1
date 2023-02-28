@@ -190,8 +190,8 @@ function Find-PSGModule {
         #__________________________________________________________
         if ($ByRepoInfo) {
             Write-Verbose -Message 'ByRepoInfo'
-            $gitModules = $dataSet | Where-Object { $_.GitHubInfo.GitStatus -eq $true }
-            $find = $gitModules | Sort-Object -Property { [int]$_.GitHubInfo.$ByRepoInfo } -Descending | Select-Object -First $NumberToReturn
+            $gitModules = $dataSet | Where-Object { $_.ProjectInfo.GitStatus -eq $true }
+            $find = $gitModules | Sort-Object -Property { [int]$_.ProjectInfo.$ByRepoInfo } -Descending | Select-Object -First $NumberToReturn
         } #if_ByRepoInfo
         elseif ($ByDownloads) {
             Write-Verbose -Message 'ByDownloads'
@@ -204,8 +204,8 @@ function Find-PSGModule {
                     $find = $dataSet | Sort-Object -Property { [datetime]$_.AdditionalMetadata.updated } -Descending | Select-Object -First $NumberToReturn
                 }
                 'RepoUpdate' {
-                    $gitModules = $dataSet | Where-Object { $_.GitHubInfo.GitStatus -eq $true }
-                    $find = $gitModules | Sort-Object -Property { [datetime]$_.GitHubInfo.Updated } -Descending | Select-Object -First $NumberToReturn
+                    $gitModules = $dataSet | Where-Object { $_.ProjectInfo.GitStatus -eq $true }
+                    $find = $gitModules | Sort-Object -Property { [datetime]$_.ProjectInfo.Updated } -Descending | Select-Object -First $NumberToReturn
                 }
             }
         } #elseif_ByRecentUpdate
@@ -252,12 +252,12 @@ function Find-PSGModule {
         $metrics = @{
             Downloads  = $item.AdditionalMetadata.downloadCount
             LastUpdate = $item.AdditionalMetadata.lastUpdated
-            Star       = $item.GitHubInfo.StarCount
-            Sub        = $item.GitHubInfo.Subscribers
-            Watch      = $item.GitHubInfo.Watchers
-            Fork       = $item.GitHubInfo.Forks
-            Issues     = $item.GitHubInfo.Issues
-            RepoUpdate = $item.GitHubInfo.Updated
+            Star       = $item.ProjectInfo.StarCount
+            Sub        = $item.ProjectInfo.Subscribers
+            Watch      = $item.ProjectInfo.Watchers
+            Fork       = $item.ProjectInfo.Forks
+            Issues     = $item.ProjectInfo.Issues
+            RepoUpdate = $item.ProjectInfo.Updated
         }
         $item | Add-Member -NotePropertyMembers $metrics -TypeName Asset -Force
         $item.PSObject.TypeNames.Insert(0, 'PSGEFormat')

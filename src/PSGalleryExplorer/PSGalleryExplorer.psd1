@@ -12,7 +12,7 @@
     RootModule        = 'PSGalleryExplorer.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '1.0.2'
+    ModuleVersion     = '2.0.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -110,6 +110,7 @@
                 'gallery',
                 'github',
                 'gitlab',
+                'bitbucket',
                 'module',
                 'modules',
                 'powershell',
