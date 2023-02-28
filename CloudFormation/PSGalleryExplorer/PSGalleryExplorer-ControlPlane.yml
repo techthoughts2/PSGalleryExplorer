@@ -1,92 +1,12 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
 
-Description: 'PSGalleryExplorer: Control Plane'
+Description: 'AUTOMATED: PSGalleryExplorer: Control Plane'
 
 Parameters:
   ServiceName:
     Type: String
     Description: 'Name of the service that will be used to tag each resource.'
-
-  BucketName:
-    Type: String
-    Description: Hard coded S3 bucketname prefix
-
-  PSGalleryXMLKey:
-    Type: String
-    Description: S3 Key name for PSGallery XML data
-
-  GitXMLKey:
-    Type: String
-    Description: S3 Key name for GitHub XML data
-
-  PSGalleryExplorerXMLKey:
-    Type: String
-    Description: S3 Key name for final public PSGallery XML data
-
-  GitHubOauthSecret:
-    Type: String
-    Description: Name of the secret to be retrieved that contains the GitHub Oauth token
-
-  TelegramSecret:
-    Type: String
-    Description: Name of the secret to be retrieved that contains the GitHub Oauth token
-
-  LMFunctionS3KeyGalleryScanner:
-    Type: String
-    Description: S3 Key for the GalleryScanner Lambda function(s) zip file
-
-  LMFunctionHandlerGalleryScanner:
-    Type: String
-    Description: GalleryScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
-
-  LMFunctionS3KeyGCombine:
-    Type: String
-    Description: S3 Key for the GCombine Lambda function(s) zip file
-
-  LMFunctionHandlerGCombine:
-    Type: String
-    Description: GCombine Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
-
-  LMFunctionS3KeyGitHubScanner:
-    Type: String
-    Description: S3 Key for the GitHubScanner Lambda function(s) zip file
-
-  LMFunctionHandlerGitHubScanner:
-    Type: String
-    Description: GitHubScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
-
-  LMFunctionS3KeyGitHubSMScanner:
-    Type: String
-    Description: S3 Key for the GitHubSMScanner Lambda function(s) zip file
-
-  LMFunctionHandlerGitHubSMScanner:
-    Type: String
-    Description: GitHubSMScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
-
-  LMFunctionS3KeyGitLabScanner:
-    Type: String
-    Description: S3 Key for the GitLabScanner Lambda function(s) zip file
-
-  LMFunctionHandlerGitLabScanner:
-    Type: String
-    Description: GitLabScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
-
-  LMFunctionS3KeyGitLabSMScanner:
-    Type: String
-    Description: S3 Key for the GitLabSMScanner Lambda function(s) zip file
-
-  LMFunctionHandlerGitLabSMScanner:
-    Type: String
-    Description: GitLabSMScanner Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
-
-  LMFunctionS3KeyPubXMLPopulator:
-    Type: String
-    Description: S3 Key for the PubXMLPopulator Lambda function(s) zip file
-
-  LMFunctionHandlerPubXMLPopulator:
-    Type: String
-    Description: PubXMLPopulator Lambda HANDLER provided by New-AWSPowerShellLambdaPackage during build
 
   LMFunctionS3KeyPubXMLMonitor:
     Type: String
@@ -108,6 +28,8 @@ Resources:
   # Deploys the s3 buckets used for the PSGalleryExplorer project
   PSGES3Buckets:
     Type: AWS::CloudFormation::Stack
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       TemplateURL: !Sub
         - 'https://${ArtifactS3Bucket}.s3.amazonaws.com/${ArtifactS3KeyPrefix}/${FileName}'
@@ -118,48 +40,7 @@ Resources:
       TimeoutInMinutes: 5 #make sure it can actually complete in this time period
       Parameters: #much match the parameters of nested template
         ServiceName: !Ref ServiceName
-        BucketName: !Ref BucketName
-      Tags:
-        - Key: ServiceName
-          Value: !Ref ServiceName
-        - Key: StackName
-          Value: !Ref AWS::StackName
-
-  # Deploys the serverless logic solution for PSGalleryExplorer data gathering
-  PSGE:
-    Type: AWS::CloudFormation::Stack
-    DependsOn: PSGES3Buckets
-    Properties:
-      TemplateURL: !Sub
-        - 'https://${ArtifactS3Bucket}.s3.amazonaws.com/${ArtifactS3KeyPrefix}/${FileName}'
-        - #AWSRegion: !Ref "AWS::Region"
-          ArtifactS3Bucket: !Ref ArtifactS3Bucket
-          ArtifactS3KeyPrefix: !Ref ArtifactS3KeyPrefix
-          FileName: CloudFormation/PSGalleryExplorer/ChildTemplates/PSGE.yml
-      TimeoutInMinutes: 5 #make sure it can actually complete in this time period
-      Parameters: #much match the parameters of nested template
-        ServiceName: !Ref ServiceName
-        BucketName: !Ref BucketName
-        PSGalleryXMLKey: !Ref PSGalleryXMLKey
-        GitXMLKey: !Ref GitXMLKey
-        PSGalleryExplorerXMLKey: !Ref PSGalleryExplorerXMLKey
-        GitHubOauthSecret: !Ref GitHubOauthSecret
-        TelegramSecret: !Ref TelegramSecret
-        LambdaS3BucketName: !Ref ArtifactS3Bucket
-        LMFunctionS3KeyGalleryScanner: !Ref LMFunctionS3KeyGalleryScanner
-        LMFunctionHandlerGalleryScanner: !Ref LMFunctionHandlerGalleryScanner
-        LMFunctionS3KeyGCombine: !Ref LMFunctionS3KeyGCombine
-        LMFunctionHandlerGCombine: !Ref LMFunctionHandlerGCombine
-        LMFunctionS3KeyGitHubScanner: !Ref LMFunctionS3KeyGitHubScanner
-        LMFunctionHandlerGitHubScanner: !Ref LMFunctionHandlerGitHubScanner
-        LMFunctionS3KeyGitHubSMScanner: !Ref LMFunctionS3KeyGitHubSMScanner
-        LMFunctionHandlerGitHubSMScanner: !Ref LMFunctionHandlerGitHubSMScanner
-        LMFunctionS3KeyGitLabScanner: !Ref LMFunctionS3KeyGitLabScanner
-        LMFunctionHandlerGitLabScanner: !Ref LMFunctionHandlerGitLabScanner
-        LMFunctionS3KeyGitLabSMScanner: !Ref LMFunctionS3KeyGitLabSMScanner
-        LMFunctionHandlerGitLabSMScanner: !Ref LMFunctionHandlerGitLabSMScanner
-        LMFunctionS3KeyPubXMLPopulator: !Ref LMFunctionS3KeyPubXMLPopulator
-        LMFunctionHandlerPubXMLPopulator: !Ref LMFunctionHandlerPubXMLPopulator
+        ResourceType: prod
       Tags:
         - Key: ServiceName
           Value: !Ref ServiceName
@@ -169,7 +50,9 @@ Resources:
   # Deploys the alarms used for the PSGalleryExplorer project
   PSGEAlarms:
     Type: AWS::CloudFormation::Stack
-    DependsOn: PSGE
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    DependsOn: PSGES3Buckets
     Properties:
       TemplateURL: !Sub
         - 'https://${ArtifactS3Bucket}.s3.amazonaws.com/${ArtifactS3KeyPrefix}/${FileName}'
