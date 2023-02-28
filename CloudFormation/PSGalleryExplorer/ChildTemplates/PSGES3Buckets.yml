@@ -17,28 +17,28 @@ Parameters:
       - prod
 
 Resources:
-  CloudFrontS3BucketPolicy:
-    Type: 'AWS::S3::BucketPolicy'
-    Properties:
-      Bucket: Ref PubXMLData
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: 'AllowCloudFrontServicePrincipalReadOnly'
-            Effect: 'Allow'
-            Principal:
-              Service: 'cloudfront.amazonaws.com'
-            Action: 's3:GetObject'
-            Resource: !Sub 'arn:${AWS::Partition}:s3:::${PubXMLData}/*'
-            Condition:
-              StringEquals:
-                'AWS:SourceArn': !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${PSGECloudFrontDistribution}'
-          # - Sid: 'AllowLegacyOAIReadOnly'
-          #   Effect: 'Allow'
-          #   Principal:
-          #     AWS: !Sub 'arn:${AWS::Partition}:iam::cloudfront:user/CloudFront Origin Access Identity ${PSGECloudFrontOriginAccessIdentity}'
-          #   Action: 's3:GetObject'
-          #   Resource: !Sub 'arn:${AWS::Partition}:s3:::${PubXMLData}/*'
+  # CloudFrontS3BucketPolicy:
+  #   Type: 'AWS::S3::BucketPolicy'
+  #   Properties:
+  #     Bucket: Ref PubXMLData
+  #     PolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Sid: 'AllowCloudFrontServicePrincipalReadOnly'
+  #           Effect: 'Allow'
+  #           Principal:
+  #             Service: 'cloudfront.amazonaws.com'
+  #           Action: 's3:GetObject'
+  #           Resource: !Sub 'arn:${AWS::Partition}:s3:::${PubXMLData}/*'
+  #           Condition:
+  #             StringEquals:
+  #               'AWS:SourceArn': !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${PSGECloudFrontDistribution}'
+  #         # - Sid: 'AllowLegacyOAIReadOnly'
+  #         #   Effect: 'Allow'
+  #         #   Principal:
+  #         #     AWS: !Sub 'arn:${AWS::Partition}:iam::cloudfront:user/CloudFront Origin Access Identity ${PSGECloudFrontOriginAccessIdentity}'
+  #         #   Action: 's3:GetObject'
+  #         #   Resource: !Sub 'arn:${AWS::Partition}:s3:::${PubXMLData}/*'
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
   # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
@@ -236,92 +236,92 @@ Resources:
   # https://github.com/aws-samples/cloudfront-authorization-at-edge/blob/master/template.yaml
   # https://hackernoon.com/how-to-configure-cloudfront-using-cloudformation-template-2c263u56
   # https://hayao-k.dev/migrating-cloudfront-oai-to-oac-using-cloudformation
-  PSGECloudFrontDistribution:
-    Type: AWS::CloudFront::Distribution
-    Properties:
-      DistributionConfig:
-        # Aliases:
-        #   - String
-        # CacheBehaviors:
-        #   - CacheBehavior
-        # CNAMEs:
-        #   - String
-        Comment: 'PSGalleryExplorer CloudFront for PowerShell Cloud XML'
-        # ContinuousDeploymentPolicyId: String
-        # CustomErrorResponses:
-        #   - ErrorCode: 403 # not found
-        #     ResponseCode: 404
-        #     ResponsePagePath: "/index.html"
-        # CustomOrigin:
-        #   LegacyCustomOrigin
-        DefaultCacheBehavior:
-          AllowedMethods:
-            - GET
-            - HEAD
-            # - OPTIONS
-          CachedMethods:
-            - GET
-            - HEAD
-            # - OPTIONS
-          # CachePolicyId: String
-          Compress: true
-          DefaultTTL: 3600 # in seconds
-          # FieldLevelEncryptionId: String
-          ForwardedValues:
-            Cookies:
-              Forward: none
-            QueryString: false
-          # FunctionAssociations:
-          #   - FunctionAssociation
-          # LambdaFunctionAssociations:
-          #   - LambdaFunctionAssociation
-          MaxTTL: 86400 # in seconds
-          MinTTL: 60 # in seconds
-          # OriginRequestPolicyId: String
-          # RealtimeLogConfigArn: String
-          # ResponseHeadersPolicyId: String
-          # SmoothStreaming: Boolean
-          TargetOriginId: s3origin
-          # TrustedKeyGroups:
-          #   - String
-          # TrustedSigners:
-          #   - String
-          ViewerProtocolPolicy: 'https-only'
-        # DefaultRootObject: 'index.html'
-        Enabled: true
-        HttpVersion: http2
-        # IPV6Enabled: Boolean
-        Logging:
-          Bucket: !Sub ${PSGECloudFrontLogBucket}.s3.amazonaws.com
-          # IncludeCookies: Boolean
-          Prefix: pwshcloudcommands
-        # OriginGroups:
-        #   OriginGroups
-        Origins:
-          - Id: S3Origin
-            DomainName: !GetAtt PubXMLData.DomainName
-            S3OriginConfig:
-              OriginAccessIdentity: ''
-            OriginAccessControlId: !GetAtt PSGECloudFrontOriginAccessControl.Id
-          # - DomainName: !GetAtt 'PubXMLData.DomainName'
-          #   Id: s3origin
-          #   S3OriginConfig:
-          #     OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${PSGECloudFrontOriginAccessIdentity}'
-        PriceClass: PriceClass_100
-        # Restrictions:
-        #   Restrictions
-        # S3Origin:
-        #   LegacyS3Origin
-        # ViewerCertificate:
-        #   ViewerCertificate
-        # WebACLId: String
-      Tags:
-        - Key: ServiceName
-          Value: !Ref ServiceName
-        - Key: StackName
-          Value: !Ref AWS::StackName
-        - Key: ResourceType
-          Value: !Ref ResourceType
+  # PSGECloudFrontDistribution:
+  #   Type: AWS::CloudFront::Distribution
+  #   Properties:
+  #     DistributionConfig:
+  #       # Aliases:
+  #       #   - String
+  #       # CacheBehaviors:
+  #       #   - CacheBehavior
+  #       # CNAMEs:
+  #       #   - String
+  #       Comment: 'PSGalleryExplorer CloudFront for PowerShell Cloud XML'
+  #       # ContinuousDeploymentPolicyId: String
+  #       # CustomErrorResponses:
+  #       #   - ErrorCode: 403 # not found
+  #       #     ResponseCode: 404
+  #       #     ResponsePagePath: "/index.html"
+  #       # CustomOrigin:
+  #       #   LegacyCustomOrigin
+  #       DefaultCacheBehavior:
+  #         AllowedMethods:
+  #           - GET
+  #           - HEAD
+  #           # - OPTIONS
+  #         CachedMethods:
+  #           - GET
+  #           - HEAD
+  #           # - OPTIONS
+  #         # CachePolicyId: String
+  #         Compress: true
+  #         DefaultTTL: 3600 # in seconds
+  #         # FieldLevelEncryptionId: String
+  #         ForwardedValues:
+  #           Cookies:
+  #             Forward: none
+  #           QueryString: false
+  #         # FunctionAssociations:
+  #         #   - FunctionAssociation
+  #         # LambdaFunctionAssociations:
+  #         #   - LambdaFunctionAssociation
+  #         MaxTTL: 86400 # in seconds
+  #         MinTTL: 60 # in seconds
+  #         # OriginRequestPolicyId: String
+  #         # RealtimeLogConfigArn: String
+  #         # ResponseHeadersPolicyId: String
+  #         # SmoothStreaming: Boolean
+  #         TargetOriginId: s3origin
+  #         # TrustedKeyGroups:
+  #         #   - String
+  #         # TrustedSigners:
+  #         #   - String
+  #         ViewerProtocolPolicy: 'https-only'
+  #       # DefaultRootObject: 'index.html'
+  #       Enabled: true
+  #       HttpVersion: http2
+  #       # IPV6Enabled: Boolean
+  #       Logging:
+  #         Bucket: !Sub ${PSGECloudFrontLogBucket}.s3.amazonaws.com
+  #         # IncludeCookies: Boolean
+  #         Prefix: pwshcloudcommands
+  #       # OriginGroups:
+  #       #   OriginGroups
+  #       Origins:
+  #         - Id: S3Origin
+  #           DomainName: !GetAtt PubXMLData.DomainName
+  #           S3OriginConfig:
+  #             OriginAccessIdentity: ''
+  #           OriginAccessControlId: !GetAtt PSGECloudFrontOriginAccessControl.Id
+  #         # - DomainName: !GetAtt 'PubXMLData.DomainName'
+  #         #   Id: s3origin
+  #         #   S3OriginConfig:
+  #         #     OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${PSGECloudFrontOriginAccessIdentity}'
+  #       PriceClass: PriceClass_100
+  #       # Restrictions:
+  #       #   Restrictions
+  #       # S3Origin:
+  #       #   LegacyS3Origin
+  #       # ViewerCertificate:
+  #       #   ViewerCertificate
+  #       # WebACLId: String
+  #     Tags:
+  #       - Key: ServiceName
+  #         Value: !Ref ServiceName
+  #       - Key: StackName
+  #         Value: !Ref AWS::StackName
+  #       - Key: ResourceType
+  #         Value: !Ref ResourceType
 
 Outputs:
   PubXMLDataBucketName:
@@ -342,11 +342,11 @@ Outputs:
     # Export:
     #   Name: !Sub ${ServiceName}-PSGECloudFrontLogBucketARN
 
-  PSGECloudFrontDistributionDomain:
-    Description: The domain of the PSGECloudFrontDistribution
-    Value: !GetAtt PSGECloudFrontDistribution.DomainName
-    # Export:
-    #   Name: !Sub ${ServiceName}-PSGECloudFrontDistributionDomain
+  # PSGECloudFrontDistributionDomain:
+  #   Description: The domain of the PSGECloudFrontDistribution
+  #   Value: !GetAtt PSGECloudFrontDistribution.DomainName
+  #   Export:
+  #     Name: !Sub ${ServiceName}-PSGECloudFrontDistributionDomain
 
   PSGECloudFrontLogBucketName:
     Value: !Ref PSGECloudFrontLogBucket
