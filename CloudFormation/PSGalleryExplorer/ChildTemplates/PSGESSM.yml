@@ -176,6 +176,7 @@ Resources:
               - '3600'
             commands:
               - !Sub if(-not(Test-Path 'C:\${ServiceName}\FinalZip\${ServiceName}.zip')){throw 'Cannot find zip file'}
+              - !Sub $zipFilePath = 'C:\${ServiceName}\FinalZip\${ServiceName}.zip';$maxAge = New-TimeSpan -Days 4;$zipAge = New-TimeSpan -Start (Get-Item $zipFilePath).LastWriteTime -End (Get-Date);if ($zipAge -gt $maxAge) {throw 'stale zip file'}
               - !Sub
                 - 'aws s3 cp "C:\${ServiceName}\FinalZip\${ServiceName}.zip" "s3://${bucketName}"'
                 - bucketName:
