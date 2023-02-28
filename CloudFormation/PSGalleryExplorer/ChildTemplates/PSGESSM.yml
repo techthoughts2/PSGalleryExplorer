@@ -1,0 +1,222 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: 'AUTOMATED: PSGalleryExplorer - SSM deployment'
+
+Parameters:
+  ServiceName:
+    Type: String
+    Description: The name of the service being deployed. Used for Developer AWS Account Resource Names.
+
+  ResourceType:
+    Type: String
+    Description: Determine the type of resource that will be deployed
+    AllowedValues:
+      - core
+      - dev
+      - test
+      - prod
+
+Resources:
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
+  PSGEMaintenanceWindowTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ServiceName}-PSGEMaintenanceWindowTaskRole'
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ssm.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonSSMMaintenanceWindowRole
+      Policies:
+        - PolicyName: pass-role
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource:
+                  - !GetAtt PSGESSMMaintenanceWindowTaskCommandRole.Arn
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
+  PSGESSMMaintenanceWindowTaskCommandRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ServiceName}-PSGESSMMaintenanceWindowTaskCommandRole'
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ssm.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      # ManagedPolicyArns:
+      #   - arn:${AWS::Partition}:iam::${AWS::Partition}:policy/service-role/AmazonSSMMaintenanceWindowRole
+      #   # - arn:${AWS::Partition}:iam::${AWS::Partition}:policy/service-role/AmazonSSMAutomationRole
+      #   - arn:${AWS::Partition}:iam::${AWS::Partition}:policy/CloudWatchFullAccess
+      Policies:
+        - PolicyName: SSMPublishAlertTopic
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource:
+                  - !ImportValue AlertSNSTopic
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-maintenancewindow.html
+  PSGEMaintWindow:
+    Type: AWS::SSM::MaintenanceWindow
+    Properties:
+      AllowUnassociatedTargets: false
+      Cutoff: 0
+      Description: 'Maintenance window to fetch combined XML file'
+      Duration: 1
+      # EndDate: String
+      Name: !Sub ${ServiceName}-PSGEMaintWindow
+      Schedule: rate(7 days)
+      # Schedule: rate(5 minutes)
+      # ScheduleOffset: Integer
+      ScheduleTimezone: 'US/Central'
+      StartDate: '2023-03-01T21:30:00-06:00'
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-maintenancewindowtarget.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssm-maintenancewindowtarget-targets.html
+  PSGEMaintTarget:
+    Type: AWS::SSM::MaintenanceWindowTarget
+    Properties:
+      Description: Hybrid Worker Target
+      Name: !Sub ${ServiceName}-HybridWorkerTarget
+      OwnerInformation: PSGE SSM XML Sourcing
+      ResourceType: INSTANCE
+      Targets:
+      - Key: tag:type
+        Values:
+        - hybridworker
+      WindowId: !Ref PSGEMaintWindow
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-maintenancewindowtask.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssm-maintenancewindowtask-taskinvocationparameters.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssm-maintenancewindowtask-maintenancewindowruncommandparameters.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssm-maintenancewindowtask-cloudwatchoutputconfig.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssm-maintenancewindowtask-notificationconfig.html
+  # https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_SendCommand.html
+  # https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-maintenance-permissions.html#maintenance-window-tasks-service-role
+  # https://docs.aws.amazon.com/systems-manager/latest/userguide/monitoring-sns-notifications.html
+  # https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-maintenance-perm-console.html
+  PSGEMaintWindowRunCommandTask:
+    Type: 'AWS::SSM::MaintenanceWindowTask'
+    Properties:
+      CutoffBehavior: CANCEL_TASK
+      Description: TBD
+      # LoggingInfo:
+      #   LoggingInfo
+      MaxConcurrency: 1
+      MaxErrors: 1
+      Name: !Sub ${ServiceName}-XMLSourcingTask
+      Priority: 0
+      ServiceRoleArn: !GetAtt PSGEMaintenanceWindowTaskRole.Arn
+      Targets:
+        - Key: WindowTargetIds
+          Values:
+            - !Ref PSGEMaintTarget
+      TaskArn: AWS-RunPowerShellScript
+      TaskInvocationParameters:
+        MaintenanceWindowRunCommandParameters:
+          CloudWatchOutputConfig:
+            CloudWatchLogGroupName: !Ref PSGESSMRunCommandLogGroup
+            CloudWatchOutputEnabled: true
+          Comment: This is a comment
+          # DocumentHash: String
+          # DocumentHashType: String
+          # DocumentVersion: String
+          NotificationConfig:
+            NotificationArn: !Sub arn:${AWS::Partition}:sns:us-west-2:${AWS::AccountId}:alertTopic
+            NotificationEvents:
+              - TimedOut
+              - Cancelled
+              - Failed
+            NotificationType: Command
+          # OutputS3BucketName: !Ref PSGESSMLogBucket
+          # OutputS3KeyPrefix: PSGE
+          Parameters:
+            executionTimeout:
+              - '3600'
+            commands:
+              - !Sub if(-not(Test-Path 'C:\${ServiceName}\FinalZip\${ServiceName}.zip')){throw 'Cannot find zip file'}
+              - !Sub
+                - 'aws s3 cp "C:\${ServiceName}\FinalZip\${ServiceName}.zip" "s3://${bucketName}"'
+                - bucketName:
+                    'Fn::ImportValue': PubXMLDataBN
+            workingDirectory:
+              - ""
+          ServiceRoleArn: !GetAtt PSGESSMMaintenanceWindowTaskCommandRole.Arn
+          TimeoutSeconds: 300
+      # TaskParameters: Json
+      TaskType: RUN_COMMAND
+      WindowId: !Ref PSGEMaintWindow
+
+  # #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html
+  PSGESSMRunCommandLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Properties:
+      # DataProtectionPolicy: Json
+      # KmsKeyId: String
+      LogGroupName: '/aws/ssm/PSGESSMRunCommandLogGroup'
+      RetentionInDays: 30
+      Tags:
+        - Key: ServiceName
+          Value: !Ref ServiceName
+        - Key: StackName
+          Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
+
+Outputs:
+  PSGEMaintWindowID:
+    Description: ID of PSGEMaintWindow
+    Value: !Ref PSGEMaintWindow
+    Export:
+      Name: !Sub ${ServiceName}-PSGEMaintWindowID
+
+  PSGEMaintTargetID:
+    Description: ID of PSGEMaintTarget
+    Value: !Ref PSGEMaintTarget
+
+  PSGEMaintWindowRunCommandTaskID:
+    Description: ID of PSGEMaintWindowRunCommandTask
+    Value: !Ref PSGEMaintWindowRunCommandTask
