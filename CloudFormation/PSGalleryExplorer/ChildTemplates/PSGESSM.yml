@@ -163,7 +163,7 @@ Resources:
           # DocumentHashType: String
           # DocumentVersion: String
           NotificationConfig:
-            NotificationArn: !Sub arn:${AWS::Partition}:sns:us-west-2:${AWS::AccountId}:alertTopic
+            NotificationArn: !ImportValue AlertSNSTopic
             NotificationEvents:
               - TimedOut
               - Cancelled
