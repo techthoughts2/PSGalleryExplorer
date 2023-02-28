@@ -9,7 +9,7 @@ $PathToManifest = [System.IO.Path]::Combine('..', '..', 'Artifacts', "$ModuleNam
 #-------------------------------------------------------------------------
 Import-Module $PathToManifest -Force
 #-------------------------------------------------------------------------
-Describe 'Infrastructure Tests' -Tag Infrastructure {
+Describe 'Integration Tests' -Tag Integration {
     Context 'ByDownloads' {
         It 'should return expected results when finding finding default downloads' {
             $eval = Find-PSGModule -ByDownloads -NumberToReturn 10000

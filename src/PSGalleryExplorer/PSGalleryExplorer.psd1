@@ -54,7 +54,7 @@
     RequiredModules   = @(
         @{
             ModuleName    = 'Convert'
-            ModuleVersion = '0.6.0'
+            ModuleVersion = '1.2.0'
         }
     )
 
