@@ -298,7 +298,7 @@ Resources:
         # OriginGroups:
         #   OriginGroups
         Origins:
-          - Id: S3Origin
+          - Id: s3origin
             DomainName: !GetAtt PubXMLData.DomainName
             S3OriginConfig:
               OriginAccessIdentity: ''
