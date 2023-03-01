@@ -17,8 +17,6 @@ PSGalleryExplorer is a PowerShell module that extends the search functionality o
 
 PSGalleryExplorer is not intended to replace `Find-Module`. Rather, it complements it by providing a means to discover modules and gain insights into their associated project repositories. PSGalleryExplorer enables you to expand your exploration of the PowerShell Gallery, identifying new, trending, and modules with heavy community involvement.
 
-
-
 ## Why PSGalleryExplorer?
 
 To aid in the discoverability of modules in the PowerShell Gallery.

@@ -10,7 +10,7 @@
 
 site_name: PSGalleryExplorer - search, explore, and discover PowerShell Gallery modules
 # site_url:
-# repo_url:
+repo_url: https://github.com/techthoughts2/PSGalleryExplorer
 # repo_name:
 # edit_uri: edit/main/docs/
 # edit_uri_template:
