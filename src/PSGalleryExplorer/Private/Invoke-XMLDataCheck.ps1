@@ -2,7 +2,7 @@
 .SYNOPSIS
     Invokes all child functions required to process retrieving the XML data set file.
 .DESCRIPTION
-    Runs all required child functions to successfull retrieve and process the XML data set file.
+    Runs all required child functions to successfully retrieve and process the XML data set file.
 .EXAMPLE
     Invoke-XMLDataCheck
 

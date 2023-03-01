@@ -173,7 +173,7 @@ Describe 'Integration Tests' -Tag Integration {
             $count | Should -BeExactly 1
             $eval.Name | Should -BeExactly 'AWS.Tools.Common'
         } #it
-        It 'should return expteced results when finding module name with wild card' {
+        It 'should return expected results when finding module name with wild card' {
             $eval = Find-PSGModule -ByName 'PoshGr*' -IncludeRegulars -IncludeCorps
             $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
             $count | Should -BeGreaterOrEqual 1

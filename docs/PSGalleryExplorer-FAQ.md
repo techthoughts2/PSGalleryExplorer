@@ -4,7 +4,7 @@
 
 ### How current is the GitHub info that is included with PSGallery Explorer?
 
-There can be up to a 1 week delay in corresponding PowerShell GitHub project data. This is solely due to cost. The [Serveless PowerShell solution](PowerShell_Serverless.md) in place cost compute time. As such, it's currently set to refresh approximately once per week.
+There can be up to a 1 week delay in corresponding PowerShell GitHub project data. This is solely due to cost. The [Serverless PowerShell solution](PowerShell_Serverless.md) in place cost compute time. As such, it's currently set to refresh approximately once per week.
 
 ### Why are common modules and corporate modules excluded by default?
 
