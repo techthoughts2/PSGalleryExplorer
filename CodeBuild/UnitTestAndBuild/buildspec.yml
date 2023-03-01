@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      dotnet: 5.0
+      dotnet: 6.0
       # python: 3.8
     commands:
       # Check PowerShell Version
@@ -29,7 +29,7 @@ phases:
     commands:
       # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script
       # - pwsh -command '& ./CodeBuild/UnitTestAndBuild/dotnet-install.ps1 -Channel LTS'
-      - ./CodeBuild/UnitTestAndBuild/dotnet-install.sh --channel LTS
+      # - ./CodeBuild/UnitTestAndBuild/dotnet-install.sh --channel LTS
 
       # Validate CloudFormation Templates
       - pwsh -command '
@@ -52,11 +52,11 @@ phases:
   build:
     commands:
 
-      # Running Invoke-Build against each PowerShell AWS Lambda Function
-      - pwsh -command 'Get-ChildItem -Path './lambdafunctions/PowerShell' -Filter '*.build.ps1' -File -Recurse | ForEach-Object {Invoke-Build -File $_.FullName}'
-
       # Publish CloudFormation templates to S3
       - pwsh -command 'Import-Module -Name "AWS.Tools.Common";Import-Module -Name "AWS.Tools.S3"; & ./CodeBuild/UnitTestAndBuild/Publish-CFNTemplatesToS3.ps1'
+
+      # Running Invoke-Build against each PowerShell AWS Lambda Function
+      - pwsh -command 'Get-ChildItem -Path './lambdafunctions/PowerShell' -Filter '*.build.ps1' -File -Recurse | ForEach-Object {Invoke-Build -File $_.FullName}'
 
 artifacts:
   files:

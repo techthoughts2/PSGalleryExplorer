@@ -6,240 +6,54 @@ Parameters:
   ServiceName:
     Type: String
     Description: 'Name of the service that will be used to tag each resource.'
-  BucketName:
+
+  ResourceType:
     Type: String
-    Description: Hard coded S3 bucketname prefix
+    Description: Determine the type of resource that will be deployed
+    AllowedValues:
+      - core
+      - dev
+      - test
+      - prod
 
 Resources:
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html
-  UpdateSNSTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      # DisplayName: String
-      # KmsMasterKeyId: String
-      # Subscription:
-      #   - Subscription
-      # TopicName: String
-      Tags:
-        - Key: ServiceName
-          Value: !Ref ServiceName
-        - Key: StackName
-          Value: !Ref AWS::StackName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html
-  SNSUpdateTopicPolicy:
-    Type: AWS::SNS::TopicPolicy
-    Properties:
-      Topics:
-        - !Ref UpdateSNSTopic
-      PolicyDocument:
-        Id: SNSTopicPolicy
-        Version: '2012-10-17'
-        Statement:
-          -
-            Sid: S3TriggerAccess
-            Effect: Allow
-            Principal:
-              AWS:
-                - '*'
-            Action:
-              - sns:Publish
-            Resource:
-              - !Ref UpdateSNSTopic
-            Condition:
-              StringEquals:
-                aws:SourceAccount: !Sub ${AWS::AccountId}
-              ArnLike:
-                aws:SourceArn: !Sub "arn:aws:s3:::${BucketName}-${AWS::AccountId}-stagetrigger"
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
-  StageTriggerData:
-    Type: AWS::S3::Bucket
-    DependsOn:
-      - SNSUpdateTopicPolicy
-    DeletionPolicy: Delete
-    Properties:
-      # AccelerateConfiguration: AccelerateConfiguration
-      # AccessControl: String
-      # AnalyticsConfigurations:
-      #   - AnalyticsConfiguration
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      BucketName: !Sub ${BucketName}-${AWS::AccountId}-stagetrigger
-      # CorsConfiguration:
-      #   CorsConfiguration
-      # InventoryConfigurations:
-      #   - InventoryConfiguration
-      # LifecycleConfiguration:
-      #   Rules:
-      #       -
-      #         AbortIncompleteMultipartUpload:
-      #           DaysAfterInitiation: 7
-      #         Status: Enabled
-      #         Transitions:
-      #           -
-      #             StorageClass: GLACIER
-      #             TransitionInDays: 30
-      # LoggingConfiguration:
-      #   DestinationBucketName: !Ref S3BucketLogs
-      #   LogFilePrefix: '/logs/updateapcdata/'
-      # MetricsConfigurations:
-      #   - MetricsConfiguration
-      NotificationConfiguration:
-        TopicConfigurations:
-          -
-            Event: s3:ObjectCreated:*
-            Topic: !Ref UpdateSNSTopic
-      # ObjectLockConfiguration:
-      #   ObjectLockConfiguration
-      # ObjectLockEnabled: Boolean
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      # ReplicationConfiguration:
-      #   ReplicationConfiguration
-      # VersioningConfiguration:
-      #   VersioningConfiguration
-      # WebsiteConfiguration:
-      #   WebsiteConfiguration
-      Tags:
-        - Key: ServiceName
-          Value: !Ref ServiceName
-        - Key: StackName
-          Value: !Ref AWS::StackName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
-  GitXMLData:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
-    Properties:
-      # AccelerateConfiguration: AccelerateConfiguration
-      # AccessControl: String
-      # AnalyticsConfigurations:
-      #   - AnalyticsConfiguration
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      BucketName: !Sub ${BucketName}-gitxml
-      # CorsConfiguration:
-      #   CorsConfiguration
-      # InventoryConfigurations:
-      #   - InventoryConfiguration
-      LifecycleConfiguration:
-        Rules:
-          -
-            AbortIncompleteMultipartUpload:
-              DaysAfterInitiation: 3
-            ExpirationInDays: 14
-            Status: Enabled
-      # LoggingConfiguration:
-      #   DestinationBucketName: !Ref S3BucketLogs
-      #   LogFilePrefix: '/logs/updateapcdata/'
-      # MetricsConfigurations:
-      #   - MetricsConfiguration
-      # NotificationConfiguration:
-      #   TopicConfigurations:
-      #     -
-      #       Event: s3:ObjectCreated:*
-      #       Topic: !Ref UpdateSNSTopic
-      # ObjectLockConfiguration:
-      #   ObjectLockConfiguration
-      # ObjectLockEnabled: Boolean
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      # ReplicationConfiguration:
-      #   ReplicationConfiguration
-      # VersioningConfiguration:
-      #   VersioningConfiguration
-      # WebsiteConfiguration:
-      #   WebsiteConfiguration
-      Tags:
-        - Key: ServiceName
-          Value: !Ref ServiceName
-        - Key: StackName
-          Value: !Ref AWS::StackName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
-  # S3BucketLogs:
-  #   Type: AWS::S3::Bucket
-  #   DeletionPolicy: Delete
-  #   Properties:
-  #     # AccelerateConfiguration: AccelerateConfiguration
-  #     AccessControl: LogDeliveryWrite
-  #     # AnalyticsConfigurations:
-  #     #   - AnalyticsConfiguration
-  #     BucketEncryption:
-  #       ServerSideEncryptionConfiguration:
-  #         - ServerSideEncryptionByDefault:
-  #             SSEAlgorithm: AES256
-  #     # BucketName: String
-  #     # CorsConfiguration:
-  #     #   CorsConfiguration
-  #     # InventoryConfigurations:
-  #     #   - InventoryConfiguration
-  #     LifecycleConfiguration:
-  #       Rules:
-  #         -
-  #           AbortIncompleteMultipartUpload:
-  #             DaysAfterInitiation: 3
-  #           ExpirationInDays: 365
-  #           Status: Enabled
-  #           Transitions:
-  #             -
-  #               StorageClass: STANDARD_IA
-  #               TransitionInDays: 30
-  #     # LoggingConfiguration:
-  #     #   DestinationBucketName: !Ref S3BucketLogs
-  #     #   LogFilePrefix: '/logs/updateapcdata/'
-  #     # MetricsConfigurations:
-  #     #   - MetricsConfiguration
-  #     # NotificationConfiguration:
-  #     #   TopicConfigurations:
-  #     #     -
-  #     #       Event: s3:ObjectCreated:*
-  #     #       Topic: !Ref UpdateSNSTopic
-  #     # ObjectLockConfiguration:
-  #     #   ObjectLockConfiguration
-  #     # ObjectLockEnabled: Boolean
-  #     PublicAccessBlockConfiguration:
-  #       BlockPublicAcls: true
-  #       BlockPublicPolicy: true
-  #       IgnorePublicAcls: true
-  #       RestrictPublicBuckets: true
-  #     Tags:
-  #       - Key: ServiceName
-  #         Value: !Ref ServiceName
-  #       - Key: StackName
-  #         Value: !Ref AWS::StackName
-
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
-  PubXMLDataPolicy:
-    Type: AWS::S3::BucketPolicy
+  CloudFrontS3BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
     Properties:
       Bucket: !Ref PubXMLData
       PolicyDocument:
+        Version: '2012-10-17'
         Statement:
-          -
-            Action:
-              - "s3:GetObject"
-            Effect: "Allow"
-            Resource:
-              !Join
-              - ""
-              -
-                - "arn:aws:s3:::"
-                -
-                  Ref: "PubXMLData"
-                - "/*"
-            Principal: "*"
+          - Sid: 'AllowCloudFrontServicePrincipalReadOnly'
+            Effect: 'Allow'
+            Principal:
+              Service: 'cloudfront.amazonaws.com'
+            Action: 's3:GetObject'
+            Resource: !Sub 'arn:${AWS::Partition}:s3:::${PubXMLData}/*'
+            Condition:
+              StringEquals:
+                'AWS:SourceArn': !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${PSGECloudFrontDistribution}'
+          # - Sid: 'AllowLegacyOAIReadOnly'
+          #   Effect: 'Allow'
+          #   Principal:
+          #     AWS: !Sub 'arn:${AWS::Partition}:iam::cloudfront:user/CloudFront Origin Access Identity ${PSGECloudFrontOriginAccessIdentity}'
+          #   Action: 's3:GetObject'
+          #   Resource: !Sub 'arn:${AWS::Partition}:s3:::${PubXMLData}/*'
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
+  # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+  # https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteAccessPermissionsReqd.html
+  # PubXMLDataPolicy:
+  #   Type: AWS::S3::BucketPolicy
+  #   Properties:
+  #     Bucket: !Ref PubXMLData
+  #     PolicyDocument:
+  #       Statement:
+  #         - Action:
+  #             - 's3:GetObject'
+  #           Effect: 'Allow'
+  #           Resource: !Sub 'arn:${AWS::Partition}:s3:::${PubXMLData}/*'
+  #           Principal: '*'
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
   # https://docs.aws.amazon.com/AmazonS3/latest/user-guide/configure-metrics.html
@@ -257,7 +71,7 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      BucketName: !Sub ${BucketName}-pubxml
+      # BucketName: !Sub ${BucketName}-pubxml
       # CorsConfiguration:
       #   CorsConfiguration
       # InventoryConfigurations:
@@ -286,10 +100,10 @@ Resources:
       #   ObjectLockConfiguration
       # ObjectLockEnabled: Boolean
       PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
-        BlockPublicPolicy: false
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
         IgnorePublicAcls: true
-        RestrictPublicBuckets: false
+        RestrictPublicBuckets: true
       # ReplicationConfiguration:
       #   ReplicationConfiguration
       # VersioningConfiguration:
@@ -301,6 +115,8 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-publicaccessblockconfiguration.html
@@ -361,22 +177,24 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
       # VersioningConfiguration:
       #   VersioningConfiguration
       # WebsiteConfiguration:
       #   IndexDocument: index.html
-        # ErrorDocument: error.html
-        # RoutingRules:
-        #   - RoutingRuleCondition:
-        #       HttpErrorCodeReturnedEquals: '404'
-        #       KeyPrefixEquals: out1/
-        #     RedirectRule:
-        #       HostName: ec2-11-22-333-44.compute-1.amazonaws.com
-        #       ReplaceKeyPrefixWith: report-404/
+      # ErrorDocument: error.html
+      # RoutingRules:
+      #   - RoutingRuleCondition:
+      #       HttpErrorCodeReturnedEquals: '404'
+      #       KeyPrefixEquals: out1/
+      #     RedirectRule:
+      #       HostName: ec2-11-22-333-44.compute-1.amazonaws.com
+      #       ReplaceKeyPrefixWith: report-404/
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
   PSCCCloudFrontLogBucketPolicy:
-    Type: 'AWS::S3::BucketPolicy'
+    Type: AWS::S3::BucketPolicy
     Properties:
       Bucket: !Ref PSGECloudFrontLogBucket
       PolicyDocument:
@@ -385,26 +203,41 @@ Resources:
           - Sid: LoggingBucketPermissions
             Effect: 'Allow'
             Principal:
-              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+              AWS: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:root'
             Action: 's3:PutObject'
             Resource:
-              - !Sub 'arn:aws:s3:::${PSGECloudFrontLogBucket}/AWSLogs/${AWS::AccountId}/*'
+              - !Sub 'arn:${AWS::Partition}:s3:::${PSGECloudFrontLogBucket}/AWSLogs/${AWS::AccountId}/*'
 
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-PSCCCloudFrontOriginAccessIdentity.html
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-PSCCCloudFrontOriginAccessIdentity-PSCCCloudFrontOriginAccessIdentityconfig.html
-  PSGECloudFrontOriginAccessIdentity:
-    Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originaccesscontrol.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-originaccesscontrol-originaccesscontrolconfig.html
+  # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+  # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-origin.html
+  PSGECloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
     Properties:
-      CloudFrontOriginAccessIdentityConfig:
-        Comment: !Ref PubXMLData
+      OriginAccessControlConfig:
+        Description: PSGalleryExplorer CloudFront Origin Access Control
+        Name: psge-origin-access-control
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-cloudfrontoriginaccessidentity.html
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-cloudfrontoriginaccessidentity-cloudfrontoriginaccessidentityconfig.html
+  # PSGECloudFrontOriginAccessIdentity:
+  #   Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+  #   Properties:
+  #     CloudFrontOriginAccessIdentityConfig:
+  #       Comment: !Ref PubXMLData
 
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-distribution.html
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-distributionconfig.html
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-defaultcachebehavior.html
   # https://github.com/aws-samples/cloudfront-authorization-at-edge/blob/master/template.yaml
   # https://hackernoon.com/how-to-configure-cloudfront-using-cloudformation-template-2c263u56
+  # https://hayao-k.dev/migrating-cloudfront-oai-to-oac-using-cloudformation
   PSGECloudFrontDistribution:
-    Type: "AWS::CloudFront::Distribution"
+    Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
         # Aliases:
@@ -414,6 +247,7 @@ Resources:
         # CNAMEs:
         #   - String
         Comment: 'PSGalleryExplorer CloudFront for PowerShell Cloud XML'
+        # ContinuousDeploymentPolicyId: String
         # CustomErrorResponses:
         #   - ErrorCode: 403 # not found
         #     ResponseCode: 404
@@ -464,10 +298,15 @@ Resources:
         # OriginGroups:
         #   OriginGroups
         Origins:
-          - DomainName: !GetAtt "PubXMLData.DomainName"
-            Id: s3origin
+          - Id: s3origin
+            DomainName: !GetAtt PubXMLData.DomainName
             S3OriginConfig:
-              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${PSGECloudFrontOriginAccessIdentity}"
+              OriginAccessIdentity: ''
+            OriginAccessControlId: !GetAtt PSGECloudFrontOriginAccessControl.Id
+          # - DomainName: !GetAtt 'PubXMLData.DomainName'
+          #   Id: s3origin
+          #   S3OriginConfig:
+          #     OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${PSGECloudFrontOriginAccessIdentity}'
         PriceClass: PriceClass_100
         # Restrictions:
         #   Restrictions
@@ -481,32 +320,10 @@ Resources:
           Value: !Ref ServiceName
         - Key: StackName
           Value: !Ref AWS::StackName
+        - Key: ResourceType
+          Value: !Ref ResourceType
 
 Outputs:
-  StageTriggerDataBucketName:
-    Value: !Ref StageTriggerData
-    Description: Name of the PSGalleryExplorer Amazon S3 bucket that holds processed XML from Gallery and GitHub
-    Export:
-      Name: StageTriggerBN
-  StageTriggerDataArn:
-    Description: Arn of the PSGalleryExplorer Amazon S3 bucket that holds processed XML from Gallery and GitHub
-    Value: !GetAtt StageTriggerData.Arn
-  StageTriggerDataDomainName:
-    Description: DomainName of the PSGalleryExplorer Amazon S3 bucket that holds processed XML from Gallery and GitHub
-    Value: !GetAtt StageTriggerData.DomainName
-
-  GitXMLDataBucketName:
-    Value: !Ref GitXMLData
-    Description: Name of the PSGalleryExplorer Amazon S3 bucket that holds raw github XML data
-    Export:
-      Name: GitXMLDataBN
-  GitXMLDataArn:
-    Description: Arn of the PSGalleryExplorer Amazon S3 bucket that holds raw github XML data
-    Value: !GetAtt GitXMLData.Arn
-  GitXMLDataDomainName:
-    Description: DomainName of the PSGalleryExplorer Amazon S3 bucket that holds raw github XML data
-    Value: !GetAtt GitXMLData.DomainName
-
   PubXMLDataBucketName:
     Value: !Ref PubXMLData
     Description: Name of the PSGalleryExplorer public S3 bucket
@@ -519,29 +336,23 @@ Outputs:
     Description: DomainName of the PSGalleryExplorer public S3 bucket
     Value: !GetAtt PubXMLData.DomainName
 
-  UpdateSNSTopicArn:
-    Value: !Ref UpdateSNSTopic
-    Description: Arn of the UpdateSNSTopic
-    Export:
-      Name: UpdateSNSTopicArn
-
   PSGECloudFrontLogBucketARN:
     Description: ARN of the PSGECloudFrontLogBucket Amazon S3 bucket
     Value: !GetAtt PSGECloudFrontLogBucket.Arn
-    Export:
-      Name: !Sub ${ServiceName}-PSGECloudFrontLogBucketARN
+    # Export:
+    #   Name: !Sub ${ServiceName}-PSGECloudFrontLogBucketARN
 
-  PSGECloudFrontDistributionDomain:
-    Description: The domain of the PSGECloudFrontDistribution
-    Value: !GetAtt PSGECloudFrontDistribution.DomainName
-    Export:
-      Name: !Sub ${ServiceName}-PSGECloudFrontDistributionDomain
+  # PSGECloudFrontDistributionDomain:
+  #   Description: The domain of the PSGECloudFrontDistribution
+  #   Value: !GetAtt PSGECloudFrontDistribution.DomainName
+  #   Export:
+  #     Name: !Sub ${ServiceName}-PSGECloudFrontDistributionDomain
 
   PSGECloudFrontLogBucketName:
     Value: !Ref PSGECloudFrontLogBucket
     Description: Name of the PSGECloudFrontLogBucket Amazon S3 bucket
-    Export:
-      Name: PSGECloudFrontLogBucketBN
+    # Export:
+    #   Name: PSGECloudFrontLogBucketBN
 
   PSGECloudFrontLogBucketArn:
     Description: Arn of the PSGECloudFrontLogBucket Amazon S3 bucket

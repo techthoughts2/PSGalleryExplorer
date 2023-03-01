@@ -225,7 +225,7 @@ InModuleScope 'PSGalleryExplorer' {
                 packageSize               = '87559'
                 Functions                 = 'Get-TelegramStickerPackInfo Send-TelegramContact Send-TelegramLocalAnimation Send-TelegramLocalAudio Send-TelegramLocalDocument Send-TelegramLocalPhoto Send-TelegramLocalSticker Send-TelegramLocalVideo Send-TelegramLocation Send-TelegramMediaGroup Send-TelegramPoll Send-TelegramSticker Send-TelegramTextMessage Send-TelegramURLAnimation Send-TelegramURLAudio Send-TelegramURLDocument Send-TelegramURLPhoto Send-TelegramURLSticker Send-TelegramURLVideo Send-TelegramVenue Test-BotToken'
             }
-            GitHubInfo                 = @{
+            ProjectInfo                = @{
                 Subscribers = '5'
                 GitStatus   = 'True'
                 Forks       = '4'
@@ -327,7 +327,7 @@ InModuleScope 'PSGalleryExplorer' {
                 description               = 'Catesta is a PowerShell module project generator. It uses templates to rapidly scaffold test and build integration for a variety of CI/CD platforms.'
                 GUID                      = '6796b193-9013-468a-b022-837749af2d06'
             }
-            GitHubInfo                 = @{
+            ProjectInfo                = @{
                 StarCount   = '39'
                 Created     = [datetime]'12/02/19 19:00:22'
                 License     = 'MIT License'
@@ -555,7 +555,7 @@ InModuleScope 'PSGalleryExplorer' {
                 developmentDependency     = 'False'
                 lastUpdated               = '01/10/20 06:21:53 -08:00'
             }
-            GitHubInfo                 = @{
+            ProjectInfo                = @{
                 StarCount   = '75'
                 Created     = [datetime]'03/26/19 17:41:43'
                 License     = 'Apache License 2.0'

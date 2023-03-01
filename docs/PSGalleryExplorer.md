@@ -2,7 +2,7 @@
 Module Name: PSGalleryExplorer
 Module Guid: e9252e8e-2073-4084-9562-cf60ad84603d
 Download Help Link: NA
-Help Version: 1.0.2
+Help Version: 2.0.0
 Locale: en-US
 ---
 

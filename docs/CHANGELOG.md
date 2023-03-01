@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - *Breaking Changes Introduced*
+
+- Module Updates
+  - **New CDN Endpoint** - ***Breaking Change***
+    - PSGalleryExplorer has migrated to a new CDN endpoint for serving repository information. As a result, the old endpoint has been decommissioned.
+      - *What does this mean?*
+        - Older versions of PSGalleryExplorer (prior to `v2.0.0`) will no longer be able to fetch module project information due to the new CDN endpoint. If you're using an older version, please upgrade to v2.0.0 or later to continue using PSGalleryExplorer.
+  - Convert `1.2.0` or higher now required
+  - Added additional corps to list
+  - Added additional regulars to list
+- Build Updates:
+  - Moved from a fully serverless PowerShell lambda architecture to a hybrid SSM execution architecture.
+  - Added integration for Read the Docs
+  - Moved `CHANGELOG.md` from `.github` directory to `docs` directory
+  - Updated VSCode `tasks.json`
+  - Added a `SECURITY.md` file for the project
+  - All Infra/Infrastructure references changed to Integration
+  - CI/CD Changes:
+    - Pester bumped from `5.3.1` to `5.4.0`
+    - InvokeBuild bumped from `5.9.7` to `5.10.2`
+    - PSScriptAnalyzer bumped from `1.20.0` to `1.21.0`
+    - Convert bumped from `0.6.0` to `1.2.0`
+    - Switched AWS module install to use PSGallery
+    - Updated CodeBuild Linux image from `aws/codebuild/standard:5.0` to `aws/codebuild/standard:6.0`
+    - Updated CodeBuild Windows image from `aws/codebuild/windows-base:2019-1.0` to `aws/codebuild/windows-base:2019-2.0`
+    - Added log retention groups to all CodeBuild projects
+
 ## [1.0.2]
 
 - Added additional corps to list
@@ -16,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Module Updates
   - Module manifest
     - Added additional tags
-    - Bumped Convert requirement to ```0.6.0```
+    - Bumped Convert requirement to `0.6.0`
   - Separated Pester unit tests into separate test folders
   - Added support for Pester 5
   - Minor formatting changes to most functions
@@ -29,9 +56,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated PSGalleryExplorer.build file to align with latest bug fixes
   - Updated CodeBuild images to latest available
   - Added support for using new main branch instead of master
-  - Updated CodeBuild image from ```aws/codebuild/amazonlinux2-x86_64-standard:3.0``` to ```aws/codebuild/standard:5.0```
+  - Updated CodeBuild image from `aws/codebuild/amazonlinux2-x86_64-standard:3.0` to `aws/codebuild/standard:5.0`
   - Added tagging to Lambda log groups
-  - ***Updated all lambdas from ```.NET 3.1``` to ```.NET 6```***
+  - ***Updated all lambdas from `.NET 3.1` to `.NET 6`***
   - Bumped all PowerShell module versions to latest version
   - Added Pester 5 support
   - XML file generation is now sent to cloudfront
@@ -41,8 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.7]
 
-- Added support for including wildcards in ByName ```Find-PSGModule -ByName Posh*```
-- Added support for returning all modules ```Find-PSGModule```
+- Added support for including wildcards in ByName `Find-PSGModule -ByName Posh*`
+- Added support for returning all modules `Find-PSGModule`
 
 ## [0.8.5]
 

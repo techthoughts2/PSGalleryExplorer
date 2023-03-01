@@ -1,0 +1,85 @@
+# https://www.mkdocs.org/user-guide/configuration/
+# https://www.mkdocs.org/user-guide/writing-your-docs/
+# https://www.mkdocs.org/user-guide/writing-your-docs/#writing-with-markdown
+# https://mkdocs.readthedocs.io/en/0.15.2/user-guide/writing-your-docs/
+# https://mkdocs.readthedocs.io/en/0.15.2/user-guide/styling-your-docs/
+# https://example-mkdocs-basic.readthedocs.io/en/latest/
+# https://github.com/mkdocs/mkdocs/blob/master/mkdocs.yml
+# https://squidfunk.github.io/mkdocs-material/creating-your-site/
+# mkdocs.yml
+
+site_name: PSGalleryExplorer - search, explore, and discover PowerShell Gallery modules
+# site_url:
+repo_url: https://github.com/techthoughts2/PSGalleryExplorer
+# repo_name:
+# edit_uri: edit/main/docs/
+# edit_uri_template:
+site_description: PSGalleryExplorer is a PowerShell module that lets you search, explore, and discover PowerShell Gallery modules based on additional criteria. # meta tag to the generated HTML header
+site_author: Jake Morrison # meta tag to the generated HTML header
+copyright: "PSGalleryExplorer is licensed under the <a href='https://github.com/techthoughts2/PSGalleryExplorer/blob/main/LICENSE'>MIT license"
+# remote_branch:
+# remote_name:
+# docs_dir: docs
+# site_dir:
+# extra_css:
+# extra_javascript:
+markdown_extensions:
+  # Python Markdown
+  - admonition
+  - toc:
+      permalink: true
+  # code highlighting
+  - pymdownx.highlight:
+      use_pygments: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+# extra_templates:
+# extra:
+theme:
+  name: material
+  # language: en
+  # custom_dir: overrides
+  features:
+    # - navigation.tabs
+    # - navigation.tabs.sticky
+    # - navigation.path
+  favicon: assets/PSGalleryExplorer_favicon-32x32.png
+  icon:
+    repo: fontawesome/brands/github
+  # font:
+  #   text: Work Sans
+  logo: assets/PSGalleryExplorerIcon.png
+  # palette:
+  #   primary: teal
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: light blue
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: light blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+nav:
+  - Overview: index.md
+  - Functions:
+    - Find-PSGModule.md: Find-PSGModule.md
+  - Data Collection: PSGalleryExplorer-Data_Collection.md
+  - FAQ: PSGalleryExplorer-FAQ.md
+  - Change Log: CHANGELOG.md
+  # - Functions:
+  #   - Function1: functions/function1.md
+

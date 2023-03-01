@@ -10,7 +10,9 @@
         "powershell"
     ],
     "cSpell.words": [
+        "Allman",
         "allmodules",
+        "amazonlinux",
         "APIURL",
         "buildspec",
         "Catesta",
@@ -24,12 +26,15 @@
         "lambdafunctions",
         "notcontains",
         "notin",
+        "OTBS",
         "Populator",
         "psgalleryexplorer",
         "PSGE",
         "PSGES",
         "pwsh",
-        "ratelimit"
+        "ratelimit",
+        "Ryver",
+        "Stroustrup"
     ]
 }
 

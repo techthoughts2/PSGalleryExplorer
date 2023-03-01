@@ -22,7 +22,7 @@
 #>
 
 
-$galleryDownload = $false
+$galleryDownload = $true
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -33,57 +33,87 @@ $VerbosePreference = 'SilentlyContinue'
 $modulesToInstall = [System.Collections.ArrayList]::new()
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Pester'
-            ModuleVersion = '5.3.1'
-            BucketName    = 'ps-invoke-modules'
+            ModuleVersion = '5.4.0'
+            BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
-            ModuleVersion = '5.9.7'
-            BucketName    = 'ps-invoke-modules'
+            ModuleVersion = '5.10.2'
+            BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PSScriptAnalyzer'
-            ModuleVersion = '1.20.0'
-            BucketName    = 'ps-invoke-modules'
+            ModuleVersion = '1.21.0'
+            BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'platyPS'
             ModuleVersion = '0.12.0'
-            BucketName    = 'ps-invoke-modules'
+            BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Convert'
-            ModuleVersion = '0.6.0'
-            BucketName    = 'ps-invoke-modules'
+            ModuleVersion = '1.2.0'
+            BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 
-$tempPath = [System.IO.Path]::GetTempPath()
+if ($galleryDownload -eq $false) {
 
-if ($PSVersionTable.Platform -eq 'Win32NT') {
-    $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
-    if ($PSEdition -eq 'Core') {
-        $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'PowerShell', 'Modules')
+    $tempPath = [System.IO.Path]::GetTempPath()
+
+    if ($PSVersionTable.Platform -eq 'Win32NT') {
+        $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
+        if ($PSEdition -eq 'Core') {
+            $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'PowerShell', 'Modules')
+            # Add the AWSPowerShell.NetCore Module
+            # $null = $modulesToInstall.Add(([PSCustomObject]@{
+            #     ModuleName    = 'AWSPowerShell.NetCore'
+            #     ModuleVersion = '3.3.604.0'
+            #     BucketName    = 'ps-invoke-modules'
+            #     KeyPrefix     = ''
+            # }))
+        }
+        else {
+            $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
+            # Add the AWSPowerShell Module
+            # $null = $modulesToInstall.Add(([PSCustomObject]@{
+            #     ModuleName    = 'AWSPowerShell'
+            #     ModuleVersion = '3.3.604.0'
+            #     BucketName    = 'ps-invoke-modules'
+            #     KeyPrefix     = ''
+            # }))
+        }
+    }
+    elseif ($PSVersionTable.Platform -eq 'Unix') {
+        $moduleInstallPath = [System.IO.Path]::Combine('/', 'usr', 'local', 'share', 'powershell', 'Modules')
+
+        # Add the AWSPowerShell.NetCore Module
+        # $null = $modulesToInstall.Add(([PSCustomObject]@{
+        #     ModuleName    = 'AWSPowerShell.NetCore'
+        #     ModuleVersion = '3.3.604.0'
+        #     BucketName    = 'ps-invoke-modules'
+        #     KeyPrefix     = ''
+        # }))
+    }
+    elseif ($PSEdition -eq 'Desktop') {
+        $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
+        # Add the AWSPowerShell Module
+        # $null = $modulesToInstall.Add(([PSCustomObject]@{
+        #     ModuleName    = 'AWSPowerShell'
+        #     ModuleVersion = '3.3.604.0'
+        #     BucketName    = 'ps-invoke-modules'
+        #     KeyPrefix     = ''
+        # }))
     }
     else {
-        $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
+        throw 'Unrecognized OS platform'
     }
-}
-elseif ($PSVersionTable.Platform -eq 'Unix') {
-    $moduleInstallPath = [System.IO.Path]::Combine('/', 'usr', 'local', 'share', 'powershell', 'Modules')
-}
-elseif ($PSEdition -eq 'Desktop') {
-    $moduleInstallPath = [System.IO.Path]::Combine($env:ProgramFiles, 'WindowsPowerShell', 'Modules')
-}
-else {
-    throw 'Unrecognized OS platform'
-}
 
-if ($galleryDownload -eq $false) {
     'Installing PowerShell Modules'
     foreach ($module in $modulesToInstall) {
         '  - {0} {1}' -f $module.ModuleName, $module.ModuleVersion
@@ -123,18 +153,23 @@ else {
     #     Install-PackageProvider -Name "NuGet" -Confirm:$false -Force -Verbose
     # }
     foreach ($module in $modulesToInstall) {
+        $installSplat = @{
+            Name               = $module.ModuleName
+            RequiredVersion    = $module.ModuleVersion
+            Repository         = 'PSGallery'
+            SkipPublisherCheck = $true
+            Force              = $true
+            ErrorAction        = 'Stop'
+        }
         try {
-            if ($module.ModuleName -eq 'Pester' -and $PSEdition -eq 'Desktop') {
-                Install-Module $module.ModuleName -RequiredVersion $module.ModuleVersion -Repository PSGallery -Force -SkipPublisherCheck -ErrorAction Stop
-            }
-            else {
-                Install-Module $module.ModuleName -RequiredVersion $module.ModuleVersion -Repository PSGallery -Confirm:$false -Force -ErrorAction Stop
-            }
+            Install-Module @installSplat
+            Import-Module -Name $module.ModuleName -ErrorAction Stop
+            '  - Successfully installed {0}' -f $module.ModuleName
         }
         catch {
             $message = 'Failed to install {0}' -f $module.ModuleName
             "  - $message"
-            throw $_
+            throw
         }
     }
 }
