@@ -1,6 +1,6 @@
 # PSGalleryExplorer
 
-[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1+-blue.svg)](https://github.com/PowerShell/PowerShell) [![PowerShell Gallery][psgallery-img]][psgallery-site] ![Cross Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-lightgrey) [![License][license-badge]](LICENSE)
+[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1+-blue.svg)](https://github.com/PowerShell/PowerShell) [![PowerShell Gallery][psgallery-img]][psgallery-site] ![Cross Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-lightgrey) [![License][license-badge]](LICENSE) [![Documentation Status](https://readthedocs.org/projects/psgalleryexplorer/badge/?version=latest)](https://psgalleryexplorer.readthedocs.io/en/latest/?badge=latest)
 
 [psgallery-img]:   https://img.shields.io/powershellgallery/dt/PSGalleryExplorer?label=Powershell%20Gallery&logo=powershell
 [psgallery-site]:  https://www.powershellgallery.com/packages/PSGalleryExplorer
@@ -27,7 +27,7 @@ The current PowerShell Gallery search options are primarily limited to module na
 
 This project aims to increase the discoverability of modules on the PowerShell Gallery and encourage module exploration.
 
-For example, when exploring what is available for adding message functionality, PSGalleryExplorer provides GitHub statistics on the associated projects (when available), such as star count and issues, giving you a better understanding of the module's community involvement and overall health.
+For example, when exploring what is available for adding message functionality, PSGalleryExplorer provides repo statistics on the associated projects (when available), such as star count and issues, giving you a better understanding of the module's community involvement and overall health.
 
 `Find-Module` Example:
 
@@ -119,7 +119,10 @@ PSGalleryExplorer uses a workflow to collect and serve information about module 
 
 ## Features
 
+- Fully cross-platform and can be run on Windows, Linux, and macOS
 - Discover modules based on various criteria such as number of downloads, stars, forks, and more
-- Get insights into the health of a module's repository, including information about open issues, license, and last updated date
-- Fully cross-platform: runs on Windows, Linux, and macOS
-- Complements existing tools like `Find-Module` to provide another way to explore modules on the PowerShell Gallery.
+- Get insights into the community health of a module's repository, including information about open issues, license, and last updated date
+- Identify modules that are actively being developed by filtering based on their most recent repository update date.
+- Compliments existing tools like `Find-Module` to provide another way to explore modules on the PowerShell Gallery.
+- Identify up-and-coming or trending modules by comparing search results including and excluding popular and corporate modules
+- PSGalleryExplorer provides a detailed, informative output of module results to help you quickly identify prime candidates for further exploration.

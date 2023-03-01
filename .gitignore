@@ -2,6 +2,8 @@ Archive
 Artifacts
 cov.xml
 coverage.xml
+*.bkp
+*.dtmp
 # OS generated files #
 ######################
 .DS_Store

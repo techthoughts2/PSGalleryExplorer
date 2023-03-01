@@ -1,6 +1,6 @@
 # PSGalleryExplorer
 
-[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1+-blue.svg)](https://github.com/PowerShell/PowerShell) [![PowerShell Gallery][psgallery-img]][psgallery-site] ![Cross Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-lightgrey) [![License][license-badge]](LICENSE)
+[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1+-blue.svg)](https://github.com/PowerShell/PowerShell) [![PowerShell Gallery][psgallery-img]][psgallery-site] ![Cross Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-lightgrey) [![License][license-badge]](LICENSE) [![Documentation Status](https://readthedocs.org/projects/psgalleryexplorer/badge/?version=latest)](https://psgalleryexplorer.readthedocs.io/en/latest/?badge=latest)
 
 [psgallery-img]:   https://img.shields.io/powershellgallery/dt/PSGalleryExplorer?label=Powershell%20Gallery&logo=powershell
 [psgallery-site]:  https://www.powershellgallery.com/packages/PSGalleryExplorer
@@ -8,7 +8,7 @@
 [license-badge]:   https://img.shields.io/github/license/techthoughts2/PSGalleryExplorer
 
 <p align="center">
-    <img src="/media/PSGalleryExplorer.png" alt="PSGalleryExplorer Logo" >
+    <img src="docs/assets/PSGalleryExplorer.png" alt="PSGalleryExplorer Logo" >
 </p>
 
 Branch | Windows | Windows pwsh | MacOS | Linux
@@ -18,52 +18,55 @@ Enhancements | ![E-W-Build Status](https://codebuild.us-west-2.amazonaws.com/bad
 
 ## Synopsis
 
-PSGalleryExplorer is a PowerShell module that lets you search, explore, and discover PowerShell Gallery modules based on various criteria.
+PSGalleryExplorer is a PowerShell module that extends the search functionality of the PowerShell Gallery by providing additional project information about modules. This enables you to search, explore, and discover PowerShell Gallery modules based on additional criteria.
 
 ![PSGalleryExplorer Gif Demo](media/psgalleryexplorer.gif)
 
 ## Description
 
-PSGalleryExplorer extends PowerShell Gallery Module search functionality by including information about a module's associated repository.
+PSGalleryExplorer is a PowerShell module that extends the search functionality of the PowerShell Gallery by providing additional project information about modules. It enables users to search, explore, and discover PowerShell Gallery modules based on additional criteria that are not available via `Find-Module`. The module provides various features such as filtering results based on download counts, stars, forks, and repository health metrics like open issues, license, and last updated date. With PSGalleryExplorer, users can easily identify trending and actively developed modules, and explore module repositories directly from the console.
 
-There are a variety of search options that aim to search and explore the available modules on the PowerShell Gallery.
+### Features
 
-To aid in module discovery more common/popular modules and modules made by corporations are excluded by default. Popular modules and corporation modules can be included in results by specifying the necessary parameter switches.
+- Fully cross-platform and can be run on Windows, Linux, and macOS
+- Discover modules based on various criteria such as number of downloads, stars, forks, and more
+- Get insights into the community health of a module's repository, including information about open issues, license, and last updated date
+- Identify modules that are actively being developed by filtering based on their most recent repository update date.
+- Compliments existing tools like `Find-Module` to provide another way to explore modules on the PowerShell Gallery.
+- Identify up-and-coming or trending modules by comparing search results including and excluding popular and corporate modules
+- PSGalleryExplorer provides a detailed, informative output of module results to help you quickly identify prime candidates for further exploration.
 
-[PSGalleryExplorer](docs/PSGalleryExplorer.md) provides the following functions:
+## Getting Started
 
-* [Find-PSGModule](docs/Find-PSGModule.md)
+### Documentation
 
-## Why
+Documentation for PSGalleryExplorer is available at: [https://psgalleryexplorer.readthedocs.io](https://psgalleryexplorer.readthedocs.io)
 
-To aid in the discoverability of modules in the PowerShell Gallery.
-
-The current PowerShell Gallery search options are primarily limited to module name, and tags. CI/CD processes also inflate the download numbers of many modules on the gallery. This makes it challenging to get a sense of new and trending modules that the community is using.
-
-This project aims to increase the discoverability of modules on the PowerShell Gallery and encourage module exploration.
-
-## Installation
-
-### Prerequisites
-
-* [PowerShell 5.1](https://github.com/PowerShell/PowerShell) *(or higher version)*
-
-### Installing PSGalleryExplorer via PowerShell Gallery
+### Installation
 
 ```powershell
-#from a 5.1+ PowerShell session
-Install-Module -Name "PSGalleryExplorer" -Scope CurrentUser
+# Install PSGalleryExplorer from the PowerShell Gallery
+Install-Module -Name "PSGalleryExplorer" -Repository PSGallery -Scope CurrentUser
 ```
 
-## Quick start
+### Quick start
 
 ```powershell
 #------------------------------------------------------------------------------------------------
 # import the PSGalleryExplorer module
 Import-Module -Name "PSGalleryExplorer"
 #------------------------------------------------------------------------------------------------
+# discover module info by tag
+Find-PSGModule -ByTag Telegram
+#------------------------------------------------------------------------------------------------
 # discover PowerShell modules by # of Gallery Downloads
 Find-PSGModule -ByDownloads
+#------------------------------------------------------------------------------------------------
+# discover the most recently updated modules on repo
+Find-PSGModule -ByRecentUpdate RepoUpdate
+#------------------------------------------------------------------------------------------------
+# discover the most recently updated modules on the PowerShell Gallery
+Find-PSGModule -ByRecentUpdate GalleryUpdate
 #------------------------------------------------------------------------------------------------
 # discover PowerShell modules by # of Gallery Downloads
 # include corporate modules and common/popular modules in results
@@ -79,41 +82,22 @@ Find-PSGModule -ByRepoInfo Issues
 # discover PowerShell modules by # of repo project subscribers
 Find-PSGModule -ByRepoInfo Subscribers
 #------------------------------------------------------------------------------------------------
-# discover the most recently updated modules on the PowerShell Gallery
-Find-PSGModule -ByRecentUpdate GalleryUpdate
-#------------------------------------------------------------------------------------------------
-# discover the most recently updated modules on repo
-Find-PSGModule -ByRecentUpdate RepoUpdate
-#------------------------------------------------------------------------------------------------
 # discover a set of random modules
 Find-PSGModule -ByRandom
 #------------------------------------------------------------------------------------------------
 # discover module info by name
 Find-PSGModule -ByName 'PoshGram'
 #------------------------------------------------------------------------------------------------
-# discover module info by tag
-Find-PSGModule -ByTag Telegram
-#------------------------------------------------------------------------------------------------
 ```
-
-## Author
-
-[Jake Morrison](https://twitter.com/JakeMorrison) - [https://www.techthoughts.info/](https://www.techthoughts.info/)
 
 ## Notes
 
-Repo information is provided via a [PowerShell Serverless Solution](docs/PowerShell_Serverless.md)
-
 This PowerShell project was created with [Catesta](https://github.com/techthoughts2/Catesta).
 
-## FAQ
+## Contributing
 
-[PSGalleryExplorer - FAQ](docs/PSGalleryExplorer-FAQ.md)
+If you'd like to contribute to PSGalleryExplorer, please see the [contribution guidelines](.github/CONTRIBUTING.md).
 
 ## License
 
 This project is [licensed under the MIT License](LICENSE).
-
-## Changelog
-
-Reference the [Changelog](.github/CHANGELOG.md)

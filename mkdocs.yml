@@ -77,6 +77,7 @@ nav:
   - Overview: index.md
   - Functions:
     - Find-PSGModule.md: Find-PSGModule.md
+  - Data Collection: PSGalleryExplorer-Data_Collection.md
   - FAQ: PSGalleryExplorer-FAQ.md
   - Change Log: CHANGELOG.md
   # - Functions:

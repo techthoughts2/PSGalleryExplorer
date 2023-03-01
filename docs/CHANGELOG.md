@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added additional corps to list
   - Added additional regulars to list
 - Build Updates:
+  - Moved from a fully serverless PowerShell lambda architecture to a hybrid SSM execution architecture.
+  - Added integration for Read the Docs
   - Moved `CHANGELOG.md` from `.github` directory to `docs` directory
   - Updated VSCode `tasks.json`
   - Added a `SECURITY.md` file for the project
