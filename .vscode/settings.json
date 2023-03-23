@@ -1,4 +1,11 @@
 {
+    "markdownlint.config": {
+        "default": true,
+        "MD007": {
+            "indent": 4
+        },
+        "no-hard-tabs": false
+    },
     // When enabled, will trim trailing whitespace when you save a file.
     "files.trimTrailingWhitespace": true,
     // specifies the location of the explicity ScriptAnalyzer settings file
