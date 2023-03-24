@@ -76,6 +76,7 @@ theme:
 nav:
   - Overview: index.md
   - Functions:
+    - Find-ModuleByCommand.md: Find-ModuleByCommand.md
     - Find-PSGModule.md: Find-PSGModule.md
   - Data Collection: PSGalleryExplorer-Data_Collection.md
   - FAQ: PSGalleryExplorer-FAQ.md

@@ -27,6 +27,8 @@ This project aims to increase the discoverability of modules on the PowerShell G
 
 For example, when exploring what is available for adding message functionality, PSGalleryExplorer provides repo statistics on the associated projects (when available), such as star count and issues, giving you a better understanding of the module's community involvement and overall health.
 
+To further enhance the discoverability of modules, PSGalleryExplorer now includes the `Find-ModuleByCommand` function, which allows users to search for modules based on a specific command, even if the module is not installed locally. This feature provides an additional means to explore modules in the PowerShell Gallery and identify modules that contain specific commands that you may be interested in.
+
 `Find-Module` Example:
 
 ```powershell
@@ -109,6 +111,9 @@ Find-PSGModule -ByRandom
 # discover module info by name
 Find-PSGModule -ByName 'PoshGram'
 #------------------------------------------------------------------------------------------------
+# Returns a list of modules that contain the command Send-TelegramTextMessage
+Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage'
+#------------------------------------------------------------------------------------------------
 ```
 
 ## How PSGalleryExplorer Works
@@ -124,3 +129,4 @@ PSGalleryExplorer uses a workflow to collect and serve information about module 
 - Compliments existing tools like `Find-Module` to provide another way to explore modules on the PowerShell Gallery.
 - Identify up-and-coming or trending modules by comparing search results including and excluding popular and corporate modules
 - PSGalleryExplorer provides a detailed, informative output of module results to help you quickly identify prime candidates for further exploration.
+- `Find-ModuleByCommand` allows users to search for modules based on a specific command name, even if the module is not installed locally, providing a quick and easy way to locate modules containing the desired functionality.
