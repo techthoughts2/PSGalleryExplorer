@@ -26,6 +26,8 @@ PSGalleryExplorer is a PowerShell module that extends the search functionality o
 
 PSGalleryExplorer is a PowerShell module that extends the search functionality of the PowerShell Gallery by providing additional project information about modules. It enables users to search, explore, and discover PowerShell Gallery modules based on additional criteria that are not available via `Find-Module`. The module provides various features such as filtering results based on download counts, stars, forks, and repository health metrics like open issues, license, and last updated date. With PSGalleryExplorer, users can easily identify trending and actively developed modules, and explore module repositories directly from the console.
 
+With `Find-ModuleByCommand`, PSGalleryExplorer now provides even more value to users by enabling them to quickly locate modules that contain specific commands. This enables you to search for modules by function name, even if you do not have the module locally installed.
+
 ### Features
 
 - Fully cross-platform and can be run on Windows, Linux, and macOS
@@ -35,6 +37,7 @@ PSGalleryExplorer is a PowerShell module that extends the search functionality o
 - Compliments existing tools like `Find-Module` to provide another way to explore modules on the PowerShell Gallery.
 - Identify up-and-coming or trending modules by comparing search results including and excluding popular and corporate modules
 - PSGalleryExplorer provides a detailed, informative output of module results to help you quickly identify prime candidates for further exploration.
+- `Find-ModuleByCommand` allows users to search for modules based on a specific command name, even if the module is not installed locally, providing a quick and easy way to locate modules containing the desired functionality.
 
 ## Getting Started
 
@@ -87,6 +90,9 @@ Find-PSGModule -ByRandom
 #------------------------------------------------------------------------------------------------
 # discover module info by name
 Find-PSGModule -ByName 'PoshGram'
+#------------------------------------------------------------------------------------------------
+# Returns a list of modules that contain the command Send-TelegramTextMessage
+Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage'
 #------------------------------------------------------------------------------------------------
 ```
 
