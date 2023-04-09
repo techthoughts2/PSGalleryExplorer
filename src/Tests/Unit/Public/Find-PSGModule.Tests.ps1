@@ -832,7 +832,7 @@ InModuleScope 'PSGalleryExplorer' {
                     $eval.Name | Should -BeExactly 'AWS.Tools.Common'
                 } #it
 
-                It 'should return expteced results when finding module name with wild card' {
+                It 'should return expected results when finding module name with wild card' {
                     $eval = Find-PSGModule -ByName 'P*' -IncludeRegulars -IncludeCorps
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
                     $count | Should -BeExactly 2
