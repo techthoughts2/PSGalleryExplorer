@@ -50,7 +50,7 @@ InModuleScope 'PSGalleryExplorer' {
             It 'should call Invoke-WebRequest with the correct parameters' {
                 $outPath = [System.IO.Path]::Combine($script:dataPath, $fileName)
                 Get-RemoteFile -File $fileName
-                Assert-MockCalled -CommandName Invoke-WebRequest -Times 1 -Exactly -Scope It -ParameterFilter {
+                Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly -Scope It -ParameterFilter {
                     $OutFile -eq $outPath -and $Uri -eq "https://$script:dlURI/$fileName"
                 }
             } #it
@@ -59,7 +59,7 @@ InModuleScope 'PSGalleryExplorer' {
                 $fileNameOverride = 'test2.zip'
                 $outPath = [System.IO.Path]::Combine($script:dataPath, $fileNameOverride)
                 Get-RemoteFile -File $fileName -OutFileName $fileNameOverride
-                Assert-MockCalled -CommandName Invoke-WebRequest -Times 1 -Exactly -Scope It -ParameterFilter {
+                Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly -Scope It -ParameterFilter {
                     $OutFile -eq $outPath -and $Uri -eq "https://$script:dlURI/$fileName"
                 }
             } #it

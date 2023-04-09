@@ -588,7 +588,7 @@ InModuleScope 'PSGalleryExplorer' {
                 It 'Should not process if no parameters are specified' {
                     Mock -CommandName Find-PSGModule -MockWith { } #endMock
                     { Find-PSGModule }
-                    Assert-MockCalled Find-PSGModule -Scope It -Exactly -Times 0
+                    Should -Invoke Find-PSGModule -Scope It -Exactly -Times 0
                 } #it
             } #context_Requirements
             Context 'Error' {
@@ -739,7 +739,7 @@ InModuleScope 'PSGalleryExplorer' {
                 It 'Should not process if a valid module name is not provided' {
                     Mock -CommandName Find-PSGModule -MockWith { } #endMock
                     { Find-PSGModule -ByName 'Posh*Gram' }
-                    Assert-MockCalled Find-PSGModule -Scope It -Exactly -Times 0
+                    Should -Invoke Find-PSGModule -Scope It -Exactly -Times 0
                 } #it
             } #context_Requirements
             Context 'Success' {
@@ -789,7 +789,7 @@ InModuleScope 'PSGalleryExplorer' {
                 It 'Should not process if a valid module tag is not provided' {
                     Mock -CommandName Find-PSGModule -MockWith { } #endMock
                     { Find-PSGModule -ByTag 'Tele-Gram' }
-                    Assert-MockCalled Find-PSGModule -Scope It -Exactly -Times 0
+                    Should -Invoke Find-PSGModule -Scope It -Exactly -Times 0
                 } #it
             } #context_Requirements
             Context 'Success' {
