@@ -39,7 +39,7 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
-            ModuleVersion = '5.10.2'
+            ModuleVersion = '5.10.3'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
@@ -57,7 +57,7 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Convert'
-            ModuleVersion = '1.2.0'
+            ModuleVersion = '1.5.0'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
