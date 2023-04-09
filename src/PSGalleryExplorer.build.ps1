@@ -190,7 +190,8 @@ Add-BuildTask AnalyzeTests -After Analyze {
             Setting     = 'PSScriptAnalyzerSettings.psd1'
             ExcludeRule = @(
                 'PSUseDeclaredVarsMoreThanAssignments',
-                'PSAvoidOverwritingBuiltInCmdlets'
+                'PSAvoidOverwritingBuiltInCmdlets',
+                'PSUseShouldProcessForStateChangingFunctions'
             )
             Recurse     = $true
             Verbose     = $false

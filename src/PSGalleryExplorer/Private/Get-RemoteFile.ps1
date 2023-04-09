@@ -1,12 +1,16 @@
 <#
 .SYNOPSIS
-    Downloads XML Data set to device.
+    Downloads file to device.
 .DESCRIPTION
-    Retrieves XML Data zip file from web and downloads to device.
+    Retrieves file from web and downloads to device.
 .EXAMPLE
-    Get-XMLDataSet
+    Get-RemoteFile
 
-    Downloads XML data set to data path.
+    Downloads file to data path.
+.PARAMETER File
+    File to download.
+.PARAMETER OutFileName
+    Specify output file name.
 .OUTPUTS
     System.Boolean
 .NOTES
@@ -15,17 +19,31 @@
 .COMPONENT
     PSGalleryExplorer
 #>
-function Get-XMLDataSet {
+function Get-RemoteFile {
     [CmdletBinding()]
     param (
+        [Parameter(Mandatory = $true,
+            HelpMessage = 'File to download')]
+        [string]$File,
+
+        [Parameter(Mandatory = $false,
+            HelpMessage = 'Specify output file name.')]
+        [string]$OutFileName
     )
     $result = $true #assume the best
 
-    Write-Verbose -Message 'Downloading XML data set...'
+    if ($OutFileName) {
+        $OutFile = $OutFileName
+    }
+    else {
+        $OutFile = $File
+    }
+
+    Write-Verbose -Message 'Downloading file...'
     try {
         $invokeWebRequestSplat = @{
-            OutFile     = '{0}/{1}' -f $script:dataPath, $script:dataFileZip
-            Uri         = 'https://{0}/{1}' -f $script:dlURI, $script:dataFileZip
+            OutFile     = [System.IO.Path]::Combine($script:dataPath, $OutFile)
+            Uri         = 'https://{0}/{1}' -f $script:dlURI, $File
             ErrorAction = 'Stop'
         }
         $oldProgressPreference = $progressPreference
@@ -45,4 +63,4 @@ function Get-XMLDataSet {
         $progressPreference = $oldProgressPreference
     } #finally
     return $result
-} #Get-XMLDataSet
+} #Get-RemoteFile

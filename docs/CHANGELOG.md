@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0]
+
+- Module Updates
+    - Added support for usage of a metadata file to better determine if data is current
+        - Added `Confirm-MetadataUpdate` private function
+        - Updated logic in `Confirm-XMLDataSet` and `Invoke-XMLDataCheck`
+        - Removed private function `Get-XMLDataSet` for new private function `Get-RemoteFile`
+        -
+- Build Updates
+    - SSM Task now generates metadata file
+
 ## [2.1.0]
 
 - Module Updates

@@ -12,7 +12,7 @@
 .NOTES
     Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
     Confirm-XMLDataSet
-    Get-XMLDataSet
+    Get-RemoteFile
     Expand-XMLDataSet
 .COMPONENT
     PSGalleryExplorer
@@ -51,9 +51,15 @@ function Invoke-XMLDataCheck {
             $dataOutputDir = Confirm-DataLocation
             if ($dataOutputDir -eq $true) {
                 $confirm = Confirm-XMLDataSet
-                if (-not $Confirm -eq $true) {
-                    $retrieve = Get-XMLDataSet
-                    if ($retrieve -eq $true) {
+                if (-not $confirm -eq $true) {
+                    $retrieve = Get-RemoteFile -File $script:dataFileZip
+                    # remove metadata file if it exists
+                    $localMetaDataFilePath = [System.IO.Path]::Combine($script:dataPath, $script:metadataFile)
+                    if (Test-Path -Path $localMetaDataFilePath) {
+                        Remove-Item -Path $localMetaDataFilePath -Force
+                    }
+                    $retrieveMetadata = Get-RemoteFile -File $script:metadataFile
+                    if ($retrieve -eq $true -and $retrieveMetadata -eq $true) {
                         $expand = Expand-XMLDataSet
                         if (-not $expand -eq $true) {
                             $results = $false

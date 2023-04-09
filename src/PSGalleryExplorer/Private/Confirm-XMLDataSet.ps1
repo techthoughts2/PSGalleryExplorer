@@ -2,7 +2,10 @@
 .SYNOPSIS
     Confirms the XML dataset file is available and not beyond the expiration time.
 .DESCRIPTION
-    Confirms the XML dataset file is present on the file system for use. Determines the age of the XML dataset file. Returns true if present and 9 days older or more.
+    Determines if the XML dataset file is stale or not available.
+    If the file is not available, false will be returned so it can be downloaded.
+    If the file is available, but over 9 days old, the metadata file will be checked to see if an update is available.
+    If an update is available after the metadata file is checked, false will be returned so the data file can be refreshed.
 .EXAMPLE
     Confirm-XMLDataSet
 
@@ -23,6 +26,8 @@ function Confirm-XMLDataSet {
 
     Write-Verbose -Message 'Confirming valid and current data set...'
 
+    # if the file doesn't exist, we need to download it
+    Write-Verbose -Message 'Checking for data file...'
     try {
         $pathEval = Test-Path -Path $dataFile -ErrorAction Stop
     }
@@ -38,7 +43,7 @@ function Confirm-XMLDataSet {
     else {
         Write-Verbose 'Data file found. Checking date of file...'
         try {
-            $fileData = Get-ChildItem -Path $dataFile -ErrorAction Stop
+            $fileData = Get-Item -Path $dataFile -ErrorAction Stop
         }
         catch {
             $result = $false
@@ -49,8 +54,16 @@ function Confirm-XMLDataSet {
             $creationDate = $fileData.CreationTime
             $now = Get-Date
             if (($now - $creationDate).Days -ge 9) {
-                Write-Verbose 'Data file requires refresh.'
-                $result = $false
+                # Write-Verbose 'Data file requires refresh.'
+                Write-Verbose 'Data file is older than 9 days. Checking if an update is available...'
+                $metadataStatus = Confirm-MetadataUpdate
+                if ($metadataStatus -eq $false) {
+                    Write-Verbose 'Refreshing data file...'
+                    $result = $false
+                }
+                else {
+                    Write-Verbose 'No update available. Data file is current.'
+                }
             }
             else {
                 Write-Verbose 'Data file verified'
