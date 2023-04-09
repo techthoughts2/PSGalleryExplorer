@@ -11,8 +11,14 @@
     Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage'
 
     Returns a list of modules that contain the command Send-TelegramTextMessage
+.EXAMPLE
+    Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage' -InsightView
+
+    Returns a list of modules that contain the command Send-TelegramTextMessage, with focused community insights about the module
 .PARAMETER CommandName
     Specifies the command name to search for
+.PARAMETER InsightView
+    Output focuses on additional insights available through PSGalleryExplorer. This includes the module's size and file count, as well as repository metrics like stars, forks, and last repo update date
 .OUTPUTS
     PSGEFormat
 .NOTES
@@ -25,7 +31,11 @@ function Find-ModuleByCommand {
     param (
         [Parameter(Mandatory = $true,
             HelpMessage = 'Specifies the command name to search for')]
-        [string]$CommandName
+        [string]$CommandName,
+
+        [Parameter(Mandatory = $false,
+            HelpMessage = 'Output focus on community insights')]
+        [switch]$InsightView
     )
     Write-Verbose -Message 'Verifying XML Data Set Availability...'
     if (Import-XMLDataSet) {
@@ -60,7 +70,12 @@ function Find-ModuleByCommand {
             RepoUpdate = $item.ProjectInfo.Updated
         }
         $item | Add-Member -NotePropertyMembers $metrics -TypeName Asset -Force
-        $item.PSObject.TypeNames.Insert(0, 'PSGEFormat')
+        if ($InsightView) {
+            $item.PSObject.TypeNames.Insert(0, 'PSGEInsight')
+        }
+        else {
+            $item.PSObject.TypeNames.Insert(0, 'PSGEFormat')
+        }
     } #foreach_find
     Write-Verbose -Message 'Properties addition completed.'
 

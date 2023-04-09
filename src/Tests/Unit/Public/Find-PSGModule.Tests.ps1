@@ -593,6 +593,15 @@ Alternative modules, AWSPowerShell.NetCore and AWSPowerShell, provide support fo
             }
         } #before_each
 
+        Context 'General' {
+
+            It 'should support the InSightview parameter' {
+                $eval = Find-PSGModule -ByName 'Catesta' -InSightview
+                $eval.Name | Should -BeExactly 'Catesta'
+            } #it
+
+        } #context_General
+
         Context 'ByDownloads' {
 
             Context 'Requirements' {

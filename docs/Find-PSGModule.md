@@ -14,36 +14,36 @@ Finds PowerShell Gallery module(s) that match specified criteria.
 
 ### none (Default)
 ```
-Find-PSGModule [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>] [<CommonParameters>]
+Find-PSGModule [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>] [-InsightView] [<CommonParameters>]
 ```
 
 ### GalleryDownloads
 ```
 Find-PSGModule [-ByDownloads] [-ByRandom] [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>]
- [<CommonParameters>]
+ [-InsightView] [<CommonParameters>]
 ```
 
 ### Repo
 ```
 Find-PSGModule [-ByRepoInfo <String>] [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>]
- [<CommonParameters>]
+ [-InsightView] [<CommonParameters>]
 ```
 
 ### Update
 ```
 Find-PSGModule [-ByRecentUpdate <String>] [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>]
- [<CommonParameters>]
+ [-InsightView] [<CommonParameters>]
 ```
 
 ### Names
 ```
-Find-PSGModule [-ByName <String>] [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>]
+Find-PSGModule [-ByName <String>] [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>] [-InsightView]
  [<CommonParameters>]
 ```
 
 ### Tags
 ```
-Find-PSGModule [-ByTag <String>] [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>]
+Find-PSGModule [-ByTag <String>] [-IncludeCorps] [-IncludeRegulars] [-NumberToReturn <Int32>] [-InsightView]
  [<CommonParameters>]
 ```
 
@@ -179,6 +179,15 @@ Find-PSGModule -IncludeCorps -IncludeRegulars
 
 Returns all modules
 
+### EXAMPLE 18
+```
+Find-PSGModule -ByTag module -InsightView
+```
+
+Returns up to 35 modules that contain the tag: module.
+The output focuses on additional insights available through PSGalleryExplorer.
+This includes the module's size and file count, as well as repository metrics like stars, forks, and last repo update date.
+
 ## PARAMETERS
 
 ### -ByDownloads
@@ -312,6 +321,22 @@ Aliases:
 Required: False
 Position: Named
 Default value: 35
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -InsightView
+Output focuses on additional insights available through PSGalleryExplorer.
+This includes the module's size and file count, as well as repository metrics like stars, forks, and last repo update date
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

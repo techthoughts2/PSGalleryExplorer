@@ -13,6 +13,15 @@ Describe 'Integration Tests' -Tag Integration {
 
     Context -Name 'Find-PSGModule' {
 
+        Context 'General' {
+
+            It 'should support the InSightview parameter' {
+                $eval = Find-PSGModule -ByName 'Catesta' -InSightview
+                $eval.Name | Should -BeExactly 'Catesta'
+            } #it
+
+        } #context_General
+
         Context 'ByDownloads' {
 
             It 'should return expected results when finding finding default downloads' {
@@ -282,6 +291,11 @@ Describe 'Integration Tests' -Tag Integration {
         It 'should return expected results when finding command name' {
             $eval = Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage'
             $eval.Name | Should -Contain 'PoshGram'
+        } #it
+
+        It 'should support the InSightview parameter' {
+            $eval = Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage' -InSightview
+            $eval.Name | Should -BeExactly 'PoshGram'
         } #it
 
     } #context_Find-ModuleByCommand

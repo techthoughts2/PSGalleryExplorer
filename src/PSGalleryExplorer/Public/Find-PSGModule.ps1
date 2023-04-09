@@ -72,6 +72,11 @@
     Find-PSGModule -IncludeCorps -IncludeRegulars
 
     Returns all modules
+.EXAMPLE
+    Find-PSGModule -ByTag module -InsightView
+
+    Returns up to 35 modules that contain the tag: module. The output focuses on additional insights available through PSGalleryExplorer.
+    This includes the module's size and file count, as well as repository metrics like stars, forks, and last repo update date.
 .PARAMETER ByDownloads
     Find modules by number of PowerShell Gallery Downloads
 .PARAMETER ByRepoInfo
@@ -90,6 +95,8 @@
     Include modules that are well known in results
 .PARAMETER NumberToReturn
     Max number of modules to return
+.PARAMETER InsightView
+    Output focuses on additional insights available through PSGalleryExplorer. This includes the module's size and file count, as well as repository metrics like stars, forks, and last repo update date
 .OUTPUTS
     PSGEFormat
 .NOTES
@@ -102,8 +109,7 @@ function Find-PSGModule {
     param (
         [Parameter(ParameterSetName = 'GalleryDownloads',
             HelpMessage = 'Find by PowerShell Gallery Downloads')]
-        [switch]
-        $ByDownloads,
+        [switch]$ByDownloads,
 
         [Parameter(ParameterSetName = 'Repo',
             HelpMessage = 'Find by Repository metrics')]
@@ -113,46 +119,42 @@ function Find-PSGModule {
             'Issues',
             'Subscribers'
         )]
-        [string]
-        $ByRepoInfo,
+        [string]$ByRepoInfo,
 
         [Parameter(ParameterSetName = 'Update',
             HelpMessage = 'Find by recently updated')]
-        [string]
         [ValidateSet(
             'GalleryUpdate',
             'RepoUpdate'
         )]
-        $ByRecentUpdate,
+        [string]$ByRecentUpdate,
 
         [Parameter(ParameterSetName = 'GalleryDownloads',
             HelpMessage = 'Find random PowerShell Gallery modules')]
-        [switch]
-        $ByRandom,
+        [switch]$ByRandom,
 
         [Parameter(ParameterSetName = 'Names',
             HelpMessage = 'Find by name')]
-        [string]
-        $ByName,
+        [string]$ByName,
 
         [Parameter(ParameterSetName = 'Tags',
             HelpMessage = 'Find by tag')]
-        [string]
         [ValidatePattern('^[A-Za-z]+')]
-        $ByTag,
+        [string]$ByTag,
 
         [Parameter(HelpMessage = 'Include corporation results')]
-        [switch]
-        $IncludeCorps,
+        [switch]$IncludeCorps,
 
         [Parameter(HelpMessage = 'Include more popular results')]
-        [switch]
-        $IncludeRegulars,
+        [switch]$IncludeRegulars,
 
         [Parameter(Mandatory = $false,
             HelpMessage = 'Max number of modules to return')]
-        [int]
-        $NumberToReturn = 35
+        [int]$NumberToReturn = 35,
+
+        [Parameter(Mandatory = $false,
+            HelpMessage = 'Output focus on community insights')]
+        [switch]$InsightView
     )
     Write-Verbose -Message 'Verifying XML Data Set Availability...'
     if (Import-XMLDataSet) {
@@ -260,7 +262,12 @@ function Find-PSGModule {
             RepoUpdate = $item.ProjectInfo.Updated
         }
         $item | Add-Member -NotePropertyMembers $metrics -TypeName Asset -Force
-        $item.PSObject.TypeNames.Insert(0, 'PSGEFormat')
+        if ($InsightView) {
+            $item.PSObject.TypeNames.Insert(0, 'PSGEInsight')
+        }
+        else {
+            $item.PSObject.TypeNames.Insert(0, 'PSGEFormat')
+        }
     } #foreach_find
     Write-Verbose -Message 'Properties addition completed.'
 

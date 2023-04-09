@@ -606,6 +606,13 @@ Alternative modules, AWSPowerShell.NetCore and AWSPowerShell, provide support fo
 
         Context 'Success' {
 
+
+            It 'should support the InSightview parameter' {
+                $eval = Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage' -InSightview
+                $eval.Name | Should -BeExactly 'PoshGram'
+            } #it
+
+
             It 'should return expected results when it finds a module containing the command' {
                 $eval = Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage'
                 $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
