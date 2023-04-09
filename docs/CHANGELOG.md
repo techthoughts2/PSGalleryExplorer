@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.4.0]
+## [2.5.0]
 
 - Module Updates
     - Added support for usage of a metadata file to better determine if data is current
@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Removed all test case uses of `Assert-MockCalled`
     - Improved test formatting
     - Updated test example references
+    - Added additional integration tests for new properties
 
 ## [2.1.0]
 
