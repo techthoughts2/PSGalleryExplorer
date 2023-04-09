@@ -181,7 +181,6 @@ Resources:
                 - 'aws s3 cp "C:\${ServiceName}\FinalZip\${ServiceName}.zip" "s3://${bucketName}"'
                 - bucketName:
                     'Fn::ImportValue': PubXMLDataBN
-              - !Sub $nowEpoch = Get-Date -UFormat %s; $metadata = @{ 'zipCreated' = $nowEpoch }; $metadataFilePath = 'C:\${ServiceName}\FinalZip\${ServiceName}.json'; $metadata | ConvertTo-Json -Depth 10 | Out-File -FilePath $metadataFilePath -Force
               - !Sub
                 - 'aws s3 cp "C:\${ServiceName}\FinalZip\${ServiceName}.json" "s3://${bucketName}"'
                 - bucketName:

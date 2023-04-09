@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added the `InsightView` parameter to both `Find-ModuleByCommand` and `Find-PSGModule`
         - This provides a new results view that focuses on community insights
 - Build Updates
-    - SSM Task now generates metadata file
+    - SSM Task now copies metadata file
     - InvokeBuild bumped from `5.10.2` to `5.10.3`
     - Convert bumped from `1.2.0` to `1.5.0`
     - Removed all test case uses of `Assert-MockCalled`
