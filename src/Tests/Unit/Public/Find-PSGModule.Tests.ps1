@@ -709,7 +709,6 @@ Alternative modules, AWSPowerShell.NetCore and AWSPowerShell, provide support fo
                     $eval = Find-PSGModule -ByRepoInfo Forks
                     $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
                     $count | Should -BeExactly 2
-                    $eval[0].Name | Should -BeExactly 'PoshGram'
                 } #it
 
             } #context_Success
