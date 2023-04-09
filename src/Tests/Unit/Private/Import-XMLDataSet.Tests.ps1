@@ -12,14 +12,13 @@ Import-Module $PathToManifest -Force
 #-------------------------------------------------------------------------
 
 InModuleScope 'PSGalleryExplorer' {
-    #-------------------------------------------------------------------------
-    $WarningPreference = "SilentlyContinue"
-    #-------------------------------------------------------------------------
+
     Describe 'Import-XMLDataSet' -Tag Unit {
         BeforeAll {
             $WarningPreference = 'SilentlyContinue'
             $ErrorActionPreference = 'SilentlyContinue'
         } #before_all
+
         BeforeEach {
             $xmlData = @'
 <Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
@@ -667,24 +666,33 @@ InModuleScope 'PSGalleryExplorer' {
                 $objData
             } #endMock
         } #before_each
+
         Context 'Error' {
+
             It 'should return false if an error is encountered getting content from data file' {
                 Mock -CommandName Get-Content -MockWith {
                     throw 'FakeError'
                 } #endMock
                 Import-XMLDataSet | Should -BeExactly $false
             } #it
-        } #context_FunctionName
+
+        } #context_Error
+
         Context 'Success' {
+
             It 'should return false if Invoke-XMLDataCheck does not succeed' {
                 Mock -CommandName Invoke-XMLDataCheck -MockWith {
                     $false
                 } #endMock
                 Import-XMLDataSet | Should -BeExactly $false
             } #it
+
             It 'should return true if the data is successfully imported' {
                 Import-XMLDataSet | Should -BeExactly $true
             } #it
+
         } #context_Success
+
     } #describe_Import-XMLDataSet
+
 } #inModule

@@ -142,6 +142,7 @@ $domain = 'cloudfront.net'
 $target = 'dfuu1myynofuh'
 Get-DataLocation
 $script:dataFileZip = 'PSGalleryExplorer.zip'
+$script:metadataFile = 'PSGalleryExplorer.json'
 $script:dataFile = 'PSGalleryExplorer.xml'
 $script:dlURI = '{0}.{1}' -f $target, $domain
 $script:glData = $null

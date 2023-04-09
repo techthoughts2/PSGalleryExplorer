@@ -12,14 +12,13 @@ Import-Module $PathToManifest -Force
 #-------------------------------------------------------------------------
 
 InModuleScope 'PSGalleryExplorer' {
-    #-------------------------------------------------------------------------
-    $WarningPreference = "SilentlyContinue"
-    #-------------------------------------------------------------------------
+
     Describe 'Expand-XMLDataSet' -Tag Unit {
         BeforeAll {
             $WarningPreference = 'SilentlyContinue'
             $ErrorActionPreference = 'SilentlyContinue'
         } #before_all
+
         BeforeEach {
             Mock -CommandName Test-Path -MockWith {
                 $false
@@ -35,13 +34,16 @@ InModuleScope 'PSGalleryExplorer' {
                 }
             } #endMock
         } #before_each
+
         Context 'Error' {
+
             It 'should return false if an error is encountered with Test-Path' {
                 Mock -CommandName Test-Path -MockWith {
                     throw 'FakeError'
                 } #endMock
                 Expand-XMLDataSet | Should -BeExactly $false
             } #it
+
             It 'should return false if an error is encountered with Remove-Item' {
                 Mock -CommandName Test-Path -MockWith {
                     $true
@@ -51,17 +53,24 @@ InModuleScope 'PSGalleryExplorer' {
                 } #endMock
                 Expand-XMLDataSet | Should -BeExactly $false
             } #it
+
             It 'should return false if an error is encountered with Expand-Archive' {
                 Mock -CommandName Expand-Archive -MockWith {
                     throw 'FakeError'
                 } #endMock
                 Expand-XMLDataSet | Should -BeExactly $false
             } #it
+
         } #context_Error
+
         Context 'Success' {
+
             It 'should return true if the data file is expanded' {
                 Expand-XMLDataSet | Should -BeExactly $true
             } #it
+
         } #context_Success
+
     } #describe_Expand-XMLDataSet
+
 } #inModule

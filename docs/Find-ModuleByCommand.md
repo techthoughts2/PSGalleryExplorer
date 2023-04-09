@@ -13,7 +13,7 @@ Searches for modules that contain a specific command or cmdlet name.
 ## SYNTAX
 
 ```
-Find-ModuleByCommand [-CommandName] <String> [<CommonParameters>]
+Find-ModuleByCommand [-CommandName] <String> [-InsightView] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -37,6 +37,13 @@ Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage'
 
 Returns a list of modules that contain the command Send-TelegramTextMessage
 
+### EXAMPLE 3
+```
+Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage' -InsightView
+```
+
+Returns a list of modules that contain the command Send-TelegramTextMessage, with focused community insights about the module
+
 ## PARAMETERS
 
 ### -CommandName
@@ -50,6 +57,22 @@ Aliases:
 Required: True
 Position: 1
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -InsightView
+Output focuses on additional insights available through PSGalleryExplorer.
+This includes the module's size and file count, as well as repository metrics like stars, forks, and last repo update date
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

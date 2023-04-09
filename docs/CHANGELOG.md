@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0]
+
+- Module Updates
+    - Added support for usage of a metadata file to better determine if data is current
+        - Added `Confirm-MetadataUpdate` private function
+        - Updated logic in `Confirm-XMLDataSet` and `Invoke-XMLDataCheck`
+        - Removed private function `Get-XMLDataSet` for new private function `Get-RemoteFile`
+    - Convert `1.5.0` or higher now required
+    - Added the `InsightView` parameter to both `Find-ModuleByCommand` and `Find-PSGModule`
+        - This provides a new results view that focuses on community insights
+- Build Updates
+    - SSM Task now generates metadata file
+    - InvokeBuild bumped from `5.10.2` to `5.10.3`
+    - Convert bumped from `1.2.0` to `1.5.0`
+    - Removed all test case uses of `Assert-MockCalled`
+    - Improved test formatting
+    - Updated test example references
+    - Added additional integration tests for new properties
+
 ## [2.1.0]
 
 - Module Updates
