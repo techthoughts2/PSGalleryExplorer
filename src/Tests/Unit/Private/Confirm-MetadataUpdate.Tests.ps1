@@ -12,9 +12,7 @@ Import-Module $PathToManifest -Force
 #-------------------------------------------------------------------------
 
 InModuleScope 'PSGalleryExplorer' {
-    #-------------------------------------------------------------------------
-    $WarningPreference = "SilentlyContinue"
-    #-------------------------------------------------------------------------
+
     Describe 'Confirm-MetadataUpdate' -Tag Unit {
         BeforeAll {
             $WarningPreference = 'SilentlyContinue'

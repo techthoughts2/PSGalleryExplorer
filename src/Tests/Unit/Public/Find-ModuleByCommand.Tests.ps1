@@ -587,15 +587,18 @@ InModuleScope 'PSGalleryExplorer' {
         } #before_each
 
         Context 'Error' {
+
             It 'should return null if the dataset can not be loaded' {
                 Mock -CommandName Import-XMLDataSet -MockWith {
                     $false
                 }
                 Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage' | Should -BeNullOrEmpty
             } #it
+
         } #context_Error
 
         Context 'Success' {
+
             It 'should return expected results when it finds a module containing the command' {
                 $eval = Find-ModuleByCommand -CommandName 'Send-TelegramTextMessage'
                 $count = $eval | Measure-Object | Select-Object -ExpandProperty Count
@@ -613,6 +616,7 @@ InModuleScope 'PSGalleryExplorer' {
             #     $count | Should -BeExactly 4
             #     $eval[0].Name | Should -BeExactly 'PSLogging'
             # } #it
+
         } #context_Success
 
     } #describe_Find-ModuleByCommand

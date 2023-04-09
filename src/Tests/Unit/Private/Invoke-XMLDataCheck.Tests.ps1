@@ -64,7 +64,7 @@ InModuleScope 'PSGalleryExplorer' {
                 Invoke-XMLDataCheck -Force
                 Should -Invoke Invoke-XMLDataCheck -Scope It -Exactly -Times 1
             } #it
-        } #context_shouldprocess
+        } #context_ShouldProcess
 
         BeforeEach {
             Mock -CommandName Confirm-DataLocation -MockWith {

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - InvokeBuild bumped from `5.10.2` to `5.10.3`
     - Convert bumped from `1.2.0` to `1.5.0`
     - Removed all test case uses of `Assert-MockCalled`
+    - Improved test formatting
 
 ## [2.1.0]
 
