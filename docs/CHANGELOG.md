@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - Updated CodeBuild containers from `aws/codebuild/standard:6.0` to `aws/codebuild/standard:7.0`
     - Changed alarm for cache data to reference correct SNS topic for alerts
     - Added CloudWatch dashboard for data cache age metric
+- Misc
+    - Added metric dashboards to docs section
 
 ## [2.5.0]
 
