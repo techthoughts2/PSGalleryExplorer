@@ -121,7 +121,7 @@ Resources:
     Properties:
       ActionsEnabled: true
       AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+        - !ImportValue AlertSNSTopic
       AlarmDescription: Alarms if the PubXML file is more than 8 days old.
       AlarmName: PubXMLMonitor
       ComparisonOperator: GreaterThanOrEqualToThreshold
