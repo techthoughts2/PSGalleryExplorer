@@ -51,7 +51,7 @@ function Confirm-XMLDataSet {
             return $result
         }
         if ($fileData) {
-            $creationDate = $fileData.CreationTime
+            $creationDate = $fileData.LastWriteTime
             $now = Get-Date
             if (($now - $creationDate).Days -ge 9) {
                 # Write-Verbose 'Data file requires refresh.'
