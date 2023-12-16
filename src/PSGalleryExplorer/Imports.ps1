@@ -15,6 +15,8 @@ function Get-DataLocation {
 }
 
 $script:corps = @(
+    '2AT B.V.'
+    '3Shape A/S'
     'AWS'
     'Amazon'
     'Amazon.com, Inc'
@@ -30,6 +32,7 @@ $script:corps = @(
     'Cisco Systems'
     'Cisco'
     'Cisco Systems, Inc.'
+    'Cybersecurity Engineering'
     'DSC Community'
     'Dell Inc.'
     'Dell Technologies'
@@ -100,6 +103,7 @@ $script:corps = @(
     'VMware Inc.'
     'Virtual Engine'
     'waldo.be'
+    'WebMD Health Services'
     'Worxspace'
     'XtremIO Dell EMC'
     'Yevrag35, LLC.'

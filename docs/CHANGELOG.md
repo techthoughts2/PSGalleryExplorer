@@ -5,10 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.5.1]
+## [2.5.2]
 
 - Module Changes
     - `Confirm-XMLDataSet` now evaluates `LastWriteTime` instead of `CreationTime` to determine cache freshness requirements
+    - Added additional corps to list
 - Build Updates
     - AWS Deployment Updates
         - Updated CodeBuild containers from `aws/codebuild/standard:6.0` to `aws/codebuild/standard:7.0`
