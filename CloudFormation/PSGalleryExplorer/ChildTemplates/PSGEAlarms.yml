@@ -121,7 +121,7 @@ Resources:
     Properties:
       ActionsEnabled: true
       AlarmActions:
-        - !Sub arn:aws:sns:us-west-2:${AWS::AccountId}:alertTopic
+        - !ImportValue AlertSNSTopic
       AlarmDescription: Alarms if the PubXML file is more than 8 days old.
       AlarmName: PubXMLMonitor
       ComparisonOperator: GreaterThanOrEqualToThreshold
@@ -146,6 +146,97 @@ Resources:
       # ThresholdMetricId: String
       TreatMissingData: notBreaching
       # Unit: String
+
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-dashboard.html
+  PSGEPubXMLMonitorDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub '${ServiceName}-PSGEPubXMLMonitorDashboard'
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+              {
+                  "height": 11,
+                  "width": 11,
+                  "y": 0,
+                  "x": 0,
+                  "type": "metric",
+                  "properties": {
+                      "metrics": [
+                          [
+                              "PSGalleryExplorer",
+                              "PubXMLAge",
+                              "PubXML",
+                              "DaysOld",
+                              {
+                                  "region": "us-west-2",
+                                  "label": "Data Cache Age (Days)"
+                              }
+                          ]
+                      ],
+                      "view": "timeSeries",
+                      "stacked": false,
+                      "region": "us-west-2",
+                      "period": 86400,
+                      "stat": "Maximum",
+                      "start": "-P90D",
+                      "end": "P0D",
+                      "title": "PSGalleryExplorer Data Cache Age Metric",
+                      "yAxis": {
+                          "left": {
+                              "label": "Days Old",
+                              "min": 0
+                          }
+                      },
+                      "annotations": {
+                          "horizontal": [
+                              {
+                                  "label": "Untitled annotation",
+                                  "value": 8
+                              }
+                          ]
+                      }
+                  }
+              },
+              {
+                  "height": 11,
+                  "width": 11,
+                  "y": 0,
+                  "x": 11,
+                  "type": "metric",
+                  "properties": {
+                      "metrics": [
+                          [
+                              "AWS/CloudFront",
+                              "Requests",
+                              "Region",
+                              "Global",
+                              "DistributionId",
+                              "E253EO4S3ELURG",
+                              {
+                                  "region": "us-east-1"
+                              }
+                          ]
+                      ],
+                      "view": "timeSeries",
+                      "stacked": false,
+                      "region": "us-west-2",
+                      "period": 86400,
+                      "stat": "Sum",
+                      "start": "-P90D",
+                      "end": "P0D",
+                      "title": "Data Cache Download Requests",
+                      "yAxis": {
+                          "left": {
+                              "label": "Download Count",
+                              "min": 0
+                          }
+                      },
+                      "setPeriodToTimeRange": true
+                  }
+              }
+          ]
+        }
 
 Outputs:
   PubXMLMonitorARN:

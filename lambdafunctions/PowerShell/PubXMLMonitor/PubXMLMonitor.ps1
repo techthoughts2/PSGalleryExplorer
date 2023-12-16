@@ -14,10 +14,10 @@
 # $env:TELEGRAM_SECRET
 # $env:SERVICE_NAME
 
-#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.275'}
-#Requires -Modules @{ModuleName='AWS.Tools.CloudWatch';ModuleVersion='4.1.275'}
-#Requires -Modules @{ModuleName='AWS.Tools.SimpleSystemsManagement';ModuleVersion='4.1.275'}
-#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.275'}
+#Requires -Modules @{ModuleName='AWS.Tools.Common';ModuleVersion='4.1.472'}
+#Requires -Modules @{ModuleName='AWS.Tools.CloudWatch';ModuleVersion='4.1.472'}
+#Requires -Modules @{ModuleName='AWS.Tools.SimpleSystemsManagement';ModuleVersion='4.1.472'}
+#Requires -Modules @{ModuleName='AWS.Tools.S3';ModuleVersion='4.1.472'}
 #Requires -Modules @{ModuleName='PoshGram';ModuleVersion='2.3.0'}
 
 # Uncomment to send the input event to CloudWatch Logs

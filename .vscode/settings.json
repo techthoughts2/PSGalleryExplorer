@@ -42,7 +42,9 @@
         "ratelimit",
         "Ryver",
         "Sightview",
-        "Stroustrup"
+        "Stroustrup",
+        "telegramchannel",
+        "telegramtoken"
     ]
 }
 

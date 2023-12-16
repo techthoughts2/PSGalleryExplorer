@@ -702,7 +702,7 @@ Resources:
         #ComputeType: !Ref CodeBuildComputeType
         ComputeType: BUILD_GENERAL1_SMALL
         Type: LINUX_CONTAINER
-        Image: aws/codebuild/standard:6.0
+        Image: aws/codebuild/standard:7.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something
@@ -807,7 +807,7 @@ Resources:
         #ComputeType: !Ref CodeBuildComputeType
         ComputeType: BUILD_GENERAL1_SMALL
         Type: LINUX_CONTAINER
-        Image: aws/codebuild/standard:6.0
+        Image: aws/codebuild/standard:7.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something

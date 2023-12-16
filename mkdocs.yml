@@ -79,6 +79,7 @@ nav:
     - Find-ModuleByCommand.md: Find-ModuleByCommand.md
     - Find-PSGModule.md: Find-PSGModule.md
   - Data Collection: PSGalleryExplorer-Data_Collection.md
+  - Metrics: PSGalleryExplorer-Metrics.md
   - FAQ: PSGalleryExplorer-FAQ.md
   - Change Log: CHANGELOG.md
   # - Functions:

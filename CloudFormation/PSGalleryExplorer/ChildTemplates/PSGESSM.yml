@@ -103,7 +103,7 @@ Resources:
       # Schedule: rate(5 minutes)
       # ScheduleOffset: Integer
       ScheduleTimezone: 'US/Central'
-      StartDate: '2023-03-01T21:30:00-06:00'
+      StartDate: '2023-04-20T21:30:00-06:00'
       Tags:
         - Key: ServiceName
           Value: !Ref ServiceName
@@ -181,7 +181,6 @@ Resources:
                 - 'aws s3 cp "C:\${ServiceName}\FinalZip\${ServiceName}.zip" "s3://${bucketName}"'
                 - bucketName:
                     'Fn::ImportValue': PubXMLDataBN
-              - !Sub $nowEpoch = Get-Date -UFormat %s; $metadata = @{ 'zipCreated' = $nowEpoch }; $metadataFilePath = 'C:\${ServiceName}\FinalZip\${ServiceName}.json'; $metadata | ConvertTo-Json -Depth 10 | Out-File -FilePath $metadataFilePath -Force
               - !Sub
                 - 'aws s3 cp "C:\${ServiceName}\FinalZip\${ServiceName}.json" "s3://${bucketName}"'
                 - bucketName:

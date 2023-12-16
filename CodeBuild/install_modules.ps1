@@ -33,13 +33,13 @@ $VerbosePreference = 'SilentlyContinue'
 $modulesToInstall = [System.Collections.ArrayList]::new()
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Pester'
-            ModuleVersion = '5.4.0'
+            ModuleVersion = '5.5.0'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
-            ModuleVersion = '5.10.2'
+            ModuleVersion = '5.10.4'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
@@ -69,25 +69,25 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.Common'
-            ModuleVersion = '4.1.275'
+            ModuleVersion = '4.1.472'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.CloudFormation'
-            ModuleVersion = '4.1.275'
+            ModuleVersion = '4.1.472'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.S3'
-            ModuleVersion = '4.1.275'
+            ModuleVersion = '4.1.472'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.SimpleSystemsManagement'
-            ModuleVersion = '4.1.275'
+            ModuleVersion = '4.1.472'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
