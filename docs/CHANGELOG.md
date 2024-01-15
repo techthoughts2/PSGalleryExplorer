@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Misc
     - Updated CONTRIBUTING guidelines
     - Updated `extensions.json` with recommended extensions for working with this repo
+    - Updated PSGalleryExplorer logo and icons
 
 ## [2.5.2]
 
