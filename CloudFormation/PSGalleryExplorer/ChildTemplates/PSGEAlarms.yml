@@ -156,14 +156,23 @@ Resources:
         {
           "widgets": [
               {
-                  "height": 9,
-                  "width": 11,
-                  "y": 10,
+                  "height": 10,
+                  "width": 20,
+                  "y": 12,
                   "x": 0,
                   "type": "metric",
                   "properties": {
                       "metrics": [
-                          [ "PSGalleryExplorer", "PubXMLAge", "PubXML", "DaysOld", { "region": "us-west-2", "label": "Data Cache Age (Days)" } ]
+                          [
+                              "PSGalleryExplorer",
+                              "PubXMLAge",
+                              "PubXML",
+                              "DaysOld",
+                              {
+                                  "region": "us-west-2",
+                                  "label": "Data Cache Age (Days)"
+                              }
+                          ]
                       ],
                       "view": "timeSeries",
                       "stacked": false,
@@ -197,7 +206,17 @@ Resources:
                   "type": "metric",
                   "properties": {
                       "metrics": [
-                          [ "AWS/CloudFront", "Requests", "Region", "Global", "DistributionId", "E253EO4S3ELURG", { "region": "us-east-1" } ]
+                          [
+                              "AWS/CloudFront",
+                              "Requests",
+                              "Region",
+                              "Global",
+                              "DistributionId",
+                              "E253EO4S3ELURG",
+                              {
+                                  "region": "us-east-1"
+                              }
+                          ]
                       ],
                       "view": "timeSeries",
                       "stacked": false,
@@ -217,11 +236,11 @@ Resources:
                   }
               },
               {
-                  "type": "alarm",
-                  "x": 11,
-                  "y": 10,
-                  "width": 9,
                   "height": 2,
+                  "width": 20,
+                  "y": 10,
+                  "x": 0,
+                  "type": "alarm",
                   "properties": {
                       "title": "Over 8 Days Alarm Status",
                       "alarms": [
