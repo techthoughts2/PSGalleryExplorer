@@ -12,7 +12,7 @@
     RootModule        = 'PSGalleryExplorer.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '2.5.3'
+    ModuleVersion     = '2.5.4'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()

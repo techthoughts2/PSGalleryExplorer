@@ -103,6 +103,8 @@
     Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
 .COMPONENT
     PSGalleryExplorer
+.LINK
+    https://psgalleryexplorer.readthedocs.io/en/latest/Find-PSGModule/
 #>
 function Find-PSGModule {
     [CmdletBinding(defaultparametersetname = 'none')]
