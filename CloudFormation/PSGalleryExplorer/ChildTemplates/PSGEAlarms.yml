@@ -156,23 +156,14 @@ Resources:
         {
           "widgets": [
               {
-                  "height": 11,
+                  "height": 9,
                   "width": 11,
-                  "y": 0,
+                  "y": 10,
                   "x": 0,
                   "type": "metric",
                   "properties": {
                       "metrics": [
-                          [
-                              "PSGalleryExplorer",
-                              "PubXMLAge",
-                              "PubXML",
-                              "DaysOld",
-                              {
-                                  "region": "us-west-2",
-                                  "label": "Data Cache Age (Days)"
-                              }
-                          ]
+                          [ "PSGalleryExplorer", "PubXMLAge", "PubXML", "DaysOld", { "region": "us-west-2", "label": "Data Cache Age (Days)" } ]
                       ],
                       "view": "timeSeries",
                       "stacked": false,
@@ -199,24 +190,14 @@ Resources:
                   }
               },
               {
-                  "height": 11,
-                  "width": 11,
+                  "height": 10,
+                  "width": 20,
                   "y": 0,
-                  "x": 11,
+                  "x": 0,
                   "type": "metric",
                   "properties": {
                       "metrics": [
-                          [
-                              "AWS/CloudFront",
-                              "Requests",
-                              "Region",
-                              "Global",
-                              "DistributionId",
-                              "E253EO4S3ELURG",
-                              {
-                                  "region": "us-east-1"
-                              }
-                          ]
+                          [ "AWS/CloudFront", "Requests", "Region", "Global", "DistributionId", "E253EO4S3ELURG", { "region": "us-east-1" } ]
                       ],
                       "view": "timeSeries",
                       "stacked": false,
@@ -233,6 +214,19 @@ Resources:
                           }
                       },
                       "setPeriodToTimeRange": true
+                  }
+              },
+              {
+                  "type": "alarm",
+                  "x": 11,
+                  "y": 10,
+                  "width": 9,
+                  "height": 2,
+                  "properties": {
+                      "title": "Over 8 Days Alarm Status",
+                      "alarms": [
+                          "arn:aws:cloudwatch:us-west-2:699483786831:alarm:PubXMLMonitor"
+                      ]
                   }
               }
           ]
