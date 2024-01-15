@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added links to inline help for all functions
 - Build Updates
     - Adjusted metric dashboard arrangement and sizing + added alarm status
+    - adjusted appveyor build
 - Misc
     - Updated CONTRIBUTING guidelines
     - Updated `extensions.json` with recommended extensions for working with this repo
