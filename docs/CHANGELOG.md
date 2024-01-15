@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Module Changes
     - Updated links in `psd1` manifest
     - Added links to inline help for all functions
+- Misc
+    - Updated CONTRIBUTING guidelines
 
 ## [2.5.2]
 
