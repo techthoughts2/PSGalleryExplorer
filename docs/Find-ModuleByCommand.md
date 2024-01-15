@@ -1,7 +1,7 @@
 ---
 external help file: PSGalleryExplorer-help.xml
 Module Name: PSGalleryExplorer
-online version:
+online version: https://psgalleryexplorer.readthedocs.io/en/latest/Find-ModuleByCommand/
 schema: 2.0.0
 ---
 
@@ -90,3 +90,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 Author: Jake Morrison - @jakemorrison - https://www.techthoughts.info/
 
 ## RELATED LINKS
+
+[https://psgalleryexplorer.readthedocs.io/en/latest/Find-ModuleByCommand/](https://psgalleryexplorer.readthedocs.io/en/latest/Find-ModuleByCommand/)
+

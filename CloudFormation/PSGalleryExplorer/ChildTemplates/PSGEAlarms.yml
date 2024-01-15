@@ -156,9 +156,9 @@ Resources:
         {
           "widgets": [
               {
-                  "height": 11,
-                  "width": 11,
-                  "y": 0,
+                  "height": 10,
+                  "width": 20,
+                  "y": 12,
                   "x": 0,
                   "type": "metric",
                   "properties": {
@@ -199,10 +199,10 @@ Resources:
                   }
               },
               {
-                  "height": 11,
-                  "width": 11,
+                  "height": 10,
+                  "width": 20,
                   "y": 0,
-                  "x": 11,
+                  "x": 0,
                   "type": "metric",
                   "properties": {
                       "metrics": [
@@ -233,6 +233,19 @@ Resources:
                           }
                       },
                       "setPeriodToTimeRange": true
+                  }
+              },
+              {
+                  "height": 2,
+                  "width": 20,
+                  "y": 10,
+                  "x": 0,
+                  "type": "alarm",
+                  "properties": {
+                      "title": "Over 8 Days Alarm Status",
+                      "alarms": [
+                          "arn:aws:cloudwatch:us-west-2:699483786831:alarm:PubXMLMonitor"
+                      ]
                   }
               }
           ]
