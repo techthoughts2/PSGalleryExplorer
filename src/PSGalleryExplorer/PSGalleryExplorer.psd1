@@ -12,7 +12,7 @@
     RootModule        = 'PSGalleryExplorer.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '2.5.2'
+    ModuleVersion     = '2.5.3'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -121,16 +121,16 @@
             )
 
             # A URL to the license for this module.
-            # LicenseUri = ''
+            LicenseUri               = 'https://github.com/techthoughts2/PSGalleryExplorer/blob/main/LICENSE'
 
             # A URL to the main website for this project.
             ProjectUri               = 'https://github.com/techthoughts2/PSGalleryExplorer'
 
             # A URL to an icon representing this module.
-            IconUri                  = 'https://github.com/techthoughts2/PSGalleryExplorer/raw/main/media/PSGalleryExplorerIcon.png'
+            IconUri                  = 'https://github.com/techthoughts2/PSGalleryExplorer/raw/main/docs/assets/PSGalleryExplorerIcon.png'
 
             # ReleaseNotes of this module
-            ReleaseNotes             = 'https://github.com/techthoughts2/PSGalleryExplorer/blob/main/.github/CHANGELOG.md'
+            ReleaseNotes             = 'https://github.com/techthoughts2/PSGalleryExplorer/blob/main/docs/CHANGELOG.md'
 
             # Prerelease string of this module
             # Prerelease = ''
