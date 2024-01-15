@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added links to inline help for all functions
 - Misc
     - Updated CONTRIBUTING guidelines
+    - Updated `extensions.json` with recommended extensions for working with this repo
 
 ## [2.5.2]
 
