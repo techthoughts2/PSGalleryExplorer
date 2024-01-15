@@ -26,3 +26,5 @@ Today, a fully PowerShell hybrid solution is deployed to continually collect and
         - Combines data sets together to one final data set.
 1. An [AWS Systems Manager Maintenance Window](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-maintenance.html) task is set up to retrieve the data set and publish it to [Amazon CloudFront](https://aws.amazon.com/cloudfront/)
 1. Users of PSGalleryExplorer can quickly download the refreshed data set worldwide when running searches
+
+You can see additional metric data of data cache age, and cache downloads on the [PSGalleryExplorer Metrics](PSGalleryExplorer-Metrics.md) page.
