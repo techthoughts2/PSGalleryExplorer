@@ -16,6 +16,7 @@
     PSGalleryExplorer
 #>
 function Import-XMLDataSet {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCorrectCasing', '', Justification = 'ConvertFrom-Clixml is used in more than one module with different casing requirements.')]
     [CmdletBinding()]
     param (
     )

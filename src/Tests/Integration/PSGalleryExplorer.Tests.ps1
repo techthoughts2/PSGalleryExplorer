@@ -1,14 +1,12 @@
-#-------------------------------------------------------------------------
-Set-Location -Path $PSScriptRoot
-#-------------------------------------------------------------------------
-$ModuleName = 'PSGalleryExplorer'
-#-------------------------------------------------------------------------
-#if the module is already in memory, remove it
-Get-Module $ModuleName | Remove-Module -Force
-$PathToManifest = [System.IO.Path]::Combine('..', '..', 'Artifacts', "$ModuleName.psd1")
-#-------------------------------------------------------------------------
-Import-Module $PathToManifest -Force
-#-------------------------------------------------------------------------
+BeforeDiscovery {
+    Set-Location -Path $PSScriptRoot
+    $ModuleName = 'PSGalleryExplorer'
+    $PathToManifest = [System.IO.Path]::Combine('..', '..', 'Artifacts', "$ModuleName.psd1")
+    #if the module is already in memory, remove it
+    Get-Module $ModuleName -ErrorAction SilentlyContinue | Remove-Module -Force
+    Import-Module $PathToManifest -Force
+}
+
 Describe 'Integration Tests' -Tag Integration {
 
     Context -Name 'Find-PSGModule' {
@@ -16,23 +14,23 @@ Describe 'Integration Tests' -Tag Integration {
         Context 'General' {
 
             It 'should support the InSightview parameter' {
-                $eval = Find-PSGModule -ByName 'Catesta' -InSightview
-                $eval.Name | Should -BeExactly 'Catesta'
+                $eval = Find-PSGModule -ByName 'pwshBedrock' -InSightview
+                $eval.Name | Should -BeExactly 'pwshBedrock'
             } #it
 
             It 'should have the ModuleSize property' {
-                $eval = Find-PSGModule -ByName 'Catesta'
+                $eval = Find-PSGModule -ByName 'pwshBedrock'
                 $eval.ModuleSize | Should -BeGreaterThan 0
             } #it
 
             It 'should have the ModuleFileCount property' {
-                $eval = Find-PSGModule -ByName 'Catesta'
+                $eval = Find-PSGModule -ByName 'pwshBedrock'
                 $eval.ModuleFileCount | Should -BeGreaterThan 0
             } #it
 
             It 'should have the Dependency property populated' {
-                $eval = Find-PSGModule -ByName 'Catesta'
-                $eval.Dependencies.Count | Should -BeGreaterThan 4
+                $eval = Find-PSGModule -ByName 'pwshBedrock'
+                $eval.Dependencies.Count | Should -BeGreaterThan 3
             } #it
 
         } #context_General

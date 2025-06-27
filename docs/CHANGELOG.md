@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.6]
+
+- Module Changes
+    - Minor casing changes to support new PSScriptAnalyzer rules
+
+- Build Updates
+    - Bumped readthedocs resource versions
+    - Pester bumped from `5.5.0` to `5.7.1`
+    - InvokeBuild bumped from `5.10.4` to `5.12.1`
+    - PSScriptAnalyzer bumped from `1.21.0` to `1.24.0`
+    - AWS Deployment Updates
+        - Updated CodeBuild containers:
+            - `WINDOWS_SERVER_2019_CONTAINER` to `WINDOWS_SERVER_2022_CONTAINER`
+            - `aws/codebuild/windows-base:2019-2.0` to `aws/codebuild/windows-base:2022-1.0`
+            - Updated from  `dotnet6.0` to `dotnet8.0`
+        - Updated `install_modules` to latest versions and AWS.Tools v5.
+    - Updated build file to match latest available doc build changes and formatting
+    - Updated all unit and integration tests to support proper Pester 5 formatting requirements
+
 ## [2.5.4]
 
 - Module Changes

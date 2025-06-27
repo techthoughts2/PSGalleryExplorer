@@ -11,17 +11,17 @@ $modulesToInstall = [System.Collections.ArrayList]::new()
 # https://github.com/pester/Pester
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Pester'
-            ModuleVersion = '5.4.0'
+            ModuleVersion = '5.7.1'
         }))
 # https://github.com/nightroman/Invoke-Build
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
-            ModuleVersion = '5.10.3'
+            ModuleVersion = '5.12.1'
         }))
 # https://github.com/PowerShell/PSScriptAnalyzer
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PSScriptAnalyzer'
-            ModuleVersion = '1.21.0'
+            ModuleVersion = '1.23.0'
         }))
 # https://github.com/PowerShell/platyPS
 # older version used due to: https://github.com/PowerShell/platyPS/issues/457

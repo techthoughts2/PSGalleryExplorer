@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      dotnet: 6.0
+      dotnet: 8.0
       # python: 3.8
     commands:
       # Check PowerShell Version
