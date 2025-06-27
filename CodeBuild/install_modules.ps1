@@ -33,19 +33,19 @@ $VerbosePreference = 'SilentlyContinue'
 $modulesToInstall = [System.Collections.ArrayList]::new()
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'Pester'
-            ModuleVersion = '5.5.0'
+            ModuleVersion = '5.7.1'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
-            ModuleVersion = '5.10.4'
+            ModuleVersion = '5.12.1'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PSScriptAnalyzer'
-            ModuleVersion = '1.21.0'
+            ModuleVersion = '1.23.0'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
@@ -57,37 +57,37 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PoshGram'
-            ModuleVersion = '2.3.0'
+            ModuleVersion = '3.0.1'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWSLambdaPSCore'
-            ModuleVersion = '3.0.1.0'
+            ModuleVersion = '4.0.4.0'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.Common'
-            ModuleVersion = '4.1.472'
+            ModuleVersion = '5.0.3'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.CloudFormation'
-            ModuleVersion = '4.1.472'
+            ModuleVersion = '5.0.3'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.S3'
-            ModuleVersion = '4.1.472'
+            ModuleVersion = '5.0.3'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'AWS.Tools.SimpleSystemsManagement'
-            ModuleVersion = '4.1.472'
+            ModuleVersion = '5.0.3'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
