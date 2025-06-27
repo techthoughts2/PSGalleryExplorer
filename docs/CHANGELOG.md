@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
             - Updated from  `dotnet6.0` to `dotnet8.0`
         - Updated `install_modules` to latest versions and AWS.Tools v5.
     - Updated build file to match latest available doc build changes and formatting
+    - Updated all unit and integration tests to support proper Pester 5 formatting requirements
 
 ## [2.5.4]
 

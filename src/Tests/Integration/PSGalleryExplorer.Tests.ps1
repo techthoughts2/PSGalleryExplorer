@@ -1,14 +1,12 @@
-#-------------------------------------------------------------------------
-Set-Location -Path $PSScriptRoot
-#-------------------------------------------------------------------------
-$ModuleName = 'PSGalleryExplorer'
-#-------------------------------------------------------------------------
-#if the module is already in memory, remove it
-Get-Module $ModuleName | Remove-Module -Force
-$PathToManifest = [System.IO.Path]::Combine('..', '..', 'Artifacts', "$ModuleName.psd1")
-#-------------------------------------------------------------------------
-Import-Module $PathToManifest -Force
-#-------------------------------------------------------------------------
+BeforeDiscovery {
+    Set-Location -Path $PSScriptRoot
+    $ModuleName = 'PSGalleryExplorer'
+    $PathToManifest = [System.IO.Path]::Combine('..', '..', 'Artifacts', "$ModuleName.psd1")
+    #if the module is already in memory, remove it
+    Get-Module $ModuleName -ErrorAction SilentlyContinue | Remove-Module -Force
+    Import-Module $PathToManifest -Force
+}
+
 Describe 'Integration Tests' -Tag Integration {
 
     Context -Name 'Find-PSGModule' {
