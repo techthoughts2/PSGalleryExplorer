@@ -45,7 +45,7 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
         }))
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'PSScriptAnalyzer'
-            ModuleVersion = '1.23.0'
+            ModuleVersion = '1.24.0'
             BucketName    = 'PSGallery'
             KeyPrefix     = ''
         }))
