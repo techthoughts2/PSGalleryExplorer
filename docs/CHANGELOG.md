@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Build Updates
     - Bumped readthedocs resource versions
+    - Pester bumped from `5.5.0` to `5.7.1`
+    - InvokeBuild bumped from `5.10.4` to `5.12.1`
+    - PSScriptAnalyzer bumped from `1.21.0` to `1.23.0`
 
 ## [2.5.4]
 
