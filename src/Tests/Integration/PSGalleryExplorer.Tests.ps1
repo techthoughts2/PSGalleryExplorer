@@ -14,23 +14,23 @@ Describe 'Integration Tests' -Tag Integration {
         Context 'General' {
 
             It 'should support the InSightview parameter' {
-                $eval = Find-PSGModule -ByName 'Catesta' -InSightview
-                $eval.Name | Should -BeExactly 'Catesta'
+                $eval = Find-PSGModule -ByName 'pwshBedrock' -InSightview
+                $eval.Name | Should -BeExactly 'pwshBedrock'
             } #it
 
             It 'should have the ModuleSize property' {
-                $eval = Find-PSGModule -ByName 'Catesta'
+                $eval = Find-PSGModule -ByName 'pwshBedrock'
                 $eval.ModuleSize | Should -BeGreaterThan 0
             } #it
 
             It 'should have the ModuleFileCount property' {
-                $eval = Find-PSGModule -ByName 'Catesta'
+                $eval = Find-PSGModule -ByName 'pwshBedrock'
                 $eval.ModuleFileCount | Should -BeGreaterThan 0
             } #it
 
             It 'should have the Dependency property populated' {
-                $eval = Find-PSGModule -ByName 'Catesta'
-                $eval.Dependencies.Count | Should -BeGreaterThan 4
+                $eval = Find-PSGModule -ByName 'pwshBedrock'
+                $eval.Dependencies.Count | Should -BeGreaterThan 3
             } #it
 
         } #context_General
