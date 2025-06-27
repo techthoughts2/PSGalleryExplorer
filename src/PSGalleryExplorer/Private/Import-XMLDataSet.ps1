@@ -16,6 +16,7 @@
     PSGalleryExplorer
 #>
 function Import-XMLDataSet {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCorrectCasing', '', Justification = 'ConvertFrom-Clixml is used in more than one module with different casing requirements.')]
     [CmdletBinding()]
     param (
     )
@@ -31,7 +32,7 @@ function Import-XMLDataSet {
                     ErrorAction = 'Stop'
                 }
                 $fileData = Get-Content @getContentSplat
-                $script:glData = $fileData | ConvertFrom-CliXml -ErrorAction Stop
+                $script:glData = $fileData | ConvertFrom-Clixml -ErrorAction Stop
             } #try
             catch {
                 $result = $false
