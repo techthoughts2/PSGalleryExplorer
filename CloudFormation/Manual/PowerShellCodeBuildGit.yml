@@ -281,8 +281,8 @@ Resources:
       Environment:
         # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
-        Type: WINDOWS_SERVER_2019_CONTAINER
-        Image: aws/codebuild/windows-base:2019-2.0
+        Type: WINDOWS_SERVER_2022_CONTAINER
+        Image: aws/codebuild/windows-base:2022-1.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something
@@ -386,8 +386,8 @@ Resources:
       Environment:
         # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
-        Type: WINDOWS_SERVER_2019_CONTAINER
-        Image: aws/codebuild/windows-base:2019-2.0
+        Type: WINDOWS_SERVER_2022_CONTAINER
+        Image: aws/codebuild/windows-base:2022-1.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something
@@ -491,8 +491,8 @@ Resources:
       Environment:
         # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
-        Type: WINDOWS_SERVER_2019_CONTAINER
-        Image: aws/codebuild/windows-base:2019-2.0
+        Type: WINDOWS_SERVER_2022_CONTAINER
+        Image: aws/codebuild/windows-base:2022-1.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something
@@ -596,8 +596,8 @@ Resources:
       Environment:
         # Certificate:
         ComputeType: BUILD_GENERAL1_MEDIUM
-        Type: WINDOWS_SERVER_2019_CONTAINER
-        Image: aws/codebuild/windows-base:2019-2.0
+        Type: WINDOWS_SERVER_2022_CONTAINER
+        Image: aws/codebuild/windows-base:2022-1.0
         # EnvironmentVariables:
         #   - Name: ARTIFACT_S3_BUCKET
         #     Value: !Ref something

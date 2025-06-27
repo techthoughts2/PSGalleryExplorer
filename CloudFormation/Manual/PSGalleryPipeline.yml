@@ -43,8 +43,9 @@ Parameters:
     Default: LINUX_CONTAINER
     Description: The type of build environment.
     AllowedValues:
+      - WINDOWS_SERVER_2022_CONTAINER
       - WINDOWS_SERVER_2019_CONTAINER
-      - WINDOWS_CONTAINER
+      - WINDOWS_EC2
       - LINUX_CONTAINER
 
   # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
@@ -65,7 +66,7 @@ Parameters:
     AllowedValues:
       - aws/codebuild/standard:7.0
       - aws/codebuild/amazonlinux2-x86_64-standard:5.0
-      - aws/codebuild/windows-base:2019-2.0
+      - aws/codebuild/windows-base:2022-1.0
 
   ResourceType:
     Type: String
