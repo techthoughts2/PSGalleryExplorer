@@ -31,7 +31,7 @@ function Import-XMLDataSet {
                     ErrorAction = 'Stop'
                 }
                 $fileData = Get-Content @getContentSplat
-                $script:glData = $fileData | ConvertFrom-Clixml -ErrorAction Stop
+                $script:glData = $fileData | ConvertFrom-CliXml -ErrorAction Stop
             } #try
             catch {
                 $result = $false

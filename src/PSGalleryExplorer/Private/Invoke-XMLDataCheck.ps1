@@ -25,7 +25,7 @@ function Invoke-XMLDataCheck {
             HelpMessage = 'Skip confirmation')]
         [switch]$Force
     )
-    Begin {
+    begin {
 
         if (-not $PSBoundParameters.ContainsKey('Verbose')) {
             $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
@@ -41,7 +41,7 @@ function Invoke-XMLDataCheck {
 
         $results = $true #assume the best
     } #begin
-    Process {
+    process {
         # -Confirm --> $ConfirmPreference = 'Low'
         # ShouldProcess intercepts WhatIf* --> no need to pass it on
         if ($Force -or $PSCmdlet.ShouldProcess("ShouldProcess?")) {
@@ -76,7 +76,7 @@ function Invoke-XMLDataCheck {
 
         } #if_Should
     } #process
-    End {
+    end {
         return $results
     } #end
 } #Invoke-XMLDataCheck
