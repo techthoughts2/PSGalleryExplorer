@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
             - `aws/codebuild/windows-base:2019-2.0` to `aws/codebuild/windows-base:2022-1.0`
             - Updated from  `dotnet6.0` to `dotnet8.0`
         - Updated `install_modules` to latest versions and AWS.Tools v5.
+    - Updated build file to match latest available doc build changes and formatting
 
 ## [2.5.4]
 
